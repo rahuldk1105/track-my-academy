@@ -458,6 +458,364 @@ async def assign_coach_to_student(student_id: str, coach_id: str, current_user: 
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc)}
 
+# Session Management Endpoints
+@app.post("/api/sessions", response_model=Session)
+async def create_session(session: SessionCreate, current_user: User = Depends(get_current_user)):
+    # Only admins and coaches can create sessions
+    if current_user.role not in ["admin", "coach"]:
+        raise HTTPException(status_code=403, detail="Only admins and coaches can create sessions")
+    
+    # Verify permissions
+    if current_user.role == "admin":
+        # Admin can create sessions for any academy they manage
+        academy = academies_collection.find_one({"academy_id": session.academy_id, "admin_email": current_user.email})
+        if not academy:
+            raise HTTPException(status_code=403, detail="Access denied")
+    else:
+        # Coach can only create sessions in their academy
+        if current_user.academy_id != session.academy_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    session_id = str(uuid.uuid4())
+    session_doc = {
+        "session_id": session_id,
+        "session_name": session.session_name,
+        "description": session.description,
+        "session_date": session.session_date,
+        "start_time": session.start_time,
+        "end_time": session.end_time,
+        "location": session.location,
+        "max_participants": session.max_participants,
+        "session_type": session.session_type,
+        "academy_id": session.academy_id,
+        "coach_id": session.coach_id,
+        "assigned_students": session.assigned_students,
+        "status": "scheduled",
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    sessions_collection.insert_one(session_doc)
+    return Session(**session_doc)
+
+@app.get("/api/sessions", response_model=List[Session])
+async def get_sessions(current_user: User = Depends(get_current_user)):
+    if current_user.role == "admin":
+        # Admin can see sessions in their academies
+        admin_academies = list(academies_collection.find({"admin_email": current_user.email}))
+        academy_ids = [academy["academy_id"] for academy in admin_academies]
+        sessions = list(sessions_collection.find({"academy_id": {"$in": academy_ids}}))
+    elif current_user.role == "coach":
+        # Coach can see sessions in their academy or sessions they're assigned to
+        sessions = list(sessions_collection.find({
+            "$or": [
+                {"academy_id": current_user.academy_id},
+                {"coach_id": current_user.email}
+            ]
+        }))
+    else:
+        # Students can see sessions they're assigned to
+        student = students_collection.find_one({"email": current_user.email})
+        if student:
+            sessions = list(sessions_collection.find({"assigned_students": student["student_id"]}))
+        else:
+            sessions = []
+    
+    return [Session(**session) for session in sessions]
+
+@app.get("/api/sessions/{session_id}", response_model=Session)
+async def get_session(session_id: str, current_user: User = Depends(get_current_user)):
+    session = sessions_collection.find_one({"session_id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Check permissions
+    if current_user.role == "admin":
+        academy = academies_collection.find_one({"academy_id": session["academy_id"], "admin_email": current_user.email})
+        if not academy:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "coach":
+        if session["academy_id"] != current_user.academy_id and session["coach_id"] != current_user.email:
+            raise HTTPException(status_code=403, detail="Access denied")
+    else:
+        # Student can only see sessions they're assigned to
+        student = students_collection.find_one({"email": current_user.email})
+        if not student or student["student_id"] not in session["assigned_students"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    return Session(**session)
+
+@app.put("/api/sessions/{session_id}", response_model=Session)
+async def update_session(session_id: str, session_update: SessionCreate, current_user: User = Depends(get_current_user)):
+    # Only admins and coaches can update sessions
+    if current_user.role not in ["admin", "coach"]:
+        raise HTTPException(status_code=403, detail="Only admins and coaches can update sessions")
+    
+    existing_session = sessions_collection.find_one({"session_id": session_id})
+    if not existing_session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Check permissions
+    if current_user.role == "coach" and existing_session["coach_id"] != current_user.email:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    updated_session = {
+        "session_name": session_update.session_name,
+        "description": session_update.description,
+        "session_date": session_update.session_date,
+        "start_time": session_update.start_time,
+        "end_time": session_update.end_time,
+        "location": session_update.location,
+        "max_participants": session_update.max_participants,
+        "session_type": session_update.session_type,
+        "assigned_students": session_update.assigned_students,
+    }
+    
+    sessions_collection.update_one(
+        {"session_id": session_id},
+        {"$set": updated_session}
+    )
+    
+    updated_doc = sessions_collection.find_one({"session_id": session_id})
+    return Session(**updated_doc)
+
+# Attendance Management Endpoints
+@app.post("/api/attendance", response_model=Attendance)
+async def mark_attendance(attendance: AttendanceCreate, current_user: User = Depends(get_current_user)):
+    # Only coaches can mark attendance
+    if current_user.role != "coach":
+        raise HTTPException(status_code=403, detail="Only coaches can mark attendance")
+    
+    # Verify session exists and coach has permission
+    session = sessions_collection.find_one({"session_id": attendance.session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if session["coach_id"] != current_user.email and session["academy_id"] != current_user.academy_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Check if attendance already marked for this student in this session
+    existing_attendance = attendance_collection.find_one({
+        "session_id": attendance.session_id,
+        "student_id": attendance.student_id
+    })
+    
+    attendance_id = str(uuid.uuid4())
+    coach = coaches_collection.find_one({"email": current_user.email})
+    
+    attendance_doc = {
+        "attendance_id": attendance_id,
+        "session_id": attendance.session_id,
+        "student_id": attendance.student_id,
+        "status": attendance.status,
+        "notes": attendance.notes,
+        "marked_by": coach["coach_id"] if coach else current_user.user_id,
+        "marked_at": datetime.now(timezone.utc)
+    }
+    
+    if existing_attendance:
+        # Update existing attendance
+        attendance_collection.update_one(
+            {"session_id": attendance.session_id, "student_id": attendance.student_id},
+            {"$set": attendance_doc}
+        )
+        attendance_doc["attendance_id"] = existing_attendance["attendance_id"]
+    else:
+        # Create new attendance record
+        attendance_collection.insert_one(attendance_doc)
+    
+    return Attendance(**attendance_doc)
+
+@app.get("/api/sessions/{session_id}/attendance", response_model=List[Attendance])
+async def get_session_attendance(session_id: str, current_user: User = Depends(get_current_user)):
+    # Verify session exists and user has permission
+    session = sessions_collection.find_one({"session_id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Check permissions
+    if current_user.role == "admin":
+        academy = academies_collection.find_one({"academy_id": session["academy_id"], "admin_email": current_user.email})
+        if not academy:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "coach":
+        if session["academy_id"] != current_user.academy_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+    else:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    attendance_records = list(attendance_collection.find({"session_id": session_id}))
+    return [Attendance(**record) for record in attendance_records]
+
+# Performance History Endpoints
+@app.post("/api/performance-history", response_model=PerformanceHistory)
+async def create_performance_record(performance: PerformanceHistoryCreate, current_user: User = Depends(get_current_user)):
+    # Only coaches can create performance records
+    if current_user.role != "coach":
+        raise HTTPException(status_code=403, detail="Only coaches can create performance records")
+    
+    coach = coaches_collection.find_one({"email": current_user.email})
+    if not coach:
+        raise HTTPException(status_code=404, detail="Coach not found")
+    
+    performance_id = str(uuid.uuid4())
+    performance_doc = {
+        "performance_id": performance_id,
+        "student_id": performance.student_id,
+        "session_id": performance.session_id,
+        "performance_score": performance.performance_score,
+        "performance_notes": performance.performance_notes,
+        "assessment_type": performance.assessment_type,
+        "assessed_by": coach["coach_id"],
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    performance_history_collection.insert_one(performance_doc)
+    
+    # Update student's current performance score
+    students_collection.update_one(
+        {"student_id": performance.student_id},
+        {"$set": {"performance_score": performance.performance_score}}
+    )
+    
+    return PerformanceHistory(**performance_doc)
+
+@app.get("/api/students/{student_id}/performance-history", response_model=List[PerformanceHistory])
+async def get_student_performance_history(student_id: str, current_user: User = Depends(get_current_user)):
+    # Check permissions
+    if current_user.role == "student":
+        student = students_collection.find_one({"email": current_user.email})
+        if not student or student["student_id"] != student_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "coach":
+        # Coach can see performance of their assigned students
+        student = students_collection.find_one({"student_id": student_id})
+        if not student or current_user.academy_id != student["academy_id"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "admin":
+        # Admin can see performance of students in their academies
+        student = students_collection.find_one({"student_id": student_id})
+        if not student:
+            raise HTTPException(status_code=404, detail="Student not found")
+        academy = academies_collection.find_one({"academy_id": student["academy_id"], "admin_email": current_user.email})
+        if not academy:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    performance_records = list(performance_history_collection.find({"student_id": student_id}).sort("created_at", -1))
+    return [PerformanceHistory(**record) for record in performance_records]
+
+# Analytics Endpoints
+@app.get("/api/analytics/attendance/{student_id}", response_model=AttendanceAnalytics)
+async def get_student_attendance_analytics(student_id: str, current_user: User = Depends(get_current_user)):
+    # Check permissions (same as performance history)
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    if current_user.role == "student":
+        if student["email"] != current_user.email:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "coach":
+        if current_user.academy_id != student["academy_id"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "admin":
+        academy = academies_collection.find_one({"academy_id": student["academy_id"], "admin_email": current_user.email})
+        if not academy:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Get all sessions assigned to student
+    assigned_sessions = list(sessions_collection.find({"assigned_students": student_id}))
+    total_sessions = len(assigned_sessions)
+    
+    # Get attendance records
+    attendance_records = list(attendance_collection.find({"student_id": student_id}))
+    attended_sessions = len([record for record in attendance_records if record["status"] == "present"])
+    
+    attendance_percentage = (attended_sessions / total_sessions * 100) if total_sessions > 0 else 0
+    
+    # Get recent attendance (last 10 sessions)
+    recent_sessions = sorted(assigned_sessions, key=lambda x: x["session_date"], reverse=True)[:10]
+    recent_attendance = []
+    
+    for session in recent_sessions:
+        attendance_record = next((record for record in attendance_records if record["session_id"] == session["session_id"]), None)
+        recent_attendance.append({
+            "session_name": session["session_name"],
+            "session_date": session["session_date"].isoformat(),
+            "status": attendance_record["status"] if attendance_record else "not_marked"
+        })
+    
+    return AttendanceAnalytics(
+        student_id=student_id,
+        student_name=student["name"],
+        total_sessions=total_sessions,
+        attended_sessions=attended_sessions,
+        attendance_percentage=round(attendance_percentage, 2),
+        recent_attendance=recent_attendance
+    )
+
+@app.get("/api/analytics/performance/{student_id}", response_model=PerformanceAnalytics)
+async def get_student_performance_analytics(student_id: str, current_user: User = Depends(get_current_user)):
+    # Check permissions (same as above)
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    if current_user.role == "student":
+        if student["email"] != current_user.email:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "coach":
+        if current_user.academy_id != student["academy_id"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user.role == "admin":
+        academy = academies_collection.find_one({"academy_id": student["academy_id"], "admin_email": current_user.email})
+        if not academy:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Get performance history
+    performance_records = list(performance_history_collection.find({"student_id": student_id}).sort("created_at", -1))
+    
+    current_score = student["performance_score"]
+    
+    if performance_records:
+        scores = [record["performance_score"] for record in performance_records]
+        average_score = sum(scores) / len(scores)
+        
+        # Determine trend (comparing last 3 records with previous 3)
+        if len(scores) >= 6:
+            recent_avg = sum(scores[:3]) / 3
+            previous_avg = sum(scores[3:6]) / 3
+            if recent_avg > previous_avg + 0.5:
+                trend = "improving"
+            elif recent_avg < previous_avg - 0.5:
+                trend = "declining"
+            else:
+                trend = "stable"
+        else:
+            trend = "stable"
+        
+        # Format performance history for frontend
+        performance_history = []
+        for record in performance_records[-10:]:  # Last 10 records
+            performance_history.append({
+                "date": record["created_at"].isoformat(),
+                "score": record["performance_score"],
+                "assessment_type": record["assessment_type"],
+                "notes": record.get("performance_notes", "")
+            })
+    else:
+        average_score = current_score
+        trend = "stable"
+        performance_history = []
+    
+    return PerformanceAnalytics(
+        student_id=student_id,
+        student_name=student["name"],
+        current_score=current_score,
+        average_score=round(average_score, 2),
+        score_trend=trend,
+        performance_history=performance_history
+    )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
