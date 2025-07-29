@@ -1271,8 +1271,8 @@ const getPerformanceBadgeClass = (score) => {
   return 'performance-poor';
 };
 
-// Main App Component
-const App = () => {
+// Main App Component with Routing
+const AppContent = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -1310,20 +1310,35 @@ const App = () => {
     );
   }
 
-  if (!user) {
-    return <LoginForm onLogin={handleLogin} />;
-  }
-
   return (
-    <AuthContext.Provider value={{ user, logout: handleLogout }}>
-      <div className="min-h-screen bg-gray-50">
-        <DashboardHeader user={user} onLogout={handleLogout} />
-        
-        {user.role === 'admin' && <AdminDashboard user={user} />}
-        {user.role === 'coach' && <CoachDashboard user={user} />}
-        {user.role === 'student' && <StudentDashboard user={user} />}
-      </div>
-    </AuthContext.Provider>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={
+        user ? <Navigate to="/dashboard" replace /> : <LoginForm onLogin={handleLogin} />
+      } />
+      <Route path="/dashboard" element={
+        user ? (
+          <AuthContext.Provider value={{ user, logout: handleLogout }}>
+            <div className="min-h-screen bg-gray-50">
+              <DashboardHeader user={user} onLogout={handleLogout} />
+              
+              {user.role === 'admin' && <AdminDashboard user={user} />}
+              {user.role === 'coach' && <CoachDashboard user={user} />}
+              {user.role === 'student' && <StudentDashboard user={user} />}
+            </div>
+          </AuthContext.Provider>
+        ) : <Navigate to="/login" replace />
+      } />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 };
 
