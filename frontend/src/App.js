@@ -1,6 +1,12 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
+
+// Import new components
+import LandingPage from './components/LandingPage';
+import { PerformanceTrendChart, AttendanceChart, AttendanceSummaryChart, AcademyOverviewChart, PerformanceDistributionChart } from './components/Charts';
+import { CreateSessionModal, SessionList, AttendanceMarking } from './components/SessionManagement';
 
 // Auth Context
 const AuthContext = createContext();
