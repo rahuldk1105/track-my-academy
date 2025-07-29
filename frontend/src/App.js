@@ -267,9 +267,12 @@ const AdminDashboard = ({ user }) => {
   const [academies, setAcademies] = useState([]);
   const [coaches, setCoaches] = useState([]);
   const [students, setStudents] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [showCreateAcademy, setShowCreateAcademy] = useState(false);
   const [showCreateCoach, setShowCreateCoach] = useState(false);
   const [showCreateStudent, setShowCreateStudent] = useState(false);
+  const [showCreateSession, setShowCreateSession] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -278,15 +281,17 @@ const AdminDashboard = ({ user }) => {
 
   const loadData = async () => {
     try {
-      const [academiesData, coachesData, studentsData] = await Promise.all([
+      const [academiesData, coachesData, studentsData, sessionsData] = await Promise.all([
         apiService.getAcademies(),
         apiService.getCoaches(),
-        apiService.getStudents()
+        apiService.getStudents(),
+        apiService.getSessions()
       ]);
       
       setAcademies(academiesData);
       setCoaches(coachesData);
       setStudents(studentsData);
+      setSessions(sessionsData);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -298,90 +303,184 @@ const AdminDashboard = ({ user }) => {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
 
+  const academyOverviewData = {
+    academies: academies.length,
+    coaches: coaches.length,
+    students: students.length,
+    sessions: sessions.length
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="stats-card">
-          <div className="text-2xl font-bold">{academies.length}</div>
-          <div className="text-primary-100">Academies</div>
-        </div>
-        <div className="stats-card">
-          <div className="text-2xl font-bold">{coaches.length}</div>
-          <div className="text-primary-100">Coaches</div>
-        </div>
-        <div className="stats-card">
-          <div className="text-2xl font-bold">{students.length}</div>
-          <div className="text-primary-100">Students</div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
+      {/* Tab Navigation */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="flex flex-wrap gap-4">
+        <nav className="flex space-x-8">
           <button
-            onClick={() => setShowCreateAcademy(true)}
-            className="btn-primary"
+            onClick={() => setActiveTab('overview')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'overview'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
           >
-            Create Academy
+            Overview
           </button>
-          {academies.length > 0 && (
-            <>
-              <button
-                onClick={() => setShowCreateCoach(true)}
-                className="btn-primary"
-              >
-                Add Coach
-              </button>
-              <button
-                onClick={() => setShowCreateStudent(true)}
-                className="btn-primary"
-              >
-                Add Student
-              </button>
-            </>
-          )}
-        </div>
+          <button
+            onClick={() => setActiveTab('sessions')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'sessions'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Sessions
+          </button>
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'analytics'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Analytics
+          </button>
+        </nav>
       </div>
 
-      {/* Data Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Academies */}
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">My Academies</h3>
-          {academies.length === 0 ? (
-            <p className="text-gray-500">No academies yet. Create your first academy to get started.</p>
-          ) : (
-            <div className="space-y-4">
-              {academies.map((academy) => (
-                <div key={academy.academy_id} className="border border-gray-200 rounded p-4">
-                  <h4 className="font-medium text-gray-900">{academy.academy_name}</h4>
-                  <p className="text-sm text-gray-600">{academy.academy_location}</p>
-                  <p className="text-sm text-gray-600">{academy.admin_email}</p>
-                </div>
-              ))}
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="stats-card">
+              <div className="text-2xl font-bold">{academies.length}</div>
+              <div className="text-primary-100">Academies</div>
             </div>
-          )}
-        </div>
+            <div className="stats-card">
+              <div className="text-2xl font-bold">{coaches.length}</div>
+              <div className="text-primary-100">Coaches</div>
+            </div>
+            <div className="stats-card">
+              <div className="text-2xl font-bold">{students.length}</div>
+              <div className="text-primary-100">Students</div>
+            </div>
+            <div className="stats-card">
+              <div className="text-2xl font-bold">{sessions.length}</div>
+              <div className="text-primary-100">Sessions</div>
+            </div>
+          </div>
 
-        {/* Recent Activity */}
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">{coaches.length} coaches registered</span>
+          {/* Quick Actions */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() => setShowCreateAcademy(true)}
+                className="btn-primary"
+              >
+                Create Academy
+              </button>
+              {academies.length > 0 && (
+                <>
+                  <button
+                    onClick={() => setShowCreateCoach(true)}
+                    className="btn-primary"
+                  >
+                    Add Coach
+                  </button>
+                  <button
+                    onClick={() => setShowCreateStudent(true)}
+                    className="btn-primary"
+                  >
+                    Add Student
+                  </button>
+                  <button
+                    onClick={() => setShowCreateSession(true)}
+                    className="btn-primary"
+                  >
+                    Create Session
+                  </button>
+                </>
+              )}
             </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">{students.length} students enrolled</span>
+          </div>
+
+          {/* Data Tables */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Academies */}
+            <div className="card">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">My Academies</h3>
+              {academies.length === 0 ? (
+                <p className="text-gray-500">No academies yet. Create your first academy to get started.</p>
+              ) : (
+                <div className="space-y-4">
+                  {academies.map((academy) => (
+                    <div key={academy.academy_id} className="border border-gray-200 rounded p-4">
+                      <h4 className="font-medium text-gray-900">{academy.academy_name}</h4>
+                      <p className="text-sm text-gray-600">{academy.academy_location}</p>
+                      <p className="text-sm text-gray-600">{academy.admin_email}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent Activity */}
+            <div className="card">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-sm text-gray-600">{coaches.length} coaches registered</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span className="text-sm text-gray-600">{students.length} students enrolled</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span className="text-sm text-gray-600">{sessions.length} sessions scheduled</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Sessions Tab */}
+      {activeTab === 'sessions' && (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Training Sessions</h2>
+            <button
+              onClick={() => setShowCreateSession(true)}
+              className="btn-primary"
+              disabled={academies.length === 0}
+            >
+              Create Session
+            </button>
+          </div>
+          <SessionList sessions={sessions} userRole="admin" />
+        </div>
+      )}
+
+      {/* Analytics Tab */}
+      {activeTab === 'analytics' && (
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Analytics Dashboard</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="card">
+              <AcademyOverviewChart academyData={academyOverviewData} />
+            </div>
+            <div className="card">
+              <PerformanceDistributionChart students={students} />
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Create Academy Modal */}
+      {/* Modals */}
       {showCreateAcademy && (
         <CreateAcademyModal 
           onClose={() => setShowCreateAcademy(false)} 
@@ -389,7 +488,6 @@ const AdminDashboard = ({ user }) => {
         />
       )}
 
-      {/* Create Coach Modal */}
       {showCreateCoach && academies.length > 0 && (
         <CreateCoachModal 
           academies={academies}
@@ -398,12 +496,21 @@ const AdminDashboard = ({ user }) => {
         />
       )}
 
-      {/* Create Student Modal */}
       {showCreateStudent && academies.length > 0 && (
         <CreateStudentModal 
           academies={academies}
           coaches={coaches}
           onClose={() => setShowCreateStudent(false)} 
+          onSuccess={loadData}
+        />
+      )}
+
+      {showCreateSession && academies.length > 0 && (
+        <CreateSessionModal 
+          academies={academies}
+          coaches={coaches}
+          students={students}
+          onClose={() => setShowCreateSession(false)} 
           onSuccess={loadData}
         />
       )}
