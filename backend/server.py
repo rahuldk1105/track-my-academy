@@ -555,8 +555,11 @@ async def update_session(session_id: str, session_update: SessionCreate, current
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Check permissions
-    if current_user.role == "coach" and existing_session["coach_id"] != current_user.email:
-        raise HTTPException(status_code=403, detail="Access denied")
+    if current_user.role == "coach":
+        # Get coach record to compare coach_id
+        coach = coaches_collection.find_one({"email": current_user.email})
+        if not coach or existing_session["coach_id"] != coach["coach_id"]:
+            raise HTTPException(status_code=403, detail="Access denied")
     
     updated_session = {
         "session_name": session_update.session_name,
