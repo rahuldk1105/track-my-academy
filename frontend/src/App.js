@@ -145,6 +145,9 @@ class ApiService {
 
 const apiService = new ApiService();
 
+// Export apiService for use in other files
+export { apiService };
+
 // Components
 const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState('');
