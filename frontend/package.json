@@ -2,6 +2,9 @@
   "name": "track-my-academy-frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -16,6 +19,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "prebuild": "rm -rf node_modules package-lock.json",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
