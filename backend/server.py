@@ -45,6 +45,9 @@ users_collection = db.users
 academies_collection = db.academies
 coaches_collection = db.coaches
 students_collection = db.students
+sessions_collection = db.sessions
+attendance_collection = db.attendance
+performance_history_collection = db.performance_history
 
 # Pydantic Models
 class UserBase(BaseModel):
