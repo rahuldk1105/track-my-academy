@@ -118,6 +118,78 @@ class Student(StudentBase):
     assigned_coaches: List[str] = []
     created_at: datetime
 
+# Session Management Models
+class SessionBase(BaseModel):
+    session_name: str
+    description: Optional[str] = None
+    session_date: datetime
+    start_time: str  # HH:MM format
+    end_time: str    # HH:MM format
+    location: Optional[str] = None
+    max_participants: Optional[int] = None
+    session_type: str  # training, match, practice, etc.
+
+class SessionCreate(SessionBase):
+    academy_id: str
+    coach_id: str
+    assigned_students: List[str] = []
+
+class Session(SessionBase):
+    session_id: str
+    academy_id: str
+    coach_id: str
+    assigned_students: List[str] = []
+    created_at: datetime
+    status: str = "scheduled"  # scheduled, ongoing, completed, cancelled
+
+# Attendance Models
+class AttendanceBase(BaseModel):
+    session_id: str
+    student_id: str
+    status: str  # present, absent, late, excused
+    notes: Optional[str] = None
+
+class AttendanceCreate(AttendanceBase):
+    pass
+
+class Attendance(AttendanceBase):
+    attendance_id: str
+    marked_by: str  # coach_id who marked attendance
+    marked_at: datetime
+
+# Performance History Models
+class PerformanceHistoryBase(BaseModel):
+    student_id: str
+    session_id: Optional[str] = None
+    performance_score: float
+    performance_notes: Optional[str] = None
+    assessment_type: str  # session, monthly, quarterly, annual
+    assessed_by: str  # coach_id
+
+class PerformanceHistoryCreate(PerformanceHistoryBase):
+    pass
+
+class PerformanceHistory(PerformanceHistoryBase):
+    performance_id: str
+    created_at: datetime
+
+# Analytics Models
+class AttendanceAnalytics(BaseModel):
+    student_id: str
+    student_name: str
+    total_sessions: int
+    attended_sessions: int
+    attendance_percentage: float
+    recent_attendance: List[dict]  # Last 10 sessions
+
+class PerformanceAnalytics(BaseModel):
+    student_id: str
+    student_name: str
+    current_score: float
+    average_score: float
+    score_trend: str  # improving, declining, stable
+    performance_history: List[dict]
+
 # Utility functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
