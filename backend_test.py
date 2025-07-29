@@ -613,6 +613,36 @@ class TrackMyAcademyAPITester:
             self.test_create_student()
             self.test_assign_coach_to_student()
         
+        # Session Management tests
+        print("\n📅 Testing Session Management...")
+        for role in ['admin', 'coach', 'student']:
+            if role in self.tokens:
+                self.test_create_session(role)
+                self.test_get_sessions(role)
+                self.test_get_session_by_id(role)
+                self.test_update_session(role)
+        
+        # Attendance Management tests
+        print("\n✅ Testing Attendance Management...")
+        for role in ['admin', 'coach', 'student']:
+            if role in self.tokens:
+                self.test_mark_attendance(role)
+                self.test_get_session_attendance(role)
+        
+        # Performance History tests
+        print("\n📈 Testing Performance History...")
+        for role in ['admin', 'coach', 'student']:
+            if role in self.tokens:
+                self.test_create_performance_record(role)
+                self.test_get_student_performance_history(role)
+        
+        # Analytics tests
+        print("\n📊 Testing Analytics...")
+        for role in ['admin', 'coach', 'student']:
+            if role in self.tokens:
+                self.test_get_attendance_analytics(role)
+                self.test_get_performance_analytics(role)
+        
         # Final results
         print("\n" + "=" * 50)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} passed")
