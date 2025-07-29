@@ -81,6 +81,60 @@ class ApiService {
     const response = await this.api.post(`/api/students/${studentId}/assign-coach/${coachId}`);
     return response.data;
   }
+
+  // Session Management
+  async createSession(sessionData) {
+    const response = await this.api.post('/api/sessions', sessionData);
+    return response.data;
+  }
+
+  async getSessions() {
+    const response = await this.api.get('/api/sessions');
+    return response.data;
+  }
+
+  async getSession(sessionId) {
+    const response = await this.api.get(`/api/sessions/${sessionId}`);
+    return response.data;
+  }
+
+  async updateSession(sessionId, sessionData) {
+    const response = await this.api.put(`/api/sessions/${sessionId}`, sessionData);
+    return response.data;
+  }
+
+  // Attendance Management
+  async markAttendance(attendanceData) {
+    const response = await this.api.post('/api/attendance', attendanceData);
+    return response.data;
+  }
+
+  async getSessionAttendance(sessionId) {
+    const response = await this.api.get(`/api/sessions/${sessionId}/attendance`);
+    return response.data;
+  }
+
+  // Performance History
+  async createPerformanceRecord(performanceData) {
+    const response = await this.api.post('/api/performance-history', performanceData);
+    return response.data;
+  }
+
+  async getStudentPerformanceHistory(studentId) {
+    const response = await this.api.get(`/api/students/${studentId}/performance-history`);
+    return response.data;
+  }
+
+  // Analytics
+  async getStudentAttendanceAnalytics(studentId) {
+    const response = await this.api.get(`/api/analytics/attendance/${studentId}`);
+    return response.data;
+  }
+
+  async getStudentPerformanceAnalytics(studentId) {
+    const response = await this.api.get(`/api/analytics/performance/${studentId}`);
+    return response.data;
+  }
 }
 
 const apiService = new ApiService();
