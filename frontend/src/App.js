@@ -671,6 +671,10 @@ const CoachDashboard = ({ user }) => {
 const StudentDashboard = ({ user }) => {
   const [studentData, setStudentData] = useState(null);
   const [coaches, setCoaches] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [attendanceAnalytics, setAttendanceAnalytics] = useState(null);
+  const [performanceAnalytics, setPerformanceAnalytics] = useState(null);
+  const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -679,15 +683,31 @@ const StudentDashboard = ({ user }) => {
 
   const loadData = async () => {
     try {
-      const [studentsData, coachesData] = await Promise.all([
+      const [studentsData, coachesData, sessionsData] = await Promise.all([
         apiService.getStudents(),
-        apiService.getCoaches()
+        apiService.getCoaches(),
+        apiService.getSessions()
       ]);
       
       // Find current student's data
       const currentStudent = studentsData.find(s => s.email === user.email);
       setStudentData(currentStudent);
       setCoaches(coachesData);
+      setSessions(sessionsData);
+
+      // Load analytics if student found
+      if (currentStudent) {
+        try {
+          const [attendanceData, performanceData] = await Promise.all([
+            apiService.getStudentAttendanceAnalytics(currentStudent.student_id),
+            apiService.getStudentPerformanceAnalytics(currentStudent.student_id)
+          ]);
+          setAttendanceAnalytics(attendanceData);
+          setPerformanceAnalytics(performanceData);
+        } catch (error) {
+          console.warn('Analytics data not available yet:', error);
+        }
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -714,91 +734,197 @@ const StudentDashboard = ({ user }) => {
     studentData.assigned_coaches.includes(coach.coach_id)
   );
 
+  const studentSessions = sessions.filter(session =>
+    session.assigned_students?.includes(studentData.student_id)
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Tab Navigation */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">My Progress</h2>
-        <p className="text-gray-600">Track your training progress and performance</p>
+        <nav className="flex space-x-8">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'profile'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            My Profile
+          </button>
+          <button
+            onClick={() => setActiveTab('sessions')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'sessions'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            My Sessions
+          </button>
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'analytics'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            My Analytics
+          </button>
+        </nav>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Student Profile */}
-        <div className="lg:col-span-2">
-          <div className="card mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-600">Name</label>
-                <p className="text-gray-900">{studentData.name}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Age</label>
-                <p className="text-gray-900">{studentData.age} years</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Program</label>
-                <p className="text-gray-900">{studentData.enrolled_program}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Performance Score</label>
-                <p className={`performance-badge ${getPerformanceBadgeClass(studentData.performance_score)}`}>
-                  {studentData.performance_score}/10
-                </p>
-              </div>
-            </div>
+      {/* Profile Tab */}
+      {activeTab === 'profile' && (
+        <>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">My Profile</h2>
+            <p className="text-gray-600">View your personal information and progress</p>
           </div>
 
-          {/* Performance Chart Placeholder */}
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Trend</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Performance chart coming soon</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* My Coaches */}
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">My Coaches</h3>
-            {assignedCoaches.length === 0 ? (
-              <p className="text-gray-500">No coaches assigned yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {assignedCoaches.map((coach) => (
-                  <div key={coach.coach_id} className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        {coach.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{coach.name}</p>
-                      <p className="text-xs text-gray-600">{coach.specialization}</p>
-                    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Student Profile */}
+            <div className="lg:col-span-2">
+              <div className="card mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Name</label>
+                    <p className="text-gray-900">{studentData.name}</p>
                   </div>
-                ))}
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Age</label>
+                    <p className="text-gray-900">{studentData.age} years</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Program</label>
+                    <p className="text-gray-900">{studentData.enrolled_program}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Performance Score</label>
+                    <p className={`performance-badge ${getPerformanceBadgeClass(studentData.performance_score)}`}>
+                      {studentData.performance_score}/10
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="card">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary-600">{assignedCoaches.length}</div>
+                    <div className="text-sm text-gray-600">Coaches</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary-600">{studentSessions.length}</div>
+                    <div className="text-sm text-gray-600">Sessions</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary-600">
+                      {attendanceAnalytics?.attendance_percentage || 0}%
+                    </div>
+                    <div className="text-sm text-gray-600">Attendance</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* My Coaches */}
+              <div className="card">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">My Coaches</h3>
+                {assignedCoaches.length === 0 ? (
+                  <p className="text-gray-500">No coaches assigned yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {assignedCoaches.map((coach) => (
+                      <div key={coach.coach_id} className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-600">
+                            {coach.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{coach.name}</p>
+                          <p className="text-xs text-gray-600">{coach.specialization}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Sessions Tab */}
+      {activeTab === 'sessions' && (
+        <>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">My Training Sessions</h2>
+            <p className="text-gray-600">View your assigned training sessions</p>
+          </div>
+
+          <SessionList sessions={studentSessions} userRole="student" />
+        </>
+      )}
+
+      {/* Analytics Tab */}
+      {activeTab === 'analytics' && (
+        <>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">My Analytics</h2>
+            <p className="text-gray-600">Track your progress and performance</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Performance Chart */}
+            {performanceAnalytics && performanceAnalytics.performance_history.length > 0 ? (
+              <div className="card">
+                <PerformanceTrendChart data={performanceAnalytics.performance_history} />
+              </div>
+            ) : (
+              <div className="card">
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Performance data will appear after assessments</p>
+                </div>
+              </div>
+            )}
+
+            {/* Attendance Summary */}
+            {attendanceAnalytics ? (
+              <div className="card">
+                <AttendanceSummaryChart data={attendanceAnalytics} />
+              </div>
+            ) : (
+              <div className="card">
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Attendance data will appear after sessions</p>
+                </div>
+              </div>
+            )}
+
+            {/* Recent Attendance */}
+            {attendanceAnalytics && attendanceAnalytics.recent_attendance.length > 0 ? (
+              <div className="card lg:col-span-2">
+                <AttendanceChart data={attendanceAnalytics} />
+              </div>
+            ) : (
+              <div className="card lg:col-span-2">
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Recent attendance chart will appear after sessions</p>
+                </div>
               </div>
             )}
           </div>
-
-          {/* Quick Stats */}
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Coaches</span>
-                <span className="text-sm font-medium">{assignedCoaches.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Current Score</span>
-                <span className="text-sm font-medium">{studentData.performance_score}/10</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
