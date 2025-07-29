@@ -18,8 +18,11 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "overrides": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "scripts": {
-    "prebuild": "rm -rf node_modules package-lock.json",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
