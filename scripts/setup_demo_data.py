@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Demo data setup script for Track My Academy
-Creates sample academy, admin user, coaches, and students for testing
-"""
-
 import os
 import sys
 import requests
@@ -20,10 +14,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', 'backend', '.env'))
 
+import certifi
+
 # MongoDB connection
 MONGO_URL = os.getenv("MONGO_URL")
-client = MongoClient(MONGO_URL)
-db = client.track_my_academy
+client = MongoClient(MONGO_URL, tlsCAFile=certifi.where())
+db = client.get_database("track_my_academy") 
 
 # Collections
 users_collection = db.users
