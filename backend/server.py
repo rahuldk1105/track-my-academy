@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from passlib.context import CryptContext
@@ -8,6 +9,8 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 import os
+import shutil
+from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from bson import ObjectId
@@ -17,6 +20,13 @@ import uuid
 load_dotenv()
 
 app = FastAPI(title="Track My Academy API", version="1.0.0")
+
+# Create uploads directory
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+# Mount static file serving
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # CORS middleware
 app.add_middleware(
@@ -52,7 +62,7 @@ performance_history_collection = db.performance_history
 # Pydantic Models
 class UserBase(BaseModel):
     email: str
-    role: str  # admin, coach, student
+    role: str  # super_admin, admin, coach, student
     name: str
 
 class UserCreate(UserBase):
@@ -69,11 +79,19 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+# Enhanced Academy Models
 class AcademyBase(BaseModel):
     academy_name: str
     academy_location: str
-    academy_logo_url: Optional[str] = None
+    owner_name: str
+    admin_contact: str
     admin_email: str
+    student_limit: int
+    coach_limit: int
+    subscription_start_date: datetime
+    subscription_expiry_date: datetime
+    branches: List[str] = []
+    academy_logo_url: Optional[str] = None
 
 class AcademyCreate(AcademyBase):
     pass
@@ -81,6 +99,20 @@ class AcademyCreate(AcademyBase):
 class Academy(AcademyBase):
     academy_id: str
     created_at: datetime
+    status: Optional[str] = None
+
+class AcademyUpdate(BaseModel):
+    academy_name: Optional[str] = None
+    academy_location: Optional[str] = None
+    owner_name: Optional[str] = None
+    admin_contact: Optional[str] = None
+    admin_email: Optional[str] = None
+    student_limit: Optional[int] = None
+    coach_limit: Optional[int] = None
+    subscription_start_date: Optional[datetime] = None
+    subscription_expiry_date: Optional[datetime] = None
+    branches: Optional[List[str]] = None
+    academy_logo_url: Optional[str] = None
 
 class CoachBase(BaseModel):
     name: str
@@ -207,6 +239,21 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+def calculate_academy_status(subscription_expiry_date: datetime) -> str:
+    """Calculate academy subscription status based on expiry date"""
+    now = datetime.now(timezone.utc)
+    
+    # Convert to timezone-aware datetime if needed
+    if subscription_expiry_date.tzinfo is None:
+        subscription_expiry_date = subscription_expiry_date.replace(tzinfo=timezone.utc)
+    
+    if now > subscription_expiry_date:
+        return "expired"
+    elif (subscription_expiry_date - now).days <= 10:
+        return "expiring_soon"
+    else:
+        return "active"
+
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -235,6 +282,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         created_at=user["created_at"]
     )
 
+async def require_super_admin(current_user: User = Depends(get_current_user)):
+    """Dependency to ensure only super admins can access certain endpoints"""
+    if current_user.role != "super_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Super admin access required"
+        )
+    return current_user
+
 # Authentication endpoints
 @app.post("/api/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -255,22 +311,177 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
-# Academy endpoints
-@app.post("/api/academies", response_model=Academy)
-async def create_academy(academy: AcademyCreate):
+# File Upload endpoint
+@app.post("/api/upload-academy-logo")
+async def upload_academy_logo(
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_super_admin)
+):
+    """Upload academy logo - only super admins can upload"""
+    
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/jpg", "image/png"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400,
+            detail="Only PNG and JPG files are allowed"
+        )
+    
+    # Generate unique filename
+    file_extension = file.filename.split(".")[-1].lower()
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to save file")
+    
+    # Return URL
+    file_url = f"/uploads/{unique_filename}"
+    return {"file_url": file_url}
+
+# Super Admin Academy Management Endpoints
+@app.post("/api/super-admin/academies", response_model=Academy)
+async def create_academy_super_admin(
+    academy: AcademyCreate, 
+    current_user: User = Depends(require_super_admin)
+):
+    """Create academy - Super admin only"""
     academy_id = str(uuid.uuid4())
+    
+    # Calculate initial status
+    status = calculate_academy_status(academy.subscription_expiry_date)
+    
     academy_doc = {
         "academy_id": academy_id,
         "academy_name": academy.academy_name,
         "academy_location": academy.academy_location,
-        "academy_logo_url": academy.academy_logo_url,
+        "owner_name": academy.owner_name,
+        "admin_contact": academy.admin_contact,
         "admin_email": academy.admin_email,
+        "student_limit": academy.student_limit,
+        "coach_limit": academy.coach_limit,
+        "subscription_start_date": academy.subscription_start_date,
+        "subscription_expiry_date": academy.subscription_expiry_date,
+        "branches": academy.branches,
+        "academy_logo_url": academy.academy_logo_url,
         "created_at": datetime.now(timezone.utc)
     }
     
     academies_collection.insert_one(academy_doc)
     
-    return Academy(**academy_doc)
+    # Return academy with status
+    result = Academy(**academy_doc)
+    result.status = status
+    return result
+
+@app.get("/api/super-admin/academies", response_model=List[Academy])
+async def get_all_academies_super_admin(current_user: User = Depends(require_super_admin)):
+    """Get all academies - Super admin only"""
+    academies = list(academies_collection.find({}))
+    
+    result = []
+    for academy in academies:
+        academy_obj = Academy(**academy)
+        academy_obj.status = calculate_academy_status(academy["subscription_expiry_date"])
+        result.append(academy_obj)
+    
+    return result
+
+@app.get("/api/super-admin/academies/{academy_id}", response_model=Academy)
+async def get_academy_super_admin(
+    academy_id: str, 
+    current_user: User = Depends(require_super_admin)
+):
+    """Get specific academy - Super admin only"""
+    academy = academies_collection.find_one({"academy_id": academy_id})
+    if not academy:
+        raise HTTPException(status_code=404, detail="Academy not found")
+    
+    result = Academy(**academy)
+    result.status = calculate_academy_status(academy["subscription_expiry_date"])
+    return result
+
+@app.put("/api/super-admin/academies/{academy_id}", response_model=Academy)
+async def update_academy_super_admin(
+    academy_id: str,
+    academy_update: AcademyUpdate,
+    current_user: User = Depends(require_super_admin)
+):
+    """Update academy - Super admin only"""
+    academy = academies_collection.find_one({"academy_id": academy_id})
+    if not academy:
+        raise HTTPException(status_code=404, detail="Academy not found")
+    
+    # Create update document with only provided fields
+    update_doc = {}
+    for field, value in academy_update.dict(exclude_unset=True).items():
+        if value is not None:
+            update_doc[field] = value
+    
+    if update_doc:
+        academies_collection.update_one(
+            {"academy_id": academy_id},
+            {"$set": update_doc}
+        )
+    
+    # Get updated academy
+    updated_academy = academies_collection.find_one({"academy_id": academy_id})
+    result = Academy(**updated_academy)
+    result.status = calculate_academy_status(updated_academy["subscription_expiry_date"])
+    return result
+
+@app.delete("/api/super-admin/academies/{academy_id}")
+async def delete_academy_super_admin(
+    academy_id: str,
+    current_user: User = Depends(require_super_admin)
+):
+    """Delete academy - Super admin only"""
+    academy = academies_collection.find_one({"academy_id": academy_id})
+    if not academy:
+        raise HTTPException(status_code=404, detail="Academy not found")
+    
+    # Delete academy and related data
+    academies_collection.delete_one({"academy_id": academy_id})
+    coaches_collection.delete_many({"academy_id": academy_id})
+    students_collection.delete_many({"academy_id": academy_id})
+    sessions_collection.delete_many({"academy_id": academy_id})
+    users_collection.delete_many({"academy_id": academy_id, "role": {"$in": ["admin", "coach", "student"]}})
+    
+    return {"message": "Academy deleted successfully"}
+
+# Original Academy endpoints (for regular admins)
+@app.post("/api/academies", response_model=Academy)
+async def create_academy(academy: AcademyCreate):
+    academy_id = str(uuid.uuid4())
+    
+    # Calculate initial status
+    status = calculate_academy_status(academy.subscription_expiry_date)
+    
+    academy_doc = {
+        "academy_id": academy_id,
+        "academy_name": academy.academy_name,
+        "academy_location": academy.academy_location,
+        "owner_name": academy.owner_name,
+        "admin_contact": academy.admin_contact,
+        "admin_email": academy.admin_email,
+        "student_limit": academy.student_limit,
+        "coach_limit": academy.coach_limit,
+        "subscription_start_date": academy.subscription_start_date,
+        "subscription_expiry_date": academy.subscription_expiry_date,
+        "branches": academy.branches,
+        "academy_logo_url": academy.academy_logo_url,
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    academies_collection.insert_one(academy_doc)
+    
+    result = Academy(**academy_doc)
+    result.status = status
+    return result
 
 @app.get("/api/academies", response_model=List[Academy])
 async def get_academies(current_user: User = Depends(get_current_user)):
@@ -283,7 +494,13 @@ async def get_academies(current_user: User = Depends(get_current_user)):
         else:
             academies = []
     
-    return [Academy(**academy) for academy in academies]
+    result = []
+    for academy in academies:
+        academy_obj = Academy(**academy)
+        academy_obj.status = calculate_academy_status(academy["subscription_expiry_date"])
+        result.append(academy_obj)
+    
+    return result
 
 @app.get("/api/academies/{academy_id}", response_model=Academy)
 async def get_academy(academy_id: str, current_user: User = Depends(get_current_user)):
@@ -298,7 +515,9 @@ async def get_academy(academy_id: str, current_user: User = Depends(get_current_
     if not academy:
         raise HTTPException(status_code=404, detail="Academy not found")
     
-    return Academy(**academy)
+    result = Academy(**academy)
+    result.status = calculate_academy_status(academy["subscription_expiry_date"])
+    return result
 
 # Coach endpoints
 @app.post("/api/coaches", response_model=Coach)
