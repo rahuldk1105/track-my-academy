@@ -239,6 +239,16 @@ const LoginForm = ({ onLogin }) => {
 };
 
 const DashboardHeader = ({ user, onLogout }) => {
+  const getRoleDisplayName = (role) => {
+    const roleNames = {
+      'super_admin': 'Super Admin',
+      'admin': 'Admin',
+      'coach': 'Coach',
+      'student': 'Student'
+    };
+    return roleNames[role] || role.charAt(0).toUpperCase() + role.slice(1);
+  };
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -246,7 +256,7 @@ const DashboardHeader = ({ user, onLogout }) => {
           <div className="flex items-center">
             <h1 className="text-2xl font-bold text-gray-900">Track My Academy</h1>
             <span className="ml-4 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              {getRoleDisplayName(user.role)}
             </span>
           </div>
           <div className="flex items-center space-x-4">
