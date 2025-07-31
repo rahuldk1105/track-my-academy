@@ -460,13 +460,45 @@ const AdminDashboard = ({ user }) => {
                 <p className="text-gray-500">No academies yet. Create your first academy to get started.</p>
               ) : (
                 <div className="space-y-4">
-                  {academies.map((academy) => (
-                    <div key={academy.academy_id} className="border border-gray-200 rounded p-4">
-                      <h4 className="font-medium text-gray-900">{academy.academy_name}</h4>
-                      <p className="text-sm text-gray-600">{academy.academy_location}</p>
-                      <p className="text-sm text-gray-600">{academy.admin_email}</p>
-                    </div>
-                  ))}
+                  {academies.map((academy) => {
+                    const expiryDate = new Date(academy.subscription_expiry_date);
+                    const today = new Date();
+                    const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                    const isExpiringSoon = daysUntilExpiry <= 10 && daysUntilExpiry > 0;
+                    const isExpired = daysUntilExpiry <= 0;
+
+                    return (
+                      <div key={academy.academy_id} className="border border-gray-200 rounded p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900">{academy.academy_name}</h4>
+                            <p className="text-sm text-gray-600">{academy.academy_location}</p>
+                            <p className="text-sm text-gray-600">{academy.admin_email}</p>
+                            {academy.subscription_expiry_date && (
+                              <p className="text-sm text-gray-600 mt-1">
+                                Expires: {expiryDate.toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            {isExpired ? (
+                              <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+                                ❌ Expired
+                              </span>
+                            ) : isExpiringSoon ? (
+                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+                                ⚠️ Expiring Soon
+                              </span>
+                            ) : (
+                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                ✅ Active
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
