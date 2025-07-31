@@ -1323,6 +1323,7 @@ const AppContent = () => {
             <div className="min-h-screen bg-gray-50">
               <DashboardHeader user={user} onLogout={handleLogout} />
               
+              {user.role === 'super_admin' && <SuperAdminDashboard user={user} />}
               {user.role === 'admin' && <AdminDashboard user={user} />}
               {user.role === 'coach' && <CoachDashboard user={user} />}
               {user.role === 'student' && <StudentDashboard user={user} />}
