@@ -677,6 +677,49 @@ async def assign_coach_to_student(student_id: str, coach_id: str, current_user: 
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc)}
 
+# Super Admin User Creation Endpoint (for initial setup)
+@app.post("/api/create-super-admin")
+async def create_super_admin_user():
+    """Create initial super admin user - only works if no super admin exists"""
+    
+    # Check if any super admin already exists
+    existing_super_admin = users_collection.find_one({"role": "super_admin"})
+    if existing_super_admin:
+        return {
+            "message": "Super admin already exists",
+            "email": existing_super_admin["email"],
+            "name": existing_super_admin["name"]
+        }
+    
+    # Create super admin user
+    user_id = str(uuid.uuid4())
+    email = "superadmin@trackmyacademy.com"
+    name = "Super Administrator"
+    password = "SuperAdmin123!"
+    
+    user_doc = {
+        "user_id": user_id,
+        "email": email,
+        "role": "super_admin",
+        "name": name,
+        "academy_id": None,  # Super admin doesn't belong to any specific academy
+        "hashed_password": get_password_hash(password),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    try:
+        users_collection.insert_one(user_doc)
+        return {
+            "message": "Super admin created successfully",
+            "email": email,
+            "password": password,
+            "name": name,
+            "user_id": user_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create super admin: {str(e)}")
+
 # Session Management Endpoints
 @app.post("/api/sessions", response_model=Session)
 async def create_session(session: SessionCreate, current_user: User = Depends(get_current_user)):
