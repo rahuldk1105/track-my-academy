@@ -417,6 +417,40 @@ const AdminDashboard = ({ user }) => {
             </div>
           </div>
 
+          {/* Subscription Warnings */}
+          {academies.some(academy => {
+            const expiryDate = new Date(academy.subscription_expiry_date);
+            const today = new Date();
+            const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+            return daysUntilExpiry <= 10 && daysUntilExpiry > 0;
+          }) && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <h4 className="text-lg font-semibold text-yellow-800">Subscription Warning</h4>
+              </div>
+              <div className="mt-2 space-y-2">
+                {academies.filter(academy => {
+                  const expiryDate = new Date(academy.subscription_expiry_date);
+                  const today = new Date();
+                  const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                  return daysUntilExpiry <= 10 && daysUntilExpiry > 0;
+                }).map(academy => {
+                  const expiryDate = new Date(academy.subscription_expiry_date);
+                  const today = new Date();
+                  const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                  return (
+                    <p key={academy.academy_id} className="text-sm text-yellow-800">
+                      <strong>{academy.academy_name}</strong> subscription expires in <strong>{daysUntilExpiry} day{daysUntilExpiry !== 1 ? 's' : ''}</strong> ({expiryDate.toLocaleDateString()})
+                    </p>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Data Tables */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Academies */}
