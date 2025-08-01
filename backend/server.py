@@ -211,7 +211,29 @@ class PerformanceHistory(PerformanceHistoryBase):
     performance_id: str
     created_at: datetime
 
-# Analytics Models
+# Enhanced Authentication Models
+class UserSignUp(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    role: str = "student"
+
+class UserSignIn(BaseModel):
+    email: EmailStr
+    password: str
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+class PasswordUpdateRequest(BaseModel):
+    password: str
+    confirm_password: str
+
+class AuthResponse(BaseModel):
+    message: str
+    success: bool
+    user: Optional[dict] = None
 class AttendanceAnalytics(BaseModel):
     student_id: str
     student_name: str
