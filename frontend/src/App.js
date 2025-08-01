@@ -9,6 +9,16 @@ import SuperAdminDashboard from './components/SuperAdminDashboard';
 import { PerformanceTrendChart, AttendanceChart, AttendanceSummaryChart, AcademyOverviewChart, PerformanceDistributionChart } from './components/Charts';
 import { CreateSessionModal, SessionList, AttendanceMarking } from './components/SessionManagement';
 
+// Import enhanced auth components
+import { AuthProvider } from './contexts/AuthContext';
+import EnhancedLoginForm from './components/auth/EnhancedLoginForm';
+import EnhancedSignupForm from './components/auth/EnhancedSignupForm';
+import CheckEmailPage from './components/auth/CheckEmailPage';
+import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
+
+// Toast notifications
+import { Toaster } from 'react-hot-toast';
+
 // Auth Context
 const AuthContext = createContext();
 
