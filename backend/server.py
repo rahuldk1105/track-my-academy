@@ -12,9 +12,15 @@ import os
 import shutil
 from pathlib import Path
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from bson import ObjectId
 import uuid
+import httpx
+import time
+from decouple import config
+
+# Import Supabase auth
+from auth.supabase_auth import supabase_auth, JWTBearer, require_super_admin, require_admin, require_coach_or_admin
 
 # Load environment variables
 load_dotenv()
