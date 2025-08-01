@@ -319,7 +319,150 @@ async def require_super_admin(current_user: User = Depends(get_current_user)):
         )
     return current_user
 
-# Authentication endpoints
+# Enhanced Authentication endpoints with Supabase
+@app.post("/api/auth/signup", response_model=AuthResponse)
+async def signup(user_data: UserSignUp):
+    """Enhanced signup with Supabase"""
+    try:
+        # Create user in Supabase
+        supabase_user = await supabase_auth.create_user_with_role(
+            email=user_data.email,
+            password=user_data.password,
+            user_data={
+                "first_name": user_data.first_name,
+                "last_name": user_data.last_name,
+                "role": user_data.role
+            }
+        )
+        
+        # Create user profile in MongoDB
+        user_profile = {
+            "user_id": supabase_user["id"],
+            "email": user_data.email,
+            "first_name": user_data.first_name,
+            "last_name": user_data.last_name,
+            "role": user_data.role,
+            "created_at": datetime.now(timezone.utc),
+            "is_active": True
+        }
+        
+        users_collection.insert_one(user_profile)
+        
+        return AuthResponse(
+            message="Account created successfully! Please check your email to verify your account.",
+            success=True,
+            user={
+                "id": supabase_user["id"],
+                "email": user_data.email,
+                "first_name": user_data.first_name,
+                "last_name": user_data.last_name,
+                "role": user_data.role
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error creating account: {str(e)}"
+        )
+
+@app.post("/api/auth/signin", response_model=AuthResponse)
+async def signin(credentials: UserSignIn):
+    """Enhanced signin with Supabase"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{config('SUPABASE_URL')}/auth/v1/token?grant_type=password",
+                json={
+                    "email": credentials.email,
+                    "password": credentials.password
+                },
+                headers={
+                    "apikey": config("SUPABASE_ANON_KEY"),
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            if response.status_code != 200:
+                error_data = response.json()
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=error_data.get("error_description", "Invalid credentials")
+                )
+            
+            auth_data = response.json()
+            
+            # Get user profile from MongoDB
+            user_profile = users_collection.find_one({"user_id": auth_data["user"]["id"]})
+            if not user_profile:
+                # Create profile if it doesn't exist
+                user_profile = {
+                    "user_id": auth_data["user"]["id"],
+                    "email": auth_data["user"]["email"],
+                    "first_name": auth_data["user"]["user_metadata"].get("first_name", ""),
+                    "last_name": auth_data["user"]["user_metadata"].get("last_name", ""),
+                    "role": auth_data["user"]["user_metadata"].get("role", "student"),
+                    "created_at": datetime.now(timezone.utc),
+                    "is_active": True
+                }
+                users_collection.insert_one(user_profile)
+            
+            return AuthResponse(
+                message="Successfully signed in!",
+                success=True,
+                user={
+                    "id": auth_data["user"]["id"],
+                    "email": auth_data["user"]["email"],
+                    "access_token": auth_data["access_token"],
+                    "refresh_token": auth_data["refresh_token"],
+                    "expires_in": auth_data["expires_in"],
+                    "token_type": auth_data["token_type"],
+                    "first_name": user_profile.get("first_name", ""),
+                    "last_name": user_profile.get("last_name", ""),
+                    "role": user_profile.get("role", "student")
+                }
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error signing in: {str(e)}"
+        )
+
+@app.post("/api/auth/reset-password", response_model=AuthResponse)
+async def request_password_reset(reset_request: PasswordResetRequest):
+    """Request password reset email"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{config('SUPABASE_URL')}/auth/v1/recover",
+                json={
+                    "email": reset_request.email,
+                    "options": {
+                        "redirectTo": f"{config('FRONTEND_URL')}/reset-password"
+                    }
+                },
+                headers={
+                    "apikey": config("SUPABASE_ANON_KEY"),
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            # Always return success for security (don't reveal if email exists)
+            return AuthResponse(
+                message="If an account with that email exists, we've sent you a password reset link.",
+                success=True
+            )
+            
+    except Exception as e:
+        return AuthResponse(
+            message="If an account with that email exists, we've sent you a password reset link.",
+            success=True
+        )
 @app.post("/api/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = users_collection.find_one({"email": form_data.username})
