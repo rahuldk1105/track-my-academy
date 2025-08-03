@@ -1,4 +1,4 @@
-import jwt
+from jose import jwt, JWTError
 import time
 from typing import Dict, Optional
 from fastapi import HTTPException, status, Request, Depends
@@ -41,7 +41,7 @@ class SupabaseAuthService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token has expired"
             )
-        except jwt.JWTError as e:
+        except JWTError as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Invalid token: {str(e)}"
