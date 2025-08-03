@@ -6,7 +6,7 @@ import { API_CONFIG, API_ENDPOINTS, createAuthHeaders, handleApiError } from '..
 class SuperAdminApiService {
   constructor() {
     this.api = axios.create({
-      baseURL: API_BASE_URL,
+      baseURL: API_CONFIG.BASE_URL,
     });
 
     this.api.interceptors.request.use((config) => {
