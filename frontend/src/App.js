@@ -39,18 +39,9 @@ class ApiService {
     });
   }
 
-  async login(email, password) {
-    const formData = new FormData();
-    formData.append('username', email);
-    formData.append('password', password);
-    
-    const response = await this.api.post('/api/token', formData);
-    return response.data;
-  }
-
   async getCurrentUser() {
-    const response = await this.api.get('/api/users/me');
-    return response.data;
+    const response = await this.api.get('/api/auth/profile');
+    return response.data.user;
   }
 
   async getAcademies() {
