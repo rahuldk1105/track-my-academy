@@ -65,6 +65,9 @@ export const AuthProvider = ({ children }) => {
       setUser(session?.user || null)
       
       if (session?.user) {
+        // Store access token in localStorage for API calls
+        localStorage.setItem('supabase_access_token', session.access_token);
+        
         const profile = {
           user_id: session.user.id,
           email: session.user.email,
@@ -73,6 +76,8 @@ export const AuthProvider = ({ children }) => {
           role: session.user.user_metadata?.role || 'student'
         }
         setUserProfile(profile)
+      } else {
+        localStorage.removeItem('supabase_access_token');
       }
     } catch (error) {
       console.error('Error initializing auth:', error)
