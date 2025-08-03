@@ -62,7 +62,7 @@ class SupabaseAuthService:
         return {
             "user_id": payload.get("sub"),
             "email": payload.get("email"),
-            "role": payload.get("user_role", "student"),
+            "role": payload.get("user_metadata", {}).get("role", "student"),
             "aal": payload.get("aal", "aal1"),
             "session_id": payload.get("session_id"),
             "app_metadata": payload.get("app_metadata", {}),
