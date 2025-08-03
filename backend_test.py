@@ -11,15 +11,16 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 class TrackMyAcademyAPITester:
-    def __init__(self, base_url: str = "http://localhost:8001"):
+    def __init__(self, base_url: str = "https://ecc844d5-4606-4f71-a31d-9ea64a764d36.preview.emergentagent.com"):
         self.base_url = base_url
         self.tokens = {}  # Store tokens for different users
         self.test_data = {}  # Store created test data
         self.tests_run = 0
         self.tests_passed = 0
         
-        # Demo account credentials
+        # Demo account credentials including super admin
         self.demo_accounts = {
+            "super_admin": {"email": "superadmin@trackmyacademy.com", "password": "SuperAdmin123!"},
             "admin": {"email": "admin@academy.com", "password": "password123"},
             "coach": {"email": "coach@academy.com", "password": "password123"},
             "student": {"email": "student@academy.com", "password": "password123"}
