@@ -1033,37 +1033,81 @@ async def create_super_admin_user():
         return {
             "message": "Super admin already exists",
             "email": existing_super_admin["email"],
-            "name": existing_super_admin["name"]
+            "name": existing_super_admin.get("name", existing_super_admin.get("first_name", "")),
+            "user_id": existing_super_admin["user_id"]
         }
     
-    # Create super admin user
-    user_id = str(uuid.uuid4())
+    # Create super admin user in Supabase first
     email = "superadmin@trackmyacademy.com"
-    name = "Super Administrator"
     password = "SuperAdmin123!"
-    
-    user_doc = {
-        "user_id": user_id,
-        "email": email,
-        "role": "super_admin",
-        "name": name,
-        "academy_id": None,  # Super admin doesn't belong to any specific academy
-        "hashed_password": get_password_hash(password),
-        "is_active": True,
-        "created_at": datetime.now(timezone.utc)
-    }
+    first_name = "Super"
+    last_name = "Administrator"
     
     try:
-        users_collection.insert_one(user_doc)
+        # Create user in Supabase using admin API
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{config('SUPABASE_URL')}/auth/v1/admin/users",
+                json={
+                    "email": email,
+                    "password": password,
+                    "email_confirm": True,  # Auto-confirm
+                    "user_metadata": {
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "role": "super_admin"
+                    }
+                },
+                headers={
+                    "apikey": config("SUPABASE_SERVICE_ROLE_KEY"),
+                    "Authorization": f"Bearer {config('SUPABASE_SERVICE_ROLE_KEY')}",
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            if response.status_code != 200:
+                error_data = response.json()
+                logger.error(f"Supabase super admin creation error: {error_data}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Failed to create super admin in Supabase: {error_data.get('msg', 'Unknown error')}"
+                )
+            
+            supabase_user = response.json()
+        
+        # Create user profile in MongoDB
+        user_profile = {
+            "user_id": supabase_user["id"],
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+            "name": f"{first_name} {last_name}",
+            "role": "super_admin",
+            "created_at": datetime.now(timezone.utc),
+            "is_active": True,
+            "academy_id": None  # Super admin doesn't belong to any specific academy
+        }
+        
+        users_collection.insert_one(user_profile)
+        logger.info(f"Super admin created successfully: {email}")
+        
         return {
             "message": "Super admin created successfully",
             "email": email,
             "password": password,
-            "name": name,
-            "user_id": user_id
+            "name": f"{first_name} {last_name}",
+            "user_id": supabase_user["id"],
+            "instructions": "You can now sign in using the enhanced login form at /login"
         }
+        
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create super admin: {str(e)}")
+        logger.error(f"Error creating super admin: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create super admin: {str(e)}"
+        )
 
 # Session Management Endpoints
 @app.post("/api/sessions", response_model=Session)
