@@ -9,8 +9,17 @@ class SuperAdminApiService {
       baseURL: API_CONFIG.BASE_URL,
     });
 
-    this.api.interceptors.request.use((config) => {
-      const token = localStorage.getItem('supabase_access_token');
+    this.api.interceptors.request.use(async (config) => {
+      // First try to get token from localStorage (if stored by auth system)
+      let token = localStorage.getItem('supabase_access_token');
+      
+      // If not found, try to get from Supabase session
+      if (!token) {
+        const { supabase } = await import('../lib/supabase');
+        const { data: { session } } = await supabase.auth.getSession();
+        token = session?.access_token;
+      }
+      
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
