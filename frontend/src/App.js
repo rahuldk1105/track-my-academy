@@ -139,95 +139,6 @@ const apiService = new ApiService();
 // Export apiService for use in other files
 export { apiService };
 
-// Components
-const LoginForm = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      const tokenData = await apiService.login(email, password);
-      localStorage.setItem('token', tokenData.access_token);
-      
-      const user = await apiService.getCurrentUser();
-      onLogin(user);
-    } catch (error) {
-      setError('Invalid credentials. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Track My Academy
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your account
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <input
-                type="email"
-                required
-                className="input-field rounded-t-md"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                required
-                className="input-field rounded-b-md"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center btn-primary"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
-
-          <div className="mt-6 text-sm text-gray-600">
-            <p>Demo Accounts (will be created after first academy setup):</p>
-            <ul className="mt-2 space-y-1">
-              <li>• Admin: admin@academy.com / password123</li>
-              <li>• Coach: coach@academy.com / password123</li>
-              <li>• Student: student@academy.com / password123</li>
-            </ul>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
 const DashboardHeader = ({ user, onLogout }) => {
   const getRoleDisplayName = (role) => {
     const roleNames = {
@@ -238,6 +149,8 @@ const DashboardHeader = ({ user, onLogout }) => {
     };
     return roleNames[role] || role.charAt(0).toUpperCase() + role.slice(1);
   };
+
+  const displayName = user.name || `${user.first_name} ${user.last_name}`.trim() || user.email.split('@')[0];
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -250,7 +163,7 @@ const DashboardHeader = ({ user, onLogout }) => {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-gray-700">Welcome, {user.name}</span>
+            <span className="text-gray-700">Welcome, {displayName}</span>
             <button
               onClick={onLogout}
               className="btn-secondary"
