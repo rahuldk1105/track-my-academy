@@ -79,6 +79,124 @@ class TrackMyAcademyAPITester:
         return self.log_test("Health Check", success, 
                            f"- Status: {response.get('status', 'unknown')}")
 
+    def test_supabase_signin(self, role: str) -> bool:
+        """Test Supabase signin for specific role"""
+        if role not in self.demo_accounts:
+            return self.log_test(f"Supabase Signin {role}", False, "- Invalid role")
+        
+        account = self.demo_accounts[role]
+        signin_data = {
+            "email": account['email'],
+            "password": account['password']
+        }
+        
+        success, response = self.make_request('POST', '/api/auth/signin', signin_data)
+        
+        if success and response.get('success') and response.get('user', {}).get('access_token'):
+            self.tokens[role] = response['user']['access_token']
+            user_role = response['user'].get('role', 'unknown')
+            return self.log_test(f"Supabase Signin {role}", True, 
+                               f"- Token received, Role: {user_role}")
+        else:
+            return self.log_test(f"Supabase Signin {role}", False, f"- {response}")
+
+    def test_create_super_admin(self) -> bool:
+        """Test creating super admin user"""
+        success, response = self.make_request('POST', '/api/create-super-admin')
+        
+        if success:
+            return self.log_test("Create Super Admin", True, 
+                               f"- {response.get('message', 'Success')}")
+        else:
+            return self.log_test("Create Super Admin", False, f"- {response}")
+
+    def test_super_admin_get_academies(self) -> bool:
+        """Test super admin getting all academies"""
+        if 'super_admin' not in self.tokens:
+            return self.log_test("Super Admin Get Academies", False, "- No super admin token")
+        
+        success, response = self.make_request('GET', '/api/super-admin/academies', 
+                                            token=self.tokens['super_admin'])
+        
+        if success:
+            academies_count = len(response) if isinstance(response, list) else 0
+            return self.log_test("Super Admin Get Academies", True, 
+                               f"- Found {academies_count} academies")
+        else:
+            return self.log_test("Super Admin Get Academies", False, f"- {response}")
+
+    def test_super_admin_create_academy(self) -> bool:
+        """Test super admin creating academy with auto admin user"""
+        if 'super_admin' not in self.tokens:
+            return self.log_test("Super Admin Create Academy", False, "- No super admin token")
+        
+        academy_data = {
+            "academy_name": f"Test Academy {datetime.now().strftime('%H%M%S')}",
+            "academy_location": "Test City",
+            "owner_name": "Test Owner",
+            "admin_contact": "+1234567890",
+            "admin_email": f"testadmin{datetime.now().strftime('%H%M%S')}@academy.com",
+            "student_limit": 100,
+            "coach_limit": 10,
+            "subscription_start_date": "2025-01-01T00:00:00Z",
+            "subscription_expiry_date": "2025-12-31T23:59:59Z",
+            "branches": ["Main Branch"],
+            "academy_logo_url": "https://example.com/logo.png"
+        }
+        
+        success, response = self.make_request('POST', '/api/super-admin/academies', 
+                                            academy_data, token=self.tokens['super_admin'])
+        
+        if success and response.get('academy', {}).get('academy_id'):
+            academy_id = response['academy']['academy_id']
+            admin_creds = response.get('admin_credentials', {})
+            self.test_data['super_admin_academy_id'] = academy_id
+            return self.log_test("Super Admin Create Academy", True, 
+                               f"- Academy ID: {academy_id}, Admin: {admin_creds.get('email', 'N/A')}")
+        else:
+            return self.log_test("Super Admin Create Academy", False, f"- {response}")
+
+    def test_super_admin_get_academy_by_id(self) -> bool:
+        """Test super admin getting specific academy"""
+        if 'super_admin' not in self.tokens:
+            return self.log_test("Super Admin Get Academy by ID", False, "- No super admin token")
+        
+        academy_id = self.test_data.get('super_admin_academy_id')
+        if not academy_id:
+            return self.log_test("Super Admin Get Academy by ID", False, "- No academy ID available")
+        
+        success, response = self.make_request('GET', f'/api/super-admin/academies/{academy_id}', 
+                                            token=self.tokens['super_admin'])
+        
+        if success and response.get('academy_id'):
+            return self.log_test("Super Admin Get Academy by ID", True, 
+                               f"- Academy: {response.get('academy_name', 'unknown')}")
+        else:
+            return self.log_test("Super Admin Get Academy by ID", False, f"- {response}")
+
+    def test_super_admin_update_academy(self) -> bool:
+        """Test super admin updating academy"""
+        if 'super_admin' not in self.tokens:
+            return self.log_test("Super Admin Update Academy", False, "- No super admin token")
+        
+        academy_id = self.test_data.get('super_admin_academy_id')
+        if not academy_id:
+            return self.log_test("Super Admin Update Academy", False, "- No academy ID available")
+        
+        update_data = {
+            "academy_name": f"Updated Test Academy {datetime.now().strftime('%H%M%S')}",
+            "student_limit": 150
+        }
+        
+        success, response = self.make_request('PUT', f'/api/super-admin/academies/{academy_id}', 
+                                            update_data, token=self.tokens['super_admin'])
+        
+        if success and response.get('academy_id'):
+            return self.log_test("Super Admin Update Academy", True, 
+                               f"- Updated: {response.get('academy_name', 'unknown')}")
+        else:
+            return self.log_test("Super Admin Update Academy", False, f"- {response}")
+
     def test_login(self, role: str) -> bool:
         """Test login for specific role"""
         if role not in self.demo_accounts:
