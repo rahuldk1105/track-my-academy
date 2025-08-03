@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-// API Base URL
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+import { API_CONFIG, API_ENDPOINTS, createAuthHeaders, handleApiError } from '../config/api';
 
 // API Service for Super Admin
 class SuperAdminApiService {
