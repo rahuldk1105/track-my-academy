@@ -31,6 +31,9 @@ export const AuthProvider = ({ children }) => {
         setUser(session?.user || null)
         
         if (session?.user) {
+          // Store access token in localStorage for API calls
+          localStorage.setItem('supabase_access_token', session.access_token);
+          
           // Extract user profile from token or fetch from backend
           const profile = {
             user_id: session.user.id,
@@ -41,6 +44,8 @@ export const AuthProvider = ({ children }) => {
           }
           setUserProfile(profile)
         } else {
+          // Clear stored token on logout
+          localStorage.removeItem('supabase_access_token');
           setUserProfile(null)
         }
         
