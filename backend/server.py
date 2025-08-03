@@ -674,7 +674,7 @@ async def upload_academy_logo(
     return {"file_url": file_url}
 
 # Super Admin Academy Management Endpoints
-@app.post("/api/super-admin/academies", response_model=Academy)
+@app.post("/api/super-admin/academies")
 async def create_academy_super_admin(
     academy: AcademyCreate, 
     current_user: User = Depends(require_super_admin)
@@ -682,31 +682,100 @@ async def create_academy_super_admin(
     """Create academy - Super admin only"""
     academy_id = str(uuid.uuid4())
     
-    # Calculate initial status
-    status = calculate_academy_status(academy.subscription_expiry_date)
+    # Generate admin credentials
+    import secrets
+    import string
+    admin_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
     
-    academy_doc = {
-        "academy_id": academy_id,
-        "academy_name": academy.academy_name,
-        "academy_location": academy.academy_location,
-        "owner_name": academy.owner_name,
-        "admin_contact": academy.admin_contact,
-        "admin_email": academy.admin_email,
-        "student_limit": academy.student_limit,
-        "coach_limit": academy.coach_limit,
-        "subscription_start_date": academy.subscription_start_date,
-        "subscription_expiry_date": academy.subscription_expiry_date,
-        "branches": academy.branches,
-        "academy_logo_url": academy.academy_logo_url,
-        "created_at": datetime.now(timezone.utc)
-    }
-    
-    academies_collection.insert_one(academy_doc)
-    
-    # Return academy with status
-    result = Academy(**academy_doc)
-    result.status = status
-    return result
+    try:
+        # Create admin user in Supabase
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{config('SUPABASE_URL')}/auth/v1/admin/users",
+                json={
+                    "email": academy.admin_email,
+                    "password": admin_password,
+                    "email_confirm": True,  # Auto-confirm for admin
+                    "user_metadata": {
+                        "first_name": academy.owner_name.split()[0] if academy.owner_name else "Academy",
+                        "last_name": academy.owner_name.split()[-1] if len(academy.owner_name.split()) > 1 else "Admin", 
+                        "role": "admin"
+                    }
+                },
+                headers={
+                    "apikey": config("SUPABASE_SERVICE_ROLE_KEY"),
+                    "Authorization": f"Bearer {config('SUPABASE_SERVICE_ROLE_KEY')}",
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            if response.status_code != 200:
+                error_data = response.json()
+                logger.error(f"Supabase admin creation error: {error_data}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Failed to create admin user: {error_data.get('msg', 'Unknown error')}"
+                )
+            
+            supabase_user = response.json()
+        
+        # Create user profile in MongoDB
+        user_profile = {
+            "user_id": supabase_user["id"],
+            "email": academy.admin_email,
+            "first_name": academy.owner_name.split()[0] if academy.owner_name else "Academy",
+            "last_name": academy.owner_name.split()[-1] if len(academy.owner_name.split()) > 1 else "Admin",
+            "name": academy.owner_name,
+            "role": "admin",
+            "created_at": datetime.now(timezone.utc),
+            "is_active": True,
+            "academy_id": academy_id
+        }
+        
+        users_collection.insert_one(user_profile)
+        
+        # Calculate initial status
+        status = calculate_academy_status(academy.subscription_expiry_date)
+        
+        academy_doc = {
+            "academy_id": academy_id,
+            "academy_name": academy.academy_name,
+            "academy_location": academy.academy_location,
+            "owner_name": academy.owner_name,
+            "admin_contact": academy.admin_contact,
+            "admin_email": academy.admin_email,
+            "student_limit": academy.student_limit,
+            "coach_limit": academy.coach_limit,
+            "subscription_start_date": academy.subscription_start_date,
+            "subscription_expiry_date": academy.subscription_expiry_date,
+            "branches": academy.branches,
+            "academy_logo_url": academy.academy_logo_url,
+            "created_at": datetime.now(timezone.utc)
+        }
+        
+        academies_collection.insert_one(academy_doc)
+        
+        # Return academy with admin credentials
+        result = Academy(**academy_doc)
+        result.status = status
+        
+        return {
+            "academy": result.dict(),
+            "admin_credentials": {
+                "email": academy.admin_email,
+                "password": admin_password,
+                "message": "Admin user created successfully. Please save these credentials!"
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating academy: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create academy: {str(e)}"
+        )
 
 @app.get("/api/super-admin/academies", response_model=List[Academy])
 async def get_all_academies_super_admin(current_user: User = Depends(require_super_admin)):
