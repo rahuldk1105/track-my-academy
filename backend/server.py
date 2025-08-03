@@ -324,16 +324,35 @@ async def require_super_admin(current_user: User = Depends(get_current_user)):
 async def signup(user_data: UserSignUp):
     """Enhanced signup with Supabase"""
     try:
-        # Create user in Supabase
-        supabase_user = await supabase_auth.create_user_with_role(
-            email=user_data.email,
-            password=user_data.password,
-            user_data={
-                "first_name": user_data.first_name,
-                "last_name": user_data.last_name,
-                "role": user_data.role
-            }
-        )
+        # Create user in Supabase using admin API
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{config('SUPABASE_URL')}/auth/v1/admin/users",
+                json={
+                    "email": user_data.email,
+                    "password": user_data.password,
+                    "email_confirm": True,  # Auto-confirm for development
+                    "user_metadata": {
+                        "first_name": user_data.first_name,
+                        "last_name": user_data.last_name,
+                        "role": user_data.role
+                    }
+                },
+                headers={
+                    "apikey": config("SUPABASE_SERVICE_ROLE_KEY"),
+                    "Authorization": f"Bearer {config('SUPABASE_SERVICE_ROLE_KEY')}",
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            if response.status_code != 200:
+                error_data = response.json()
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=error_data.get("msg", "Failed to create user in Supabase")
+                )
+            
+            supabase_user = response.json()
         
         # Create user profile in MongoDB
         user_profile = {
@@ -341,15 +360,17 @@ async def signup(user_data: UserSignUp):
             "email": user_data.email,
             "first_name": user_data.first_name,
             "last_name": user_data.last_name,
+            "name": f"{user_data.first_name} {user_data.last_name}".strip(),
             "role": user_data.role,
             "created_at": datetime.now(timezone.utc),
-            "is_active": True
+            "is_active": True,
+            "academy_id": None  # Will be set later when user joins an academy
         }
         
         users_collection.insert_one(user_profile)
         
         return AuthResponse(
-            message="Account created successfully! Please check your email to verify your account.",
+            message="Account created successfully! You can now sign in.",
             success=True,
             user={
                 "id": supabase_user["id"],
@@ -397,15 +418,17 @@ async def signin(credentials: UserSignIn):
             # Get user profile from MongoDB
             user_profile = users_collection.find_one({"user_id": auth_data["user"]["id"]})
             if not user_profile:
-                # Create profile if it doesn't exist
+                # Create profile if it doesn't exist (fallback)
                 user_profile = {
                     "user_id": auth_data["user"]["id"],
                     "email": auth_data["user"]["email"],
                     "first_name": auth_data["user"]["user_metadata"].get("first_name", ""),
                     "last_name": auth_data["user"]["user_metadata"].get("last_name", ""),
+                    "name": f"{auth_data['user']['user_metadata'].get('first_name', '')} {auth_data['user']['user_metadata'].get('last_name', '')}".strip() or auth_data["user"]["email"].split("@")[0],
                     "role": auth_data["user"]["user_metadata"].get("role", "student"),
                     "created_at": datetime.now(timezone.utc),
-                    "is_active": True
+                    "is_active": True,
+                    "academy_id": None
                 }
                 users_collection.insert_one(user_profile)
             
@@ -421,7 +444,9 @@ async def signin(credentials: UserSignIn):
                     "token_type": auth_data["token_type"],
                     "first_name": user_profile.get("first_name", ""),
                     "last_name": user_profile.get("last_name", ""),
-                    "role": user_profile.get("role", "student")
+                    "name": user_profile.get("name", ""),
+                    "role": user_profile.get("role", "student"),
+                    "academy_id": user_profile.get("academy_id")
                 }
             )
             
@@ -431,6 +456,77 @@ async def signin(credentials: UserSignIn):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error signing in: {str(e)}"
+        )
+
+@app.get("/api/auth/profile", response_model=AuthResponse) 
+async def get_user_profile(current_user: dict = Depends(JWTBearer())):
+    """Get user profile from MongoDB"""
+    try:
+        user_profile = users_collection.find_one({"user_id": current_user["user_id"]})
+        
+        if not user_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User profile not found"
+            )
+        
+        return AuthResponse(
+            message="Profile retrieved successfully",
+            success=True,
+            user={
+                "user_id": user_profile["user_id"],
+                "email": user_profile["email"],
+                "first_name": user_profile.get("first_name", ""),
+                "last_name": user_profile.get("last_name", ""),
+                "name": user_profile.get("name", ""),
+                "role": user_profile.get("role", "student"),
+                "academy_id": user_profile.get("academy_id"),
+                "is_active": user_profile.get("is_active", True)
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving profile: {str(e)}"
+        )
+
+@app.post("/api/auth/sync-profile", response_model=AuthResponse)
+async def sync_user_profile(profile_data: dict, current_user: dict = Depends(JWTBearer())):
+    """Sync user profile with MongoDB"""
+    try:
+        # Update or create user profile in MongoDB
+        user_profile = {
+            "user_id": current_user["user_id"],
+            "email": profile_data.get("email"),
+            "first_name": profile_data.get("first_name", ""),
+            "last_name": profile_data.get("last_name", ""),
+            "name": profile_data.get("name", ""),
+            "role": profile_data.get("role", "student"),
+            "academy_id": profile_data.get("academy_id"),
+            "is_active": True,
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        # Upsert the profile
+        users_collection.update_one(
+            {"user_id": current_user["user_id"]},
+            {"$set": user_profile, "$setOnInsert": {"created_at": datetime.now(timezone.utc)}},
+            upsert=True
+        )
+        
+        return AuthResponse(
+            message="Profile synced successfully",
+            success=True,
+            user=user_profile
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error syncing profile: {str(e)}"
         )
 
 @app.post("/api/auth/reset-password", response_model=AuthResponse)
