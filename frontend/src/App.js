@@ -10,7 +10,7 @@ import { PerformanceTrendChart, AttendanceChart, AttendanceSummaryChart, Academy
 import { CreateSessionModal, SessionList, AttendanceMarking } from './components/SessionManagement';
 
 // Import enhanced auth components
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import EnhancedLoginForm from './components/auth/EnhancedLoginForm';
 import EnhancedSignupForm from './components/auth/EnhancedSignupForm';
 import CheckEmailPage from './components/auth/CheckEmailPage';
