@@ -19,21 +19,10 @@ import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
 // Toast notifications
 import { Toaster } from 'react-hot-toast';
 
-// Auth Context
-const AuthContext = createContext();
-
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
 // API Base URL
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-// API Service
+// Enhanced API Service with Supabase auth
 class ApiService {
   constructor() {
     this.api = axios.create({
@@ -42,7 +31,7 @@ class ApiService {
 
     // Add auth token to requests
     this.api.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('supabase_access_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
