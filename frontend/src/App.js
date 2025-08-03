@@ -1282,6 +1282,7 @@ const AppContent = () => {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/setup-super-admin" element={<SuperAdminSetup />} />
       <Route path="/login" element={
         currentUser ? <Navigate to="/dashboard" replace /> : <EnhancedLoginForm />
       } />
