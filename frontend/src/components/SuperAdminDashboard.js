@@ -109,7 +109,7 @@ const AcademyModal = ({ isOpen, onClose, onSuccess, academy = null, isEditing = 
       setUploadingLogo(true);
       try {
         const response = await superAdminApiService.uploadLogo(file);
-        setFormData({ ...formData, academy_logo_url: API_BASE_URL + response.file_url });
+        setFormData({ ...formData, academy_logo_url: API_CONFIG.BASE_URL + response.file_url });
       } catch (error) {
         console.error('Logo upload failed:', error);
         alert('Logo upload failed. Please try again.');
