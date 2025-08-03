@@ -16,26 +16,26 @@ class SupabaseAuthService:
         self.supabase_service_key = config("SUPABASE_SERVICE_ROLE_KEY")
         self.jwt_secret = config("SUPABASE_JWT_SECRET")
         self.jwt_algorithm = config("JWT_ALGORITHM", default="HS256")
-    
+
     def decode_jwt(self, token: str) -> Dict:
         """Decode and validate JWT token"""
         try:
             decoded_token = jwt.decode(
-                token, 
-                self.jwt_secret, 
+                token,
+                self.jwt_secret,
                 algorithms=[self.jwt_algorithm],
                 options={"verify_aud": False}
             )
-            
+
             # Check token expiration
             if decoded_token.get("exp", 0) < time.time():
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Token has expired"
                 )
-            
+
             return decoded_token
-            
+
         except jwt.ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,7 +46,7 @@ class SupabaseAuthService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Invalid token: {str(e)}"
             )
-    
+
     def verify_jwt(self, jwtoken: str) -> bool:
         """Verify if JWT token is valid"""
         try:
@@ -54,14 +54,15 @@ class SupabaseAuthService:
             return payload is not None
         except HTTPException:
             return False
-    
+
     def get_user_from_token(self, token: str) -> Dict:
         """Extract user information from JWT token"""
         payload = self.decode_jwt(token)
-        
+
         return {
             "user_id": payload.get("sub"),
             "email": payload.get("email"),
+            # CORRECTED LINE: Get role from user_metadata
             "role": payload.get("user_metadata", {}).get("role", "student"),
             "aal": payload.get("aal", "aal1"),
             "session_id": payload.get("session_id"),
@@ -91,17 +92,17 @@ class SupabaseAuthService:
                         "Content-Type": "application/json"
                     }
                 )
-                
+
                 if response.status_code != 200:
                     error_data = response.json()
                     raise HTTPException(
                         status_code=status.HTTP_400_BAD_REQUEST,
                         detail=error_data.get("msg", "Failed to create user")
                     )
-                
+
                 user_data = response.json()
                 return user_data
-                
+
         except httpx.RequestError as e:
             logger.error(f"Network error creating user: {e}")
             raise HTTPException(
@@ -115,23 +116,23 @@ supabase_auth = SupabaseAuthService()
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
-    
+
     async def __call__(self, request: Request) -> Dict:
         credentials: HTTPAuthorizationCredentials = await super(JWTBearer, self).__call__(request)
-        
+
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Invalid authentication scheme"
                 )
-            
+
             if not supabase_auth.verify_jwt(credentials.credentials):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Invalid token or expired token"
                 )
-            
+
             # Extract user information from token
             user_info = supabase_auth.get_user_from_token(credentials.credentials)
             return user_info
@@ -145,7 +146,7 @@ class JWTBearer(HTTPBearer):
 class RoleChecker:
     def __init__(self, allowed_roles: list):
         self.allowed_roles = allowed_roles
-    
+
     def __call__(self, user: Dict = Depends(JWTBearer())) -> Dict:
         if user.get("role") not in self.allowed_roles:
             raise HTTPException(
