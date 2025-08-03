@@ -283,20 +283,37 @@ def calculate_academy_status(subscription_expiry_date: datetime) -> str:
         return "active"
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+    """Get current user from Supabase JWT token"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        # Decode Supabase JWT token
+        payload = jwt.decode(
+            token, 
+            config("SUPABASE_JWT_SECRET"), 
+            algorithms=["HS256"],
+            options={"verify_aud": False}
+        )
+        
+        user_id: str = payload.get("sub")
+        email: str = payload.get("email")
+        
+        if user_id is None or email is None:
             raise credentials_exception
-    except JWTError:
+            
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
+    except jwt.JWTError:
         raise credentials_exception
     
-    user = users_collection.find_one({"email": email})
+    # Get user profile from MongoDB
+    user = users_collection.find_one({"user_id": user_id})
     if user is None:
         raise credentials_exception
     
@@ -304,7 +321,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         user_id=user["user_id"],
         email=user["email"],
         role=user["role"],
-        name=user["name"],
+        name=user.get("name", ""),
         academy_id=user.get("academy_id"),
         is_active=user.get("is_active", True),
         created_at=user["created_at"]
