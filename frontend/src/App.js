@@ -19,8 +19,8 @@ import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
 // Toast notifications
 import { Toaster } from 'react-hot-toast';
 
-// API Base URL
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+// Import production-ready API configuration
+import { API_CONFIG, API_ENDPOINTS, createAuthHeaders, handleApiError } from './config/api';
 
 // Enhanced API Service with Supabase auth
 class ApiService {
