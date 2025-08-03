@@ -1251,33 +1251,9 @@ const getPerformanceBadgeClass = (score) => {
   return 'performance-poor';
 };
 
-// Main App Component with Routing
+// Main App Component with Enhanced Authentication
 const AppContent = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      apiService.getCurrentUser()
-        .then(setUser)
-        .catch(() => {
-          localStorage.removeItem('token');
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-  };
+  const { user, userProfile, loading, signOutUser } = useAuth();
 
   if (loading) {
     return (
@@ -1290,24 +1266,39 @@ const AppContent = () => {
     );
   }
 
+  const currentUser = userProfile || (user ? {
+    user_id: user.id,
+    email: user.email,
+    name: user.user_metadata?.first_name && user.user_metadata?.last_name 
+      ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+      : user.email.split('@')[0],
+    role: user.user_metadata?.role || 'student',
+    first_name: user.user_metadata?.first_name || '',
+    last_name: user.user_metadata?.last_name || '',
+    academy_id: null
+  } : null);
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={
-        user ? <Navigate to="/dashboard" replace /> : <LoginForm onLogin={handleLogin} />
+        currentUser ? <Navigate to="/dashboard" replace /> : <EnhancedLoginForm />
       } />
+      <Route path="/signup" element={
+        currentUser ? <Navigate to="/dashboard" replace /> : <EnhancedSignupForm />
+      } />
+      <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+      <Route path="/check-email" element={<CheckEmailPage />} />
       <Route path="/dashboard" element={
-        user ? (
-          <AuthContext.Provider value={{ user, logout: handleLogout }}>
-            <div className="min-h-screen bg-gray-50">
-              <DashboardHeader user={user} onLogout={handleLogout} />
-              
-              {user.role === 'super_admin' && <SuperAdminDashboard user={user} />}
-              {user.role === 'admin' && <AdminDashboard user={user} />}
-              {user.role === 'coach' && <CoachDashboard user={user} />}
-              {user.role === 'student' && <StudentDashboard user={user} />}
-            </div>
-          </AuthContext.Provider>
+        currentUser ? (
+          <div className="min-h-screen bg-gray-50">
+            <DashboardHeader user={currentUser} onLogout={signOutUser} />
+            
+            {currentUser.role === 'super_admin' && <SuperAdminDashboard user={currentUser} />}
+            {currentUser.role === 'admin' && <AdminDashboard user={currentUser} />}
+            {currentUser.role === 'coach' && <CoachDashboard user={currentUser} />}
+            {currentUser.role === 'student' && <StudentDashboard user={currentUser} />}
+          </div>
         ) : <Navigate to="/login" replace />
       } />
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -1317,9 +1308,12 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Toaster position="top-right" />
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 };
 
