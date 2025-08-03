@@ -6,6 +6,7 @@ import './App.css';
 // Import new components
 import LandingPage from './components/LandingPage';
 import SuperAdminDashboard from './components/SuperAdminDashboard';
+import SuperAdminSetup from './components/SuperAdminSetup';
 import { PerformanceTrendChart, AttendanceChart, AttendanceSummaryChart, AcademyOverviewChart, PerformanceDistributionChart } from './components/Charts';
 import { CreateSessionModal, SessionList, AttendanceMarking } from './components/SessionManagement';
 
