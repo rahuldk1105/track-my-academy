@@ -190,6 +190,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true)
       await signOut()
+      localStorage.removeItem('supabase_access_token')
       setUser(null)
       setSession(null)
       setUserProfile(null)
