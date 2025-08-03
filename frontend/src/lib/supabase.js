@@ -2,8 +2,22 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY
+const environment = process.env.REACT_APP_ENVIRONMENT || 'development'
 
-// Create Supabase client with custom configuration
+// Validate required environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing required Supabase environment variables')
+}
+
+// Get the correct redirect URL based on environment
+const getRedirectUrl = () => {
+  if (environment === 'production') {
+    return 'https://trackmyacademy.vercel.app/reset-password'
+  }
+  return `${window.location.origin}/reset-password`
+}
+
+// Create Supabase client with production-ready configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     // Automatically refresh tokens when they expire
@@ -12,8 +26,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     // Detect session recovery from URL
     detectSessionInUrl: true,
-    // Custom redirect URL for password reset
-    redirectTo: `${window.location.origin}/reset-password`
+    // Production-ready redirect URL for password reset
+    redirectTo: getRedirectUrl()
   },
   // Configure realtime subscription options if needed
   realtime: {
