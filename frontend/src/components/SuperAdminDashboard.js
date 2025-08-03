@@ -160,15 +160,24 @@ const AcademyModal = ({ isOpen, onClose, onSuccess, academy = null, isEditing = 
 
       if (isEditing) {
         await superAdminApiService.updateAcademy(academy.academy_id, academyData);
+        alert('Academy updated successfully!');
       } else {
-        await superAdminApiService.createAcademy(academyData);
+        const result = await superAdminApiService.createAcademy(academyData);
+        
+        // Show admin credentials if returned
+        if (result.admin_credentials) {
+          alert(`Academy created successfully!\n\nAdmin Login Credentials:\nEmail: ${result.admin_credentials.email}\nPassword: ${result.admin_credentials.password}\n\nPlease save these credentials securely!`);
+        } else {
+          alert('Academy created successfully!');
+        }
       }
       
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error saving academy:', error);
-      alert('Failed to save academy. Please try again.');
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to save academy';
+      alert(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
