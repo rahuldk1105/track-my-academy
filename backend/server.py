@@ -18,6 +18,7 @@ import uuid
 import httpx
 import time
 from decouple import config
+import logging
 
 # Import Supabase auth
 from auth.supabase_auth import supabase_auth, JWTBearer, require_super_admin, require_admin, require_coach_or_admin
@@ -25,7 +26,20 @@ from auth.supabase_auth import supabase_auth, JWTBearer, require_super_admin, re
 # Load environment variables
 load_dotenv()
 
-app = FastAPI(title="Track My Academy API", version="1.0.0")
+# Configure logging for production
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title="Track My Academy API", 
+    version="1.0.0",
+    description="Sports Academy Management Platform",
+    docs_url="/docs" if os.getenv("ENVIRONMENT") != "production" else None,
+    redoc_url="/redoc" if os.getenv("ENVIRONMENT") != "production" else None
+)
 
 # Create uploads directory
 UPLOAD_DIR = Path("uploads")
@@ -34,27 +48,50 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 # Mount static file serving
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# CORS middleware
+# Production-ready CORS configuration
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+if ENVIRONMENT == "production":
+    allowed_origins = os.getenv("CORS_ORIGINS", "https://trackmyacademy.vercel.app").split(",")
+    allowed_origins = [origin.strip() for origin in allowed_origins]
+else:
+    allowed_origins = ["*"]
+
+logger.info(f"Environment: {ENVIRONMENT}")
+logger.info(f"Allowed CORS origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure this properly for production
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
 # Security
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is required")
+
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# MongoDB connection
+# MongoDB connection with error handling
 MONGO_URL = os.getenv("MONGO_URL")
-client = MongoClient(MONGO_URL)
-db = client.track_my_academy
+if not MONGO_URL:
+    raise ValueError("MONGO_URL environment variable is required")
+
+try:
+    client = MongoClient(MONGO_URL)
+    # Test connection
+    client.admin.command('ismaster')
+    db = client.track_my_academy
+    logger.info("Connected to MongoDB successfully")
+except Exception as e:
+    logger.error(f"Failed to connect to MongoDB: {e}")
+    raise
 
 # Collections
 users_collection = db.users
@@ -364,6 +401,7 @@ async def signup(user_data: UserSignUp):
             
             if response.status_code != 200:
                 error_data = response.json()
+                logger.error(f"Supabase signup error: {error_data}")
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=error_data.get("msg", "Failed to create user in Supabase")
@@ -385,6 +423,7 @@ async def signup(user_data: UserSignUp):
         }
         
         users_collection.insert_one(user_profile)
+        logger.info(f"User created successfully: {user_data.email}")
         
         return AuthResponse(
             message="Account created successfully! You can now sign in.",
@@ -401,6 +440,7 @@ async def signup(user_data: UserSignUp):
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Error creating account: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error creating account: {str(e)}"
@@ -425,6 +465,7 @@ async def signin(credentials: UserSignIn):
             
             if response.status_code != 200:
                 error_data = response.json()
+                logger.warning(f"Failed login attempt for {credentials.email}: {error_data.get('error_description', 'Invalid credentials')}")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=error_data.get("error_description", "Invalid credentials")
@@ -449,6 +490,8 @@ async def signin(credentials: UserSignIn):
                 }
                 users_collection.insert_one(user_profile)
             
+            logger.info(f"User signed in successfully: {credentials.email}")
+            
             return AuthResponse(
                 message="Successfully signed in!",
                 success=True,
@@ -470,6 +513,7 @@ async def signin(credentials: UserSignIn):
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Error signing in: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error signing in: {str(e)}"
@@ -505,6 +549,7 @@ async def get_user_profile(current_user: dict = Depends(JWTBearer())):
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Error retrieving profile: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving profile: {str(e)}"
@@ -541,6 +586,7 @@ async def sync_user_profile(profile_data: dict, current_user: dict = Depends(JWT
         )
         
     except Exception as e:
+        logger.error(f"Error syncing profile: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error syncing profile: {str(e)}"
@@ -959,7 +1005,22 @@ async def assign_coach_to_student(student_id: str, coach_id: str, current_user: 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "timestamp": datetime.now(timezone.utc)}
+    """Production-ready health check endpoint"""
+    try:
+        # Test database connection
+        client.admin.command('ismaster')
+        db_status = "healthy"
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        db_status = "unhealthy"
+    
+    return {
+        "status": "healthy" if db_status == "healthy" else "unhealthy",
+        "timestamp": datetime.now(timezone.utc),
+        "database": db_status,
+        "environment": ENVIRONMENT,
+        "version": "1.0.0"
+    }
 
 # Super Admin User Creation Endpoint (for initial setup)
 @app.post("/api/create-super-admin")
@@ -1365,6 +1426,13 @@ async def get_student_performance_analytics(student_id: str, current_user: User 
         performance_history=performance_history
     )
 
+# Production-ready startup event
+@app.on_event("startup")
+async def startup_event():
+    logger.info(f"Track My Academy API starting up in {ENVIRONMENT} mode")
+    logger.info(f"Database connection: {'✓' if client else '✗'}")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    port = int(os.getenv("PORT", 8001))
+    uvicorn.run(app, host="0.0.0.0", port=port)

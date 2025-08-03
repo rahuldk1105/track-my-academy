@@ -1,0 +1,37 @@
+# Render Blueprint Configuration for Track My Academy Backend
+
+services:
+  - type: web
+    name: track-my-academy-backend
+    env: python
+    plan: free  # Change to starter or higher for production
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: MONGO_URL
+        sync: false  # Set manually in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true  # Render will generate a secure random key
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: SUPABASE_URL
+        value: https://dhlndplegrqjggcffvtp.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRobG5kcGxlZ3JxamdnY2ZmdnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMzI5NTEsImV4cCI6MjA2OTgwODk1MX0.iH5xjU5QQ78dcwk6k0MNe2f_4oew1y0fsWwjsqieWfM
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRobG5kcGxlZ3JxamdnY2ZmdnRwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDIzMjk1MSwiZXhwIjoyMDY5ODA4OTUxfQ.qX-ieR61Z_fBAqVFiUPOCm3IqyP670tBczPvRm140tQ
+      - key: SUPABASE_JWT_SECRET
+        value: oskgm/xOLzlwb4BjA8RcKYSaBE2DDGv/7aOOdkY+hHOS2oEAkanEwAmagknrefH7XPjsx3KWY0dlx7hYVN7/lg==
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: CORS_ORIGINS
+        value: https://trackmyacademy.vercel.app
+      - key: FRONTEND_URL
+        value: https://trackmyacademy.vercel.app
+      - key: PORT
+        value: 8001
+    healthCheckPath: /api/health
