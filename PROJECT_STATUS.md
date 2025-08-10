@@ -37,7 +37,8 @@
   - `POST /api/auth/logout` - User logout ✅
   - `GET /api/auth/user` - Get current user ✅
   - `POST /api/auth/refresh` - Token refresh ✅
-  - ⚠️ `POST /api/auth/signup` - EXISTS but should be ADMIN-ONLY
+  - ✅ `POST /api/auth/signup` - DISABLED for SaaS model
+  - 🆕 `POST /api/admin/create-academy` - Admin-only academy creation (implemented)
 - ✅ **JWT Token Handling** - Complete token validation and management
 - ✅ **Protected Route Component** - Redirects to login if not authenticated
 - ✅ **Login Form Integration** - Connected to Supabase authentication
