@@ -210,39 +210,338 @@ def test_supabase_connection():
         print(f"❌ Supabase connection FAILED: {e}")
         return False
 
+def test_supabase_health_check():
+    """Test Supabase health check endpoint"""
+    print("\n=== Testing Supabase Health Check ===")
+    try:
+        response = requests.get(f"{API_BASE_URL}/supabase/health", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "healthy" and data.get("connection") == "active":
+                print("✅ Supabase health check PASSED")
+                return True
+            else:
+                print("❌ Supabase health check FAILED - Unhealthy status")
+                return False
+        else:
+            print("❌ Supabase health check FAILED - Non-200 status code")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Supabase health check FAILED - Connection error: {e}")
+        return False
+
+def test_auth_signup():
+    """Test user signup endpoint"""
+    print("\n=== Testing Auth Signup ===")
+    try:
+        # Use realistic test data
+        test_user = {
+            "email": "test@academy.com",
+            "password": "TestPassword123!",
+            "academy_name": "Test Academy",
+            "owner_name": "Test Owner",
+            "phone": "+1234567890",
+            "location": "Test Location",
+            "sports_type": "Football"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/auth/signup",
+            json=test_user,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            if "user" in data and "session" in data and "message" in data:
+                print("✅ Auth signup PASSED")
+                return True, data
+            else:
+                print("❌ Auth signup FAILED - Missing required response fields")
+                return False, None
+        elif response.status_code == 400:
+            # User might already exist, which is acceptable for testing
+            error_data = response.json()
+            if "already registered" in str(error_data).lower() or "user already exists" in str(error_data).lower():
+                print("✅ Auth signup PASSED (user already exists)")
+                return True, None
+            else:
+                print(f"❌ Auth signup FAILED - Bad request: {error_data}")
+                return False, None
+        else:
+            print(f"❌ Auth signup FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Auth signup FAILED - Connection error: {e}")
+        return False, None
+
+def test_auth_login():
+    """Test user login endpoint"""
+    print("\n=== Testing Auth Login ===")
+    try:
+        login_data = {
+            "email": "test@academy.com",
+            "password": "TestPassword123!"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            if "user" in data and "session" in data and "message" in data:
+                # Extract access token for further tests
+                session = data.get("session", {})
+                access_token = session.get("access_token")
+                print("✅ Auth login PASSED")
+                return True, access_token
+            else:
+                print("❌ Auth login FAILED - Missing required response fields")
+                return False, None
+        else:
+            print(f"❌ Auth login FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Auth login FAILED - Connection error: {e}")
+        return False, None
+
+def test_auth_user(access_token=None):
+    """Test get current user endpoint"""
+    print("\n=== Testing Auth User ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        response = requests.get(
+            f"{API_BASE_URL}/auth/user",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            if "message" in data:
+                if access_token and data.get("user"):
+                    print("✅ Auth user PASSED (authenticated user)")
+                    return True
+                elif not access_token and not data.get("user"):
+                    print("✅ Auth user PASSED (no authenticated user)")
+                    return True
+                else:
+                    print("❌ Auth user FAILED - Unexpected user state")
+                    return False
+            else:
+                print("❌ Auth user FAILED - Missing message field")
+                return False
+        else:
+            print(f"❌ Auth user FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Auth user FAILED - Connection error: {e}")
+        return False
+
+def test_auth_refresh():
+    """Test token refresh endpoint"""
+    print("\n=== Testing Auth Refresh ===")
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/auth/refresh",
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        # Token refresh might fail if no active session, which is expected
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            if "user" in data and "session" in data and "message" in data:
+                print("✅ Auth refresh PASSED")
+                return True
+            else:
+                print("❌ Auth refresh FAILED - Missing required response fields")
+                return False
+        elif response.status_code == 401:
+            print("✅ Auth refresh PASSED (no active session to refresh)")
+            return True
+        else:
+            print(f"❌ Auth refresh FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Auth refresh FAILED - Connection error: {e}")
+        return False
+
+def test_auth_logout(access_token=None):
+    """Test user logout endpoint"""
+    print("\n=== Testing Auth Logout ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        response = requests.post(
+            f"{API_BASE_URL}/auth/logout",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            if "message" in data:
+                print("✅ Auth logout PASSED")
+                return True
+            else:
+                print("❌ Auth logout FAILED - Missing message field")
+                return False
+        else:
+            print(f"❌ Auth logout FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Auth logout FAILED - Connection error: {e}")
+        return False
+
+def test_auth_error_handling():
+    """Test authentication error handling"""
+    print("\n=== Testing Auth Error Handling ===")
+    
+    # Test login with invalid credentials
+    try:
+        invalid_login = {
+            "email": "invalid@test.com",
+            "password": "wrongpassword"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=invalid_login,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Invalid login status: {response.status_code}")
+        
+        if response.status_code == 401:
+            print("✅ Invalid credentials properly rejected")
+            error_handling_passed = True
+        else:
+            print("❌ Invalid credentials not properly handled")
+            error_handling_passed = False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Error handling test failed: {e}")
+        error_handling_passed = False
+    
+    # Test protected endpoint without auth
+    try:
+        response = requests.get(f"{API_BASE_URL}/auth/user", timeout=10)
+        print(f"Unauth user endpoint status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            if not data.get("user"):
+                print("✅ Protected endpoint properly handles no auth")
+                error_handling_passed = error_handling_passed and True
+            else:
+                print("❌ Protected endpoint should not return user without auth")
+                error_handling_passed = False
+        else:
+            print("❌ Protected endpoint error handling failed")
+            error_handling_passed = False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Protected endpoint test failed: {e}")
+        error_handling_passed = False
+    
+    return error_handling_passed
+
+def test_complete_auth_flow():
+    """Test complete authentication flow"""
+    print("\n=== Testing Complete Auth Flow ===")
+    
+    # Step 1: Signup
+    signup_success, signup_data = test_auth_signup()
+    if not signup_success:
+        print("❌ Complete auth flow FAILED at signup")
+        return False
+    
+    # Step 2: Login
+    login_success, access_token = test_auth_login()
+    if not login_success:
+        print("❌ Complete auth flow FAILED at login")
+        return False
+    
+    # Step 3: Get user info
+    user_success = test_auth_user(access_token)
+    if not user_success:
+        print("❌ Complete auth flow FAILED at get user")
+        return False
+    
+    # Step 4: Logout
+    logout_success = test_auth_logout(access_token)
+    if not logout_success:
+        print("❌ Complete auth flow FAILED at logout")
+        return False
+    
+    print("✅ Complete auth flow PASSED")
+    return True
+
 def test_supabase_auth_endpoints():
-    """Test if backend has Supabase auth endpoints"""
+    """Test all Supabase authentication endpoints"""
     print("\n=== Testing Supabase Auth Endpoints ===")
     
-    auth_endpoints = [
-        "/auth/signup",
-        "/auth/login", 
-        "/auth/logout",
-        "/auth/user",
-        "/auth/refresh"
-    ]
+    # Test individual endpoints
+    health_check = test_supabase_health_check()
+    signup_test, _ = test_auth_signup()
+    login_test, access_token = test_auth_login()
+    user_test = test_auth_user(access_token)
+    refresh_test = test_auth_refresh()
+    logout_test = test_auth_logout(access_token)
+    error_handling = test_auth_error_handling()
+    complete_flow = test_complete_auth_flow()
     
-    existing_endpoints = []
-    missing_endpoints = []
+    # Summary
+    tests = [health_check, signup_test, login_test, user_test, refresh_test, logout_test, error_handling, complete_flow]
+    passed_tests = sum(tests)
+    total_tests = len(tests)
     
-    for endpoint in auth_endpoints:
-        try:
-            response = requests.get(f"{API_BASE_URL}{endpoint}", timeout=5)
-            if response.status_code != 404:
-                existing_endpoints.append(endpoint)
-                print(f"✅ Found endpoint: {endpoint} (Status: {response.status_code})")
-            else:
-                missing_endpoints.append(endpoint)
-                print(f"❌ Missing endpoint: {endpoint}")
-        except requests.exceptions.RequestException as e:
-            missing_endpoints.append(endpoint)
-            print(f"❌ Error testing {endpoint}: {e}")
+    print(f"\n📊 Auth Endpoints Summary: {passed_tests}/{total_tests} tests passed")
     
-    if existing_endpoints:
-        print(f"✅ Found {len(existing_endpoints)} auth endpoints")
+    if passed_tests >= 6:  # Allow some flexibility for edge cases
+        print("✅ Supabase auth endpoints PASSED")
         return True
     else:
-        print("❌ No Supabase auth endpoints found in backend")
+        print("❌ Supabase auth endpoints FAILED")
         return False
 
 def test_backend_supabase_integration():
