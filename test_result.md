@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the new SportsTech landing page for navigation, animations, mobile responsiveness, interactive elements, and visual elements"
+user_problem_statement: "Test the new Track My Academy landing page for navigation, animations, mobile responsiveness, interactive elements, and visual elements"
 
 frontend:
   - task: "Navigation System"
