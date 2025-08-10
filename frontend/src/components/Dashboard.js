@@ -383,14 +383,16 @@ const Dashboard = () => {
                     {academies.map((academy) => (
                       <tr key={academy.id} className="border-b border-white/5">
                         <td className="py-3 px-4 text-white">{academy.name}</td>
-                        <td className="py-3 px-4 text-gray-300">{academy.owner}</td>
-                        <td className="py-3 px-4 text-gray-300">{academy.sport}</td>
-                        <td className="py-3 px-4 text-gray-300">{academy.location}</td>
+                        <td className="py-3 px-4 text-gray-300">{academy.owner_name}</td>
+                        <td className="py-3 px-4 text-gray-300">{academy.sports_type || 'Not specified'}</td>
+                        <td className="py-3 px-4 text-gray-300">{academy.location || 'Not specified'}</td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${
                             academy.status === 'approved' 
                               ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-orange-500/20 text-orange-400'
+                              : academy.status === 'pending'
+                              ? 'bg-orange-500/20 text-orange-400'
+                              : 'bg-red-500/20 text-red-400'
                           }`}>
                             {academy.status}
                           </span>
