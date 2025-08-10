@@ -27,9 +27,14 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-              SportsTech
+          <div className="flex-shrink-0 flex items-center">
+            <img 
+              src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
+              alt="Track My Academy" 
+              className="h-10 w-auto mr-3"
+            />
+            <h1 className="text-xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
+              Track My Academy
             </h1>
           </div>
 
@@ -47,7 +52,7 @@ const Navbar = () => {
           {/* CTA Button */}
           <div className="hidden md:block">
             <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-sky-500/25">
-              Get Started
+              Join Beta
             </button>
           </div>
 
@@ -78,7 +83,7 @@ const Navbar = () => {
               <button onClick={() => scrollToSection('pricing')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">Pricing</button>
               <button onClick={() => scrollToSection('testimonials')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">Testimonials</button>
               <button className="w-full mt-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300">
-                Get Started
+                Join Beta
               </button>
             </div>
           </div>

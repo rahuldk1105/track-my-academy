@@ -28,8 +28,8 @@ const FeaturesSection = ({ scrollY }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
       ),
-      title: 'Advanced Analytics',
-      description: 'Real-time performance metrics and data visualization to optimize training and competition strategies.',
+      title: 'SaaS Academy Management',
+      description: 'Comprehensive cloud-based platform to manage your sports academy operations, player records, and training programs in one unified system.',
       image: 'https://images.unsplash.com/photo-1647601294667-5a5948b6cd93?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxhdGhsZXRpYyUyMGVxdWlwbWVudHxlbnwwfHx8fDE3NTQ4MTcwNTh8MA&ixlib=rb-4.1.0&q=85'
     },
     {
@@ -38,8 +38,8 @@ const FeaturesSection = ({ scrollY }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      title: 'Smart Equipment',
-      description: 'IoT-enabled sports gear that adapts to your performance level and provides instant feedback.',
+      title: 'Smart Performance Tracking',
+      description: 'Advanced IoT gadgets and smart sports equipment (in development) to monitor player performance metrics in real-time.',
       image: 'https://images.unsplash.com/photo-1646504632442-6cacb1858bd6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxhdGhsZXRpYyUyMGVxdWlwbWVudHxlbnwwfHx8fDE3NTQ4MTcwNTh8MA&ixlib=rb-4.1.0&q=85'
     },
     {
@@ -48,8 +48,8 @@ const FeaturesSection = ({ scrollY }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
         </svg>
       ),
-      title: 'Team Collaboration',
-      description: 'Connect coaches, athletes, and support staff with seamless communication and data sharing tools.',
+      title: 'Academy-Player Portal',
+      description: 'Seamless platform where academy owners manage operations while players access their personal dashboards, training plans, and progress reports.',
       image: 'https://images.unsplash.com/photo-1652497213813-89e58c19f678?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxhdGhsZXRpYyUyMGVxdWlwbWVudHxlbnwwfHx8fDE3NTQ4MTcwNTh8MA&ixlib=rb-4.1.0&q=85'
     },
     {
@@ -58,8 +58,8 @@ const FeaturesSection = ({ scrollY }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
       ),
-      title: 'AI-Powered Insights',
-      description: 'Machine learning algorithms analyze patterns to predict performance trends and prevent injuries.',
+      title: 'Beta Testing Program',
+      description: 'Join our exclusive beta program to experience cutting-edge sports technology before public launch and help shape the future of academy management.',
       image: 'https://images.unsplash.com/photo-1705593349153-0e21c38c8ff2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxhdGhsZXRpYyUyMGVxdWlwbWVudHxlbnwwfHx8fDE3NTQ4MTcwNTh8MA&ixlib=rb-4.1.0&q=85'
     }
   ];
@@ -78,12 +78,12 @@ const FeaturesSection = ({ scrollY }) => {
         }`}>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-              Cutting-Edge Features
+              Revolutionary Features for Academies
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Experience the future of sports technology with our innovative suite of tools 
-            designed to elevate performance and transform athletic potential.
+            Experience the future of sports academy management with our innovative SaaS platform 
+            and smart equipment designed specifically for academy owners and their players.
           </p>
         </div>
 
@@ -144,7 +144,7 @@ const FeaturesSection = ({ scrollY }) => {
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`} style={{ transitionDelay: '800ms' }}>
           <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-4 rounded-full text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-sky-500/25">
-            Explore All Features
+            Join Beta Program
           </button>
         </div>
       </div>

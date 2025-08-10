@@ -50,26 +50,26 @@ const HeroSection = ({ scrollY }) => {
         }`}>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
             <span className="bg-gradient-to-r from-white via-sky-400 to-white bg-clip-text text-transparent animate-gradient-x">
-              Revolutionize
+              Empower Your
             </span>
             <br />
-            <span className="text-white">Sports with</span>
+            <span className="text-white">Sports Academy with</span>
             <br />
             <span className="bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent">
-              Technology
+              Smart Technology
             </span>
           </h1>
           
           <p className="text-xl sm:text-2xl text-gray-300 mb-8 leading-relaxed">
-            Unleash peak performance with cutting-edge sports technology. 
-            From advanced analytics to smart equipment, we're transforming 
-            the future of athletics.
+            Transform your sports academy with our cutting-edge SaaS platform and smart equipment. 
+            Track every player's performance, optimize training programs, and elevate your academy 
+            to championship levels.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button className="group bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-4 rounded-full text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-sky-500/25 w-full sm:w-auto">
               <span className="flex items-center justify-center">
-                Start Your Journey
+                Join Beta Program
                 <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -78,9 +78,9 @@ const HeroSection = ({ scrollY }) => {
             
             <button className="group border-2 border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-black px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
               <span className="flex items-center justify-center">
-                Watch Demo
+                Learn More
                 <svg className="ml-2 w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
               </span>
             </button>
@@ -92,15 +92,28 @@ const HeroSection = ({ scrollY }) => {
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`}>
           {[
-            { number: '10M+', label: 'Athletes Trained' },
-            { number: '99.9%', label: 'Performance Boost' },
-            { number: '24/7', label: 'Real-time Analytics' }
+            { number: 'Beta', label: 'Launch Ready' },
+            { number: '100%', label: 'Academy Focused' },
+            { number: '24/7', label: 'Performance Tracking' }
           ].map((stat, index) => (
             <div key={index} className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:border-sky-400/50 transition-all duration-300 transform hover:scale-105">
               <div className="text-3xl font-bold text-sky-400 mb-2">{stat.number}</div>
               <div className="text-gray-300">{stat.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* Location Badge */}
+        <div className={`mt-8 transition-all duration-1000 delay-700 transform ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+        }`}>
+          <div className="inline-flex items-center bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+            <svg className="w-5 h-5 text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="text-white font-medium">Chennai, Tamil Nadu, India</span>
+          </div>
         </div>
 
         {/* Scroll Indicator */}

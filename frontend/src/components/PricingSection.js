@@ -25,48 +25,51 @@ const PricingSection = ({ scrollY }) => {
   const pricingPlans = [
     {
       id: 'starter',
-      name: 'Starter',
-      price: '$29',
+      name: 'Starter Academy',
+      price: '₹2,999',
       period: 'per month',
-      description: 'Perfect for individual athletes and small teams',
+      description: 'Perfect for small sports academies getting started',
       features: [
         'Basic performance analytics',
-        'Up to 5 athlete profiles',
+        'Up to 50 player profiles',
         'Mobile app access',
         'Standard reporting',
         'Email support',
-        '1GB data storage'
+        '10GB data storage',
+        'Academy dashboard'
       ],
-      buttonText: 'Start Free Trial',
+      buttonText: 'Start Beta Trial',
       popular: false,
       color: 'from-gray-600 to-gray-700'
     },
     {
       id: 'pro',
-      name: 'Professional',
-      price: '$99',
+      name: 'Professional Academy',
+      price: '₹7,999',
       period: 'per month',
-      description: 'Advanced features for serious athletes and coaches',
+      description: 'Advanced features for growing sports academies',
       features: [
         'Advanced AI analytics',
-        'Unlimited athlete profiles',
+        'Unlimited player profiles',
         'Real-time performance tracking',
         'Custom reports & insights',
         'Priority support',
-        '50GB data storage',
-        'Team collaboration tools',
-        'Video analysis integration'
+        '100GB data storage',
+        'Smart equipment integration',
+        'Player-academy portal',
+        'Training program management',
+        'Progress tracking dashboards'
       ],
-      buttonText: 'Get Started',
+      buttonText: 'Join Beta Program',
       popular: true,
       color: 'from-sky-500 to-sky-600'
     },
     {
       id: 'enterprise',
-      name: 'Enterprise',
-      price: '$299',
+      name: 'Multi-Academy Enterprise',
+      price: '₹19,999',
       period: 'per month',
-      description: 'Complete solution for organizations and academies',
+      description: 'Complete solution for large academies and chains',
       features: [
         'Full platform access',
         'Unlimited everything',
@@ -77,7 +80,9 @@ const PricingSection = ({ scrollY }) => {
         'Multi-location support',
         'Advanced security features',
         'Custom branding',
-        'API access'
+        'API access',
+        'Smart equipment priority',
+        'Advanced IoT integration'
       ],
       buttonText: 'Contact Sales',
       popular: false,
@@ -111,27 +116,25 @@ const PricingSection = ({ scrollY }) => {
         }`}>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-              Choose Your Plan
+              Beta Pricing Plans
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Unlock your athletic potential with our flexible pricing options. 
-            From individual athletes to enterprise organizations, we have the perfect plan for you.
+            Special beta pricing for early adopters! Join our exclusive program and transform 
+            your sports academy with cutting-edge technology at unbeatable rates.
           </p>
         </div>
 
-        {/* Pricing Toggle */}
+        {/* Beta Badge */}
         <div className={`flex justify-center mb-12 transition-all duration-1000 transform ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`} style={{ transitionDelay: '200ms' }}>
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
-            <div className="flex">
-              <button className="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-sky-500 text-white">
-                Monthly
-              </button>
-              <button className="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-gray-400 hover:text-white">
-                Annual <span className="text-green-400 text-xs">(Save 20%)</span>
-              </button>
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full px-6 py-3 border border-orange-400/50">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="text-white font-semibold">🚀 Beta Launch Special - Limited Time Pricing</span>
             </div>
           </div>
         </div>
@@ -169,9 +172,12 @@ const PricingSection = ({ scrollY }) => {
                   <div className="text-center mb-8">
                     <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
                     <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
-                    <div className="mb-6">
-                      <span className="text-5xl font-bold text-sky-400">{plan.price}</span>
+                    <div className="mb-2">
+                      <span className="text-4xl font-bold text-sky-400">{plan.price}</span>
                       <span className="text-gray-400 ml-2">{plan.period}</span>
+                    </div>
+                    <div className="text-xs text-orange-400 font-semibold">
+                      ⚡ Beta Special Price
                     </div>
                   </div>
 
@@ -200,7 +206,7 @@ const PricingSection = ({ scrollY }) => {
 
                   {/* Extra Info */}
                   <p className="text-center text-xs text-gray-500 mt-4">
-                    No setup fees • Cancel anytime
+                    Beta program • Special pricing • Early access
                   </p>
                 </div>
 
@@ -218,17 +224,18 @@ const PricingSection = ({ scrollY }) => {
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`} style={{ transitionDelay: '1000ms' }}>
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-white mb-4">Need a Custom Solution?</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">Ready to Transform Your Academy?</h3>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              We understand that every organization has unique needs. Our team can create a 
-              tailored solution that fits your specific requirements and budget.
+              Join the beta program and be among the first academies to experience the future of 
+              sports technology. Our team is ready to help you get started with custom onboarding 
+              and dedicated support.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105">
-                Schedule a Demo
+                Schedule Demo
               </button>
               <button className="border-2 border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-black px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-                Contact Sales
+                Contact Team
               </button>
             </div>
           </div>
