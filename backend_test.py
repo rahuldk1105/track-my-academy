@@ -617,6 +617,7 @@ def run_all_tests():
         'mongodb_integration': test_mongodb_integration(),
         'supabase_environment_variables': test_supabase_environment_variables(),
         'supabase_connection': test_supabase_connection(),
+        'supabase_health_check': test_supabase_health_check(),
         'supabase_auth_endpoints': test_supabase_auth_endpoints(),
         'backend_supabase_integration': test_backend_supabase_integration(),
     }
