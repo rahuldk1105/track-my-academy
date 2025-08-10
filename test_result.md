@@ -420,9 +420,9 @@ backend:
 
 frontend:
   - task: "Academy Creation Form in Dashboard"
-    implemented: false
-    working: false
-    file: "/app/frontend/src/components/Dashboard.js"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Dashboard.js, /app/frontend/src/components/CreateAcademyModal.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: true
@@ -430,6 +430,9 @@ frontend:
         - working: false
           agent: "main"
           comment: "Need to implement academy creation form/modal with connection to POST /api/admin/create-academy endpoint"
+        - working: true
+          agent: "main"
+          comment: "Implemented CreateAcademyModal component with form validation and connection to backend API. Added success/error handling and integrated with Dashboard component."
 
   - task: "Real Data Integration in Dashboard"
     implemented: false
