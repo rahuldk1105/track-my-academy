@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import AuthModal from './AuthModal';
 
 const HeroSection = ({ scrollY }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
