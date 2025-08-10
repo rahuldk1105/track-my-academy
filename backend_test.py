@@ -904,6 +904,8 @@ def run_all_tests():
         'supabase_health_check': test_supabase_health_check(),
         'supabase_auth_endpoints': test_supabase_auth_endpoints(),
         'backend_supabase_integration': test_backend_supabase_integration(),
+        'academy_management_apis': test_academy_management_apis(),
+        'academy_authentication': test_academy_authentication(),
     }
     
     print("\n" + "=" * 60)
