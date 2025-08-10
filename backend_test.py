@@ -27,7 +27,15 @@ except ImportError:
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
+# Get Supabase configuration
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
+
 print(f"Testing backend at: {API_BASE_URL}")
+print(f"Supabase URL: {SUPABASE_URL}")
+print(f"Supabase Key available: {'Yes' if SUPABASE_KEY else 'No'}")
+print(f"Supabase Service Key available: {'Yes' if SUPABASE_SERVICE_KEY else 'No'}")
 
 def test_server_health():
     """Test basic server health check"""
