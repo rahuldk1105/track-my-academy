@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateAcademyModal from './CreateAcademyModal';
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, token } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAcademies: 0,
