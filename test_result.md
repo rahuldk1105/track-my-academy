@@ -129,17 +129,20 @@ frontend:
           agent: "testing"
           comment: "Mobile hamburger menu functionality works perfectly. Menu opens/closes correctly, all mobile navigation links are visible and functional. Tested on 375px width viewport."
 
-  - task: "Hero Section with CTA Buttons"
+  - task: "Hero Section with CTA Buttons and Auth Modal"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/HeroSection.js"
+    file: "/app/frontend/src/components/HeroSection.js, /app/frontend/src/components/AuthModal.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "testing"
           comment: "Hero section displays beautifully with parallax background effects. Both CTA buttons ('Start Your Journey' and 'Watch Demo') are present and functional with proper hover effects. Gradient text animations working correctly."
+        - working: true
+          agent: "main"
+          comment: "Updated 'Join Beta Program' button to show auth modal with choice between Sign In and Join Beta. Created AuthModal component with proper navigation to login/signup pages. Updated branding from SportsTech to Track My Academy throughout the application."
 
   - task: "Features Section with Animations"
     implemented: true
