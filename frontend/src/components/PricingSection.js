@@ -227,7 +227,7 @@ const PricingSection = ({ scrollY }) => {
             <h3 className="text-2xl font-bold text-white mb-4">Ready to Transform Your Academy?</h3>
             <p className="text-gray-300 mb-6 leading-relaxed">
               Join the beta program and be among the first academies to experience the future of 
-              sports technology. Our team is ready to help you get started with custom onboarding 
+              academy management with Track My Academy. Our team is ready to help you get started with custom onboarding 
               and dedicated support.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
