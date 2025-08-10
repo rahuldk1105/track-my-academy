@@ -182,6 +182,20 @@ async def admin_create_academy(request: SignUpRequest, current_user = Depends(ge
         })
         
         if response.user:
+            # Store academy data in MongoDB
+            academy_data = Academy(
+                name=request.academy_name or "Unnamed Academy",
+                owner_name=request.owner_name or "Unknown Owner",
+                email=request.email,
+                phone=request.phone,
+                location=request.location,
+                sports_type=request.sports_type,
+                status="approved",  # Admin-created academies are auto-approved
+                supabase_user_id=response.user.id
+            )
+            
+            await db.academies.insert_one(academy_data.dict())
+            
             return AuthResponse(
                 user=response.user.model_dump() if hasattr(response.user, 'model_dump') else dict(response.user),
                 session={},  # No session for admin-created users
@@ -193,6 +207,79 @@ async def admin_create_academy(request: SignUpRequest, current_user = Depends(ge
     except Exception as e:
         logger.error(f"Admin academy creation error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+
+# Academy Management Endpoints
+@api_router.get("/admin/academies", response_model=List[Academy])
+async def get_academies(current_user = Depends(get_current_user)):
+    try:
+        # TODO: Add admin role verification
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
+        academies = await db.academies.find().to_list(1000)
+        return [Academy(**academy) for academy in academies]
+    except Exception as e:
+        logger.error(f"Error fetching academies: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch academies")
+
+@api_router.put("/admin/academies/{academy_id}", response_model=Academy)
+async def update_academy(academy_id: str, academy_update: AcademyUpdate, current_user = Depends(get_current_user)):
+    try:
+        # TODO: Add admin role verification
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Find the academy
+        academy = await db.academies.find_one({"id": academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Update fields
+        update_data = academy_update.dict(exclude_unset=True)
+        if update_data:
+            update_data["updated_at"] = datetime.utcnow()
+            await db.academies.update_one(
+                {"id": academy_id},
+                {"$set": update_data}
+            )
+        
+        # Return updated academy
+        updated_academy = await db.academies.find_one({"id": academy_id})
+        return Academy(**updated_academy)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating academy: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update academy")
+
+@api_router.delete("/admin/academies/{academy_id}")
+async def delete_academy(academy_id: str, current_user = Depends(get_current_user)):
+    try:
+        # TODO: Add admin role verification
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Find the academy
+        academy = await db.academies.find_one({"id": academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Delete from MongoDB
+        await db.academies.delete_one({"id": academy_id})
+        
+        # TODO: Also delete the Supabase user if needed
+        # if academy.get('supabase_user_id'):
+        #     try:
+        #         supabase_admin.auth.admin.delete_user(academy['supabase_user_id'])
+        #     except Exception as e:
+        #         logger.warning(f"Failed to delete Supabase user: {e}")
+        
+        return {"message": "Academy deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting academy: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete academy")
 
 @api_router.post("/auth/login", response_model=AuthResponse)
 async def login(request: SignInRequest):
