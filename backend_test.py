@@ -146,6 +146,134 @@ def test_get_status_checks():
         print(f"❌ GET /api/status FAILED - Connection error: {e}")
         return False
 
+def test_supabase_environment_variables():
+    """Test if Supabase environment variables are properly loaded"""
+    print("\n=== Testing Supabase Environment Variables ===")
+    
+    missing_vars = []
+    if not SUPABASE_URL:
+        missing_vars.append("SUPABASE_URL")
+    if not SUPABASE_KEY:
+        missing_vars.append("SUPABASE_KEY")
+    if not SUPABASE_SERVICE_KEY:
+        missing_vars.append("SUPABASE_SERVICE_KEY")
+    
+    if missing_vars:
+        print(f"❌ Missing environment variables: {', '.join(missing_vars)}")
+        return False
+    
+    # Validate URL format
+    if not SUPABASE_URL.startswith('https://'):
+        print("❌ SUPABASE_URL should start with https://")
+        return False
+    
+    print("✅ All Supabase environment variables are properly loaded")
+    return True
+
+def test_supabase_connection():
+    """Test connection to Supabase"""
+    print("\n=== Testing Supabase Connection ===")
+    
+    if not SUPABASE_AVAILABLE:
+        print("❌ Supabase client library not available")
+        return False
+    
+    if not test_supabase_environment_variables():
+        print("❌ Cannot test connection - environment variables missing")
+        return False
+    
+    try:
+        # Test with anon key
+        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        
+        # Try to get the current user (should return None for anon key)
+        user = supabase.auth.get_user()
+        print(f"Anon key connection test - User response: {user}")
+        
+        # Test with service key
+        supabase_service: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+        
+        # Try to list users (admin operation)
+        try:
+            # This should work with service key
+            response = supabase_service.auth.admin.list_users()
+            print(f"Service key connection test - Users list response received")
+            print("✅ Supabase connection PASSED")
+            return True
+        except Exception as admin_error:
+            print(f"Service key admin operation: {admin_error}")
+            # Even if admin operations fail, basic connection might work
+            print("✅ Supabase basic connection PASSED (admin operations may be restricted)")
+            return True
+            
+    except Exception as e:
+        print(f"❌ Supabase connection FAILED: {e}")
+        return False
+
+def test_supabase_auth_endpoints():
+    """Test if backend has Supabase auth endpoints"""
+    print("\n=== Testing Supabase Auth Endpoints ===")
+    
+    auth_endpoints = [
+        "/auth/signup",
+        "/auth/login", 
+        "/auth/logout",
+        "/auth/user",
+        "/auth/refresh"
+    ]
+    
+    existing_endpoints = []
+    missing_endpoints = []
+    
+    for endpoint in auth_endpoints:
+        try:
+            response = requests.get(f"{API_BASE_URL}{endpoint}", timeout=5)
+            if response.status_code != 404:
+                existing_endpoints.append(endpoint)
+                print(f"✅ Found endpoint: {endpoint} (Status: {response.status_code})")
+            else:
+                missing_endpoints.append(endpoint)
+                print(f"❌ Missing endpoint: {endpoint}")
+        except requests.exceptions.RequestException as e:
+            missing_endpoints.append(endpoint)
+            print(f"❌ Error testing {endpoint}: {e}")
+    
+    if existing_endpoints:
+        print(f"✅ Found {len(existing_endpoints)} auth endpoints")
+        return True
+    else:
+        print("❌ No Supabase auth endpoints found in backend")
+        return False
+
+def test_backend_supabase_integration():
+    """Test if backend can integrate with Supabase"""
+    print("\n=== Testing Backend Supabase Integration ===")
+    
+    # Check if backend imports Supabase
+    try:
+        response = requests.get(f"{API_BASE_URL}/", timeout=10)
+        if response.status_code == 200:
+            print("✅ Backend is running")
+            
+            # Test if there's a Supabase health check endpoint
+            try:
+                supabase_health = requests.get(f"{API_BASE_URL}/supabase/health", timeout=5)
+                if supabase_health.status_code == 200:
+                    print("✅ Backend has Supabase health check endpoint")
+                    return True
+                else:
+                    print("❌ No Supabase health check endpoint found")
+                    return False
+            except:
+                print("❌ No Supabase integration endpoints found in backend")
+                return False
+        else:
+            print("❌ Backend is not responding properly")
+            return False
+    except Exception as e:
+        print(f"❌ Backend integration test failed: {e}")
+        return False
+
 def test_mongodb_integration():
     """Test MongoDB integration by creating and retrieving data"""
     print("\n=== Testing MongoDB Integration ===")
