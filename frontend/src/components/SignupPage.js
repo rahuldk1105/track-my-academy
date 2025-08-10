@@ -15,6 +15,9 @@ const SignupPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
