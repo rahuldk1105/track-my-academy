@@ -61,7 +61,7 @@ const Navbar = () => {
               onClick={handleJoinBeta}
               className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-sky-500/25"
             >
-              Join Beta
+              Request Demo
             </button>
           </div>
 
