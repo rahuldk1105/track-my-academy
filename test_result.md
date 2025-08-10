@@ -496,3 +496,15 @@ frontend:
         - working: false
           agent: "main"
           comment: "Implement academy editing, approval workflow, and management features in dashboard"
+
+  - task: "Admin Account Creation for User Access"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Successfully created dedicated admin account for user access. Account details: Email: admin@trackmyacademy.com, Password: AdminPassword123!, Academy: Track My Academy Admin, Owner: System Administrator. Account verified in database with ID: 5a78d9e9-f6f0-4270-a6c0-78e6ded1cf9f, Status: approved. Login functionality tested and confirmed working. User can now access super admin dashboard at provided URL."
