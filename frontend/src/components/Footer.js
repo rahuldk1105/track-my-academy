@@ -7,30 +7,30 @@ const Footer = () => {
     {
       title: 'Product',
       links: [
-        { name: 'Features', href: '#features' },
-        { name: 'Analytics', href: '#' },
-        { name: 'Equipment', href: '#' },
+        { name: 'SaaS Platform', href: '#features' },
+        { name: 'IoT Devices', href: '#' },
+        { name: 'Smart Equipment', href: '#' },
         { name: 'Mobile App', href: '#' },
-        { name: 'Integrations', href: '#' }
+        { name: 'Beta Program', href: '#' }
       ]
     },
     {
       title: 'Company',
       links: [
         { name: 'About Us', href: '#about' },
+        { name: 'Team', href: '#' },
         { name: 'Careers', href: '#' },
-        { name: 'Press', href: '#' },
         { name: 'Blog', href: '#' },
         { name: 'Contact', href: '#' }
       ]
     },
     {
-      title: 'Resources',
+      title: 'Support',
       links: [
         { name: 'Documentation', href: '#' },
         { name: 'Help Center', href: '#' },
-        { name: 'Community', href: '#' },
-        { name: 'Tutorials', href: '#' },
+        { name: 'Academy Portal', href: '#' },
+        { name: 'Beta Support', href: '#' },
         { name: 'API Reference', href: '#' }
       ]
     },
@@ -39,9 +39,9 @@ const Footer = () => {
       links: [
         { name: 'Privacy Policy', href: '#' },
         { name: 'Terms of Service', href: '#' },
-        { name: 'Cookie Policy', href: '#' },
-        { name: 'GDPR', href: '#' },
-        { name: 'Security', href: '#' }
+        { name: 'Data Security', href: '#' },
+        { name: 'Compliance', href: '#' },
+        { name: 'Beta Terms', href: '#' }
       ]
     }
   ];
@@ -116,13 +116,27 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-                SportsTech
-              </h3>
-              <p className="text-gray-400 mt-4 leading-relaxed">
-                Revolutionizing sports through cutting-edge technology. 
-                Empowering athletes and organizations worldwide to achieve peak performance.
+              <div className="flex items-center mb-4">
+                <img 
+                  src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
+                  alt="Track My Academy" 
+                  className="h-12 w-auto mr-3"
+                />
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
+                  Track My Academy
+                </h3>
+              </div>
+              <p className="text-gray-400 leading-relaxed mb-4">
+                Empowering sports academies across India with cutting-edge SaaS solutions 
+                and smart IoT technology. Currently in beta testing phase.
               </p>
+              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 inline-flex">
+                <svg className="w-4 h-4 text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-white text-sm font-medium">Chennai, Tamil Nadu</span>
+              </div>
             </div>
             
             {/* Social Links */}
@@ -163,19 +177,19 @@ const Footer = () => {
         {/* Newsletter Section */}
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 mb-12">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Stay Updated</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">Stay Updated on Beta Progress</h3>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Get the latest insights on sports technology, performance tips, and product updates 
-              delivered straight to your inbox.
+              Get the latest updates on our beta program, new features, and early access 
+              opportunities for sports academies across India.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your academy email"
                 className="flex-1 bg-white/10 border border-white/20 rounded-full px-6 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-400 transition-colors duration-300"
               />
               <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105">
-                Subscribe
+                Join Beta List
               </button>
             </div>
           </div>
@@ -185,17 +199,17 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © {currentYear} SportsTech. All rights reserved.
+              © {currentYear} Track My Academy. All rights reserved. Made in Chennai, Tamil Nadu, India.
             </div>
             <div className="flex items-center space-x-6 text-sm text-gray-400">
+              <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full text-xs font-semibold">
+                🚀 Beta Phase
+              </span>
               <button className="hover:text-sky-400 transition-colors duration-300">
                 Privacy Policy
               </button>
               <button className="hover:text-sky-400 transition-colors duration-300">
-                Terms of Service
-              </button>
-              <button className="hover:text-sky-400 transition-colors duration-300">
-                Cookie Settings
+                Beta Terms
               </button>
             </div>
           </div>

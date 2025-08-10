@@ -22,10 +22,10 @@ const AboutSection = ({ scrollY }) => {
   }, []);
 
   const stats = [
-    { number: '50K+', label: 'Professional Athletes', icon: '🏆' },
-    { number: '200+', label: 'Sports Organizations', icon: '🏟️' },
-    { number: '15+', label: 'Countries Worldwide', icon: '🌍' },
-    { number: '98%', label: 'Customer Satisfaction', icon: '⭐' }
+    { number: 'Beta', label: 'Launch Phase', icon: '🚀' },
+    { number: '100%', label: 'Academy Focused', icon: '🏟️' },
+    { number: 'Chennai', label: 'Tamil Nadu Base', icon: '📍' },
+    { number: 'SaaS+IoT', label: 'Dual Technology', icon: '⚡' }
   ];
 
   return (
@@ -52,12 +52,12 @@ const AboutSection = ({ scrollY }) => {
         }`}>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-              About SportsTech
+              About Track My Academy
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            We're pioneers in sports technology, dedicated to pushing the boundaries of athletic 
-            performance through innovative solutions and cutting-edge research.
+            Born in Chennai, Tamil Nadu, we're pioneering the future of sports academy management 
+            through innovative SaaS solutions and cutting-edge IoT technology.
           </p>
         </div>
 
@@ -67,57 +67,88 @@ const AboutSection = ({ scrollY }) => {
             isVisible ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'
           }`}>
             <h3 className="text-3xl font-bold text-white mb-6">
-              Transforming Sports Through Innovation
+              Transforming Sports Academies Across India
             </h3>
             <div className="space-y-6 text-gray-300 leading-relaxed">
               <p>
-                Founded by a team of former athletes, engineers, and data scientists, SportsTech 
-                was born from the vision of merging cutting-edge technology with athletic excellence. 
-                We understand the dedication it takes to reach peak performance.
+                <strong className="text-sky-400">Track My Academy</strong> is a Chennai-based technology 
+                startup dedicated to revolutionizing how sports academies operate and manage their athletes. 
+                We understand the unique challenges faced by academy owners in India.
               </p>
               <p>
-                Our revolutionary platform combines artificial intelligence, IoT sensors, and 
-                advanced analytics to provide athletes and coaches with unprecedented insights 
-                into performance optimization, injury prevention, and strategic planning.
+                Our comprehensive <strong className="text-sky-400">SaaS platform</strong> is currently in 
+                beta testing, designed specifically for sports academy owners to streamline operations, 
+                track player performance, and enhance training effectiveness.
               </p>
               <p>
-                From grassroots programs to professional leagues, we're democratizing access to 
-                elite-level sports technology, making peak performance achievable for athletes 
-                at every level.
+                In addition to our software solutions, we're developing cutting-edge 
+                <strong className="text-sky-400"> IoT gadgets and smart sports equipment</strong> that 
+                will provide real-time performance analytics, helping academies make data-driven decisions 
+                for player development.
+              </p>
+              <p>
+                <strong className="text-sky-400">Academy-First Approach:</strong> Unlike platforms targeting individual athletes, 
+                we focus exclusively on academy owners. Players access the platform through their academy's 
+                portal, ensuring proper management hierarchy and data security.
               </p>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 border border-sky-400/30">
-                <span className="text-sky-400 font-semibold">AI-Powered</span>
+                <span className="text-sky-400 font-semibold">SaaS Platform</span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 border border-sky-400/30">
-                <span className="text-sky-400 font-semibold">Real-time Data</span>
+                <span className="text-sky-400 font-semibold">IoT Devices</span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 border border-sky-400/30">
-                <span className="text-sky-400 font-semibold">Global Reach</span>
+                <span className="text-sky-400 font-semibold">Beta Testing</span>
               </div>
             </div>
           </div>
 
-          {/* Image */}
+          {/* Logo and Company Info */}
           <div className={`transition-all duration-1000 transform ${
             isVisible ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
           }`}>
             <div className="relative">
               <div className="bg-gradient-to-br from-sky-400/20 to-transparent rounded-2xl p-8 backdrop-blur-sm border border-white/10">
-                <img
-                  src="https://images.unsplash.com/photo-1745103598675-85df75773d12?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHxhdGhsZXRlcyUyMGluJTIwYWN0aW9ufGVufDB8fHx8MTc1NDgxNzA4M3ww&ixlib=rb-4.1.0&q=85"
-                  alt="Athletes in action"
-                  className="w-full h-80 object-cover rounded-xl"
-                />
+                {/* Company Logo */}
+                <div className="text-center mb-6">
+                  <img
+                    src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png"
+                    alt="Track My Academy Logo"
+                    className="w-32 h-32 mx-auto mb-4"
+                  />
+                  <h3 className="text-2xl font-bold text-white mb-2">Track My Academy</h3>
+                  <p className="text-sky-400 font-semibold">Chennai, Tamil Nadu</p>
+                </div>
+                
+                {/* Company Stats */}
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-sky-400 font-bold text-lg">2025</div>
+                    <div className="text-gray-300 text-sm">Launch Year</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-sky-400 font-bold text-lg">Beta</div>
+                    <div className="text-gray-300 text-sm">Current Phase</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-sky-400 font-bold text-lg">India</div>
+                    <div className="text-gray-300 text-sm">Primary Market</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-sky-400 font-bold text-lg">Academies</div>
+                    <div className="text-gray-300 text-sm">Target Users</div>
+                  </div>
+                </div>
                 
                 {/* Floating Elements */}
                 <div className="absolute -top-4 -right-4 bg-sky-500 rounded-full w-16 h-16 flex items-center justify-center text-white font-bold animate-pulse">
-                  AI
+                  Beta
                 </div>
                 <div className="absolute -bottom-4 -left-4 bg-white/20 backdrop-blur-sm rounded-full w-20 h-20 flex items-center justify-center text-sky-400 font-bold border border-sky-400/30">
-                  24/7
+                  TMA
                 </div>
               </div>
             </div>
@@ -155,9 +186,17 @@ const AboutSection = ({ scrollY }) => {
           <div className="bg-gradient-to-r from-sky-500/20 to-transparent rounded-2xl p-8 backdrop-blur-sm border border-sky-400/20">
             <h3 className="text-2xl font-bold text-white mb-4">Our Mission</h3>
             <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              "To empower every athlete with the technology and insights needed to unlock their full potential, 
-              while fostering a global community where sports excellence meets technological innovation."
+              "To empower sports academies across India with cutting-edge technology solutions that 
+              streamline operations, enhance player development, and create a connected ecosystem 
+              where academy owners and athletes can achieve their maximum potential together."
             </p>
+            <div className="mt-6 inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+              <svg className="w-5 h-5 text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="text-white font-medium">Made in Chennai, Tamil Nadu</span>
+            </div>
           </div>
         </div>
       </div>

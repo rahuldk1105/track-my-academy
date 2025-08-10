@@ -33,38 +33,41 @@ const TestimonialsSection = ({ scrollY }) => {
   const testimonials = [
     {
       id: 1,
-      name: 'Sarah Johnson',
-      role: 'Olympic Tennis Player',
+      name: 'Rajesh Kumar',
+      role: 'Director, Chennai Cricket Academy',
       image: 'https://images.unsplash.com/photo-1709403552725-97e0ba206cb8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxhdGhsZXRlcyUyMGluJTIwYWN0aW9ufGVufDB8fHx8MTc1NDgxNzA4M3ww&ixlib=rb-4.1.0&q=85',
-      quote: "SportsTech revolutionized my training regimen. The AI-powered insights helped me identify weaknesses I never knew existed and improve my game significantly.",
+      quote: "Track My Academy has revolutionized how we manage our cricket academy. The beta platform is incredibly intuitive and helps us track every player's progress efficiently. Excited for the full launch!",
       rating: 5,
-      sport: 'Tennis'
+      sport: 'Cricket Academy',
+      location: 'Chennai'
     },
     {
       id: 2,
-      name: 'Marcus Rodriguez',
-      role: 'Professional Soccer Coach',
+      name: 'Priya Sharma',
+      role: 'Head Coach, Bangalore Football Academy',
       image: 'https://images.unsplash.com/photo-1745103598675-85df75773d12?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHxhdGhsZXRlcyUyMGluJTIwYWN0aW9ufGVufDB8fHx8MTc1NDgxNzA4M3ww&ixlib=rb-4.1.0&q=85',
-      quote: "The team collaboration features are incredible. Being able to analyze player performance in real-time during matches has given us a competitive edge.",
+      quote: "As a beta tester, I'm impressed by the comprehensive features for academy management. The player portal integration is seamless and our students love accessing their performance data.",
       rating: 5,
-      sport: 'Soccer'
+      sport: 'Football Academy',
+      location: 'Bangalore'
     },
     {
       id: 3,
-      name: 'Emily Chen',
-      role: 'Swimming Academy Director',
+      name: 'Arun Patel',
+      role: 'Owner, Mumbai Tennis Center',
       image: 'https://images.pexels.com/photos/159573/lacrosse-lax-lacrosse-game-game-159573.jpeg',
-      quote: "Our academy has seen a 40% improvement in athlete performance since implementing SportsTech. The data-driven approach is phenomenal.",
+      quote: "The SaaS solution has streamlined our entire academy operations. Being part of the beta program gives us early access to cutting-edge sports technology. Highly recommend to fellow academy owners!",
       rating: 5,
-      sport: 'Swimming'
+      sport: 'Tennis Academy',
+      location: 'Mumbai'
     }
   ];
 
   const achievements = [
-    { icon: '🏆', title: 'Olympic Gold Medals', count: '150+' },
-    { icon: '⚡', title: 'Performance Boost', count: '45%' },
-    { icon: '🎯', title: 'Injury Reduction', count: '60%' },
-    { icon: '📊', title: 'Data Points Analyzed', count: '10M+' }
+    { icon: '🏆', title: 'Beta Academies', count: '25+' },
+    { icon: '📈', title: 'Performance Improvement', count: '40%' },
+    { icon: '⚡', title: 'Operational Efficiency', count: '60%' },
+    { icon: '🎯', title: 'Player Satisfaction', count: '95%' }
   ];
 
   return (
@@ -90,13 +93,27 @@ const TestimonialsSection = ({ scrollY }) => {
         }`}>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-              Trusted by Champions
+              Trusted by Academy Owners
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Discover how elite athletes and organizations worldwide are achieving 
-            unprecedented success with SportsTech.
+            Discover how sports academy owners across India are transforming their 
+            operations with Track My Academy's beta platform.
           </p>
+        </div>
+
+        {/* Beta Badge */}
+        <div className={`flex justify-center mb-12 transition-all duration-1000 transform ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+        }`} style={{ transitionDelay: '200ms' }}>
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full px-6 py-3 border border-orange-400/50">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="text-white font-semibold">🚀 Beta Testing Feedback</span>
+            </div>
+          </div>
         </div>
 
         {/* Main Testimonial */}
@@ -138,9 +155,14 @@ const TestimonialsSection = ({ scrollY }) => {
                     <p className="text-sky-400 font-semibold">
                       {testimonials[currentTestimonial].role}
                     </p>
-                    <span className="inline-block bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-sm font-medium mt-2">
-                      {testimonials[currentTestimonial].sport}
-                    </span>
+                    <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                      <span className="inline-block bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-sm font-medium">
+                        {testimonials[currentTestimonial].sport}
+                      </span>
+                      <span className="inline-block bg-white/10 text-gray-300 px-3 py-1 rounded-full text-sm font-medium">
+                        📍 {testimonials[currentTestimonial].location}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -210,13 +232,13 @@ const TestimonialsSection = ({ scrollY }) => {
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`} style={{ transitionDelay: '800ms' }}>
           <div className="bg-gradient-to-r from-sky-500/20 to-transparent rounded-2xl p-8 backdrop-blur-sm border border-sky-400/20 max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold text-white mb-4">Join the Champions</h3>
+            <h3 className="text-3xl font-bold text-white mb-4">Join the Beta Program</h3>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
-              Ready to unlock your full potential? Join thousands of athletes who have 
-              transformed their performance with SportsTech.
+              Ready to transform your sports academy? Join our exclusive beta program and be among 
+              the first academy owners in India to experience the future of academy management.
             </p>
             <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-4 rounded-full text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-sky-500/25">
-              Start Your Free Trial
+              Apply for Beta Access
             </button>
           </div>
         </div>
