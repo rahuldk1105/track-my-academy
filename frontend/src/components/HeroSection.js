@@ -12,7 +12,7 @@ const HeroSection = ({ scrollY }) => {
   const parallaxOffset = scrollY * 0.5;
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black">
         <div className="absolute inset-0 bg-gradient-to-r from-sky-900/20 to-transparent"></div>
