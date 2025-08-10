@@ -256,7 +256,10 @@ const Dashboard = () => {
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-white">User Management</h2>
-                <button className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors">
+                <button 
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors"
+                >
                   Add New User
                 </button>
               </div>
