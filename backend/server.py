@@ -52,6 +52,34 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# Authentication Models
+class SignUpRequest(BaseModel):
+    email: str
+    password: str
+    academy_name: Optional[str] = None
+    owner_name: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    sports_type: Optional[str] = None
+
+class SignInRequest(BaseModel):
+    email: str
+    password: str
+
+class AuthResponse(BaseModel):
+    user: dict
+    session: dict
+    message: str
+
+class UserResponse(BaseModel):
+    user: Optional[dict] = None
+    message: str
+
+class SupabaseHealthResponse(BaseModel):
+    status: str
+    supabase_url: str
+    connection: str
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
