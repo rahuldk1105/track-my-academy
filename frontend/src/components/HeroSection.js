@@ -130,12 +130,6 @@ const HeroSection = ({ scrollY }) => {
           </div>
         </div>
       </div>
-      
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-      />
     </section>
   );
 };
