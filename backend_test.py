@@ -301,6 +301,10 @@ def run_all_tests():
         'server_health': test_server_health(),
         'cors_configuration': test_cors_configuration(),
         'mongodb_integration': test_mongodb_integration(),
+        'supabase_environment_variables': test_supabase_environment_variables(),
+        'supabase_connection': test_supabase_connection(),
+        'supabase_auth_endpoints': test_supabase_auth_endpoints(),
+        'backend_supabase_integration': test_backend_supabase_integration(),
     }
     
     print("\n" + "=" * 60)
