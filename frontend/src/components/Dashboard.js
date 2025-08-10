@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import CreateAcademyModal from './CreateAcademyModal';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
