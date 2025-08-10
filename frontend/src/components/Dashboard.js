@@ -1,0 +1,344 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+const Dashboard = () => {
+  const { user, signOut } = useAuth();
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalAcademies: 0,
+    pendingAcademies: 0,
+    activeUsers: 0
+  });
+  const [users, setUsers] = useState([]);
+  const [academies, setAcademies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Load dashboard data
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      // TODO: Fetch real data from backend APIs
+      
+      // Mock data for now
+      setStats({
+        totalUsers: 156,
+        totalAcademies: 23,
+        pendingAcademies: 5,
+        activeUsers: 89
+      });
+      
+      setUsers([
+        { id: 1, email: 'admin@academy1.com', academy: 'Elite Sports Academy', status: 'active', joined: '2024-01-15' },
+        { id: 2, email: 'owner@football.com', academy: 'Football Masters', status: 'pending', joined: '2024-01-20' },
+        { id: 3, email: 'contact@tennis.com', academy: 'Tennis Pro Center', status: 'active', joined: '2024-01-22' }
+      ]);
+      
+      setAcademies([
+        { id: 1, name: 'Elite Sports Academy', owner: 'John Doe', sport: 'Multi-Sport', status: 'approved', location: 'Chennai' },
+        { id: 2, name: 'Football Masters', owner: 'Mike Smith', sport: 'Football', status: 'pending', location: 'Mumbai' },
+        { id: 3, name: 'Tennis Pro Center', owner: 'Sarah Wilson', sport: 'Tennis', status: 'approved', location: 'Bangalore' }
+      ]);
+      
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const StatCard = ({ title, value, icon, color }) => (
+    <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-gray-400 text-sm">{title}</p>
+          <p className={`text-2xl font-bold ${color}`}>{value}</p>
+        </div>
+        <div className={`p-3 rounded-full ${color.replace('text', 'bg').replace('-400', '-400/20')}`}>
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+
+  const TabButton = ({ id, label, active, onClick }) => (
+    <button
+      onClick={() => onClick(id)}
+      className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+        active
+          ? 'bg-sky-500 text-white shadow-lg'
+          : 'text-gray-400 hover:text-white hover:bg-white/10'
+      }`}
+    >
+      {label}
+    </button>
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-sky-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+      {/* Header */}
+      <header className="bg-white/5 backdrop-blur-md border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <img 
+                src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
+                alt="Track My Academy" 
+                className="h-10 w-auto mr-4"
+              />
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
+                  SuperAdmin Dashboard
+                </h1>
+                <p className="text-gray-400 text-sm">Welcome back, {user?.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg transition-all duration-300"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Total Users"
+            value={stats.totalUsers}
+            color="text-blue-400"
+            icon={
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+              </svg>
+            }
+          />
+          <StatCard
+            title="Total Academies"
+            value={stats.totalAcademies}
+            color="text-green-400"
+            icon={
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a2 2 0 011.732-1.732l.268.268a2 2 0 002.828 0l.268-.268A2 2 0 0112 8a2 2 0 11-4 4 2 2 0 01-2-2z" clipRule="evenodd" />
+              </svg>
+            }
+          />
+          <StatCard
+            title="Pending Approvals"
+            value={stats.pendingAcademies}
+            color="text-orange-400"
+            icon={
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+            }
+          />
+          <StatCard
+            title="Active Users"
+            value={stats.activeUsers}
+            color="text-sky-400"
+            icon={
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+              </svg>
+            }
+          />
+        </div>
+
+        {/* Tabs */}
+        <div className="flex space-x-4 mb-6">
+          <TabButton
+            id="overview"
+            label="Overview"
+            active={activeTab === 'overview'}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="users"
+            label="Users"
+            active={activeTab === 'users'}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="academies"
+            label="Academies"
+            active={activeTab === 'academies'}
+            onClick={setActiveTab}
+          />
+        </div>
+
+        {/* Content */}
+        <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+          {activeTab === 'overview' && (
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">System Overview</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-300 mb-3">Recent Activity</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center p-3 bg-white/5 rounded-lg">
+                      <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                      <p className="text-gray-300">New academy registration: Football Masters</p>
+                    </div>
+                    <div className="flex items-center p-3 bg-white/5 rounded-lg">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
+                      <p className="text-gray-300">User login: admin@academy1.com</p>
+                    </div>
+                    <div className="flex items-center p-3 bg-white/5 rounded-lg">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full mr-3"></div>
+                      <p className="text-gray-300">Academy approval pending: Tennis Pro Center</p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-300 mb-3">Quick Actions</h3>
+                  <div className="space-y-3">
+                    <button className="w-full bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left">
+                      Review Pending Academies
+                    </button>
+                    <button className="w-full bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left">
+                      Send Bulk Notifications
+                    </button>
+                    <button className="w-full bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left">
+                      Generate Analytics Report
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'users' && (
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-white">User Management</h2>
+                <button className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors">
+                  Add New User
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-gray-300">Email</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Academy</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Status</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Joined</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user.id} className="border-b border-white/5">
+                        <td className="py-3 px-4 text-white">{user.email}</td>
+                        <td className="py-3 px-4 text-gray-300">{user.academy}</td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            user.status === 'active' 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-orange-500/20 text-orange-400'
+                          }`}>
+                            {user.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-gray-300">{user.joined}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex space-x-2">
+                            <button className="text-blue-400 hover:text-blue-300">Edit</button>
+                            <button className="text-red-400 hover:text-red-300">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'academies' && (
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-white">Academy Management</h2>
+                <button className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors">
+                  Add New Academy
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-gray-300">Academy Name</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Owner</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Sport</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Location</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Status</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {academies.map((academy) => (
+                      <tr key={academy.id} className="border-b border-white/5">
+                        <td className="py-3 px-4 text-white">{academy.name}</td>
+                        <td className="py-3 px-4 text-gray-300">{academy.owner}</td>
+                        <td className="py-3 px-4 text-gray-300">{academy.sport}</td>
+                        <td className="py-3 px-4 text-gray-300">{academy.location}</td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            academy.status === 'approved' 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-orange-500/20 text-orange-400'
+                          }`}>
+                            {academy.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex space-x-2">
+                            {academy.status === 'pending' && (
+                              <button className="text-green-400 hover:text-green-300">Approve</button>
+                            )}
+                            <button className="text-blue-400 hover:text-blue-300">Edit</button>
+                            <button className="text-red-400 hover:text-red-300">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
