@@ -60,7 +60,7 @@ const PricingSection = ({ scrollY }) => {
         'Training program management',
         'Progress tracking dashboards'
       ],
-      buttonText: 'Join Beta Program',
+      buttonText: 'Request Demo',
       popular: true,
       color: 'from-sky-500 to-sky-600'
     },
