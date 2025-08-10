@@ -954,6 +954,184 @@ def run_all_tests():
         print("⚠️  Some backend tests FAILED. Please check the issues above.")
         return False
 
+def create_admin_account():
+    """Create the admin account for user access"""
+    print("\n=== Creating Admin Account for User Access ===")
+    try:
+        # Admin account details as specified
+        admin_data = {
+            "email": "admin@trackmyacademy.com",
+            "password": "AdminPassword123!",
+            "academy_name": "Track My Academy Admin",
+            "owner_name": "System Administrator",
+            "phone": "+1-555-ADMIN",
+            "location": "Administrative Office",
+            "sports_type": "Multi-Sport"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/admin/create-academy",
+            json=admin_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"✅ Admin account created successfully!")
+            print(f"User ID: {data.get('user', {}).get('id', 'N/A')}")
+            print(f"Email: {admin_data['email']}")
+            print(f"Academy: {admin_data['academy_name']}")
+            return True, data
+        elif response.status_code == 400:
+            # Check if user already exists
+            error_data = response.json()
+            if "already registered" in str(error_data).lower() or "user already exists" in str(error_data).lower():
+                print("✅ Admin account already exists - ready for login!")
+                return True, None
+            else:
+                print(f"❌ Failed to create admin account: {error_data}")
+                return False, None
+        else:
+            print(f"❌ Failed to create admin account - Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Connection error while creating admin account: {e}")
+        return False, None
+
+def verify_admin_account():
+    """Verify the admin account exists in the database"""
+    print("\n=== Verifying Admin Account in Database ===")
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}/admin/academies",
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            academies = response.json()
+            print(f"Total academies found: {len(academies)}")
+            
+            # Look for the admin academy
+            admin_academy = None
+            for academy in academies:
+                if academy.get('email') == 'admin@trackmyacademy.com':
+                    admin_academy = academy
+                    break
+            
+            if admin_academy:
+                print("✅ Admin academy found in database!")
+                print(f"Academy ID: {admin_academy.get('id')}")
+                print(f"Name: {admin_academy.get('name')}")
+                print(f"Owner: {admin_academy.get('owner_name')}")
+                print(f"Email: {admin_academy.get('email')}")
+                print(f"Status: {admin_academy.get('status')}")
+                print(f"Sports Type: {admin_academy.get('sports_type')}")
+                return True, admin_academy
+            else:
+                print("❌ Admin academy not found in database")
+                return False, None
+        else:
+            print(f"❌ Failed to retrieve academies - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Connection error while verifying admin account: {e}")
+        return False, None
+
+def test_admin_login():
+    """Test login with the admin account"""
+    print("\n=== Testing Admin Account Login ===")
+    try:
+        login_data = {
+            "email": "admin@trackmyacademy.com",
+            "password": "AdminPassword123!"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ Admin login successful!")
+            print(f"User ID: {data.get('user', {}).get('id', 'N/A')}")
+            print(f"Email: {data.get('user', {}).get('email', 'N/A')}")
+            
+            # Extract access token
+            session = data.get("session", {})
+            access_token = session.get("access_token")
+            if access_token:
+                print("✅ Access token received - ready for dashboard access")
+            
+            return True, access_token
+        else:
+            print(f"❌ Admin login failed - Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Connection error during admin login: {e}")
+        return False, None
+
+def setup_admin_account():
+    """Complete admin account setup and verification"""
+    print("🔧 Setting up admin account for user access...")
+    print("=" * 60)
+    
+    # Step 1: Create admin account
+    create_success, create_data = create_admin_account()
+    if not create_success:
+        print("❌ Failed to create admin account")
+        return False
+    
+    # Step 2: Verify account exists in database
+    verify_success, academy_data = verify_admin_account()
+    if not verify_success:
+        print("❌ Failed to verify admin account in database")
+        return False
+    
+    # Step 3: Test login functionality
+    login_success, access_token = test_admin_login()
+    if not login_success:
+        print("❌ Failed to test admin login")
+        return False
+    
+    print("\n" + "=" * 60)
+    print("🎉 ADMIN ACCOUNT SETUP COMPLETE!")
+    print("=" * 60)
+    print("📋 LOGIN CREDENTIALS FOR USER:")
+    print(f"URL: https://77a331c8-de54-4922-9533-0d7f3f695434.preview.emergentagent.com/login")
+    print(f"Email: admin@trackmyacademy.com")
+    print(f"Password: AdminPassword123!")
+    print("\n📊 ACCOUNT DETAILS:")
+    if academy_data:
+        print(f"Academy Name: {academy_data.get('name')}")
+        print(f"Owner Name: {academy_data.get('owner_name')}")
+        print(f"Phone: {academy_data.get('phone')}")
+        print(f"Location: {academy_data.get('location')}")
+        print(f"Sports Type: {academy_data.get('sports_type')}")
+        print(f"Status: {academy_data.get('status')}")
+    print("=" * 60)
+    
+    return True
+
 if __name__ == "__main__":
-    success = run_all_tests()
+    # Check if we should run full tests or just setup admin account
+    if len(sys.argv) > 1 and sys.argv[1] == "setup-admin":
+        success = setup_admin_account()
+    else:
+        success = run_all_tests()
     sys.exit(0 if success else 1)
