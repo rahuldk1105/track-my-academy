@@ -58,7 +58,7 @@ const HeroSection = ({ scrollY }) => {
             <span className="text-white">Sports Academy with</span>
             <br />
             <span className="bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent">
-              Smart Technology
+              Track My Academy
             </span>
           </h1>
           
