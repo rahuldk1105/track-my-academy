@@ -30,15 +30,40 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // TODO: Implement actual signup logic
-    console.log('Signup attempt:', formData);
-    
-    // Simulate API call
-    setTimeout(() => {
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       setIsLoading(false);
-      alert('Beta signup functionality will be implemented in backend integration phase. Thank you for your interest!');
-    }, 1000);
+      return;
+    }
+    
+    try {
+      const { data, error } = await signUp(
+        formData.email,
+        formData.password,
+        {
+          academy_name: formData.academyName,
+          owner_name: formData.ownerName,
+          phone: formData.phone,
+          location: formData.location,
+          sports_type: formData.sportsType
+        }
+      );
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        // Show success message and redirect to login
+        alert('Account created successfully! Please check your email to verify your account.');
+        navigate('/login');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const nextStep = () => {
