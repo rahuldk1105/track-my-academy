@@ -360,6 +360,13 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Create Academy Modal */}
+      <CreateAcademyModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={handleAcademyCreated}
+      />
     </div>
   );
 };
