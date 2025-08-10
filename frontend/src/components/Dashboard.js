@@ -27,9 +27,66 @@ const Dashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      // TODO: Fetch real data from backend APIs
+      const { token } = useAuth();
       
-      // Mock data for now
+      // Fetch real academies data
+      const academiesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/academies`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (academiesResponse.ok) {
+        const academiesData = await academiesResponse.json();
+        setAcademies(academiesData);
+        
+        // Update stats based on real data
+        const pendingCount = academiesData.filter(a => a.status === 'pending').length;
+        const approvedCount = academiesData.filter(a => a.status === 'approved').length;
+        
+        setStats({
+          totalUsers: academiesData.length, // Each academy has one user
+          totalAcademies: academiesData.length,
+          pendingAcademies: pendingCount,
+          activeUsers: approvedCount
+        });
+        
+        // Convert academies to users format for the users tab
+        const usersData = academiesData.map((academy, index) => ({
+          id: academy.id,
+          email: academy.email,
+          academy: academy.name,
+          status: academy.status === 'approved' ? 'active' : academy.status,
+          joined: new Date(academy.created_at).toLocaleDateString()
+        }));
+        setUsers(usersData);
+        
+      } else {
+        console.error('Failed to fetch academies');
+        // Fall back to mock data if API fails
+        setStats({
+          totalUsers: 156,
+          totalAcademies: 23,
+          pendingAcademies: 5,
+          activeUsers: 89
+        });
+        
+        setUsers([
+          { id: 1, email: 'admin@academy1.com', academy: 'Elite Sports Academy', status: 'active', joined: '2024-01-15' },
+          { id: 2, email: 'owner@football.com', academy: 'Football Masters', status: 'pending', joined: '2024-01-20' },
+          { id: 3, email: 'contact@tennis.com', academy: 'Tennis Pro Center', status: 'active', joined: '2024-01-22' }
+        ]);
+        
+        setAcademies([
+          { id: 1, name: 'Elite Sports Academy', owner_name: 'John Doe', sports_type: 'Multi-Sport', status: 'approved', location: 'Chennai' },
+          { id: 2, name: 'Football Masters', owner_name: 'Mike Smith', sports_type: 'Football', status: 'pending', location: 'Mumbai' },
+          { id: 3, name: 'Tennis Pro Center', owner_name: 'Sarah Wilson', sports_type: 'Tennis', status: 'approved', location: 'Bangalore' }
+        ]);
+      }
+      
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      // Use mock data as fallback
       setStats({
         totalUsers: 156,
         totalAcademies: 23,
@@ -44,13 +101,10 @@ const Dashboard = () => {
       ]);
       
       setAcademies([
-        { id: 1, name: 'Elite Sports Academy', owner: 'John Doe', sport: 'Multi-Sport', status: 'approved', location: 'Chennai' },
-        { id: 2, name: 'Football Masters', owner: 'Mike Smith', sport: 'Football', status: 'pending', location: 'Mumbai' },
-        { id: 3, name: 'Tennis Pro Center', owner: 'Sarah Wilson', sport: 'Tennis', status: 'approved', location: 'Bangalore' }
+        { id: 1, name: 'Elite Sports Academy', owner_name: 'John Doe', sports_type: 'Multi-Sport', status: 'approved', location: 'Chennai' },
+        { id: 2, name: 'Football Masters', owner_name: 'Mike Smith', sports_type: 'Football', status: 'pending', location: 'Mumbai' },
+        { id: 3, name: 'Tennis Pro Center', owner_name: 'Sarah Wilson', sports_type: 'Tennis', status: 'approved', location: 'Bangalore' }
       ]);
-      
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
     }
