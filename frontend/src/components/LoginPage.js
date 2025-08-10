@@ -23,15 +23,22 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // TODO: Implement actual login logic
-    console.log('Login attempt:', formData);
-    
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const { data, error } = await signIn(formData.email, formData.password);
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        // Successful login, redirect to dashboard
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
-      alert('Login functionality will be implemented in backend integration phase.');
-    }, 1000);
+    }
   };
 
   return (
