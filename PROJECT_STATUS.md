@@ -120,7 +120,7 @@
 ### Backend Structure
 ```
 /app/backend/
-├── server.py                  ✅ Working (restrict signup endpoint)
+├── server.py                  ✅ Working (signup restricted to admin-only)
 ├── requirements.txt           ✅ Updated with Supabase
 └── .env                      ✅ Configured with Supabase credentials
 ```
