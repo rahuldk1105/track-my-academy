@@ -548,27 +548,42 @@ def test_backend_supabase_integration():
     """Test if backend can integrate with Supabase"""
     print("\n=== Testing Backend Supabase Integration ===")
     
-    # Check if backend imports Supabase
+    # Check if backend is running
     try:
         response = requests.get(f"{API_BASE_URL}/", timeout=10)
-        if response.status_code == 200:
-            print("✅ Backend is running")
-            
-            # Test if there's a Supabase health check endpoint
-            try:
-                supabase_health = requests.get(f"{API_BASE_URL}/supabase/health", timeout=5)
-                if supabase_health.status_code == 200:
-                    print("✅ Backend has Supabase health check endpoint")
-                    return True
-                else:
-                    print("❌ No Supabase health check endpoint found")
-                    return False
-            except:
-                print("❌ No Supabase integration endpoints found in backend")
-                return False
-        else:
+        if response.status_code != 200:
             print("❌ Backend is not responding properly")
             return False
+        
+        print("✅ Backend is running")
+        
+        # Test Supabase health check endpoint
+        health_success = test_supabase_health_check()
+        if not health_success:
+            print("❌ Backend Supabase integration FAILED - No health check")
+            return False
+        
+        # Test if auth endpoints are available
+        auth_endpoints = ["/auth/signup", "/auth/login", "/auth/logout", "/auth/user", "/auth/refresh"]
+        available_endpoints = 0
+        
+        for endpoint in auth_endpoints:
+            try:
+                # Use HEAD request to check if endpoint exists without triggering auth logic
+                response = requests.head(f"{API_BASE_URL}{endpoint}", timeout=5)
+                if response.status_code != 404:
+                    available_endpoints += 1
+            except:
+                pass
+        
+        if available_endpoints >= 4:  # Most endpoints should be available
+            print(f"✅ Backend has {available_endpoints}/{len(auth_endpoints)} auth endpoints")
+            print("✅ Backend Supabase integration PASSED")
+            return True
+        else:
+            print(f"❌ Backend only has {available_endpoints}/{len(auth_endpoints)} auth endpoints")
+            return False
+            
     except Exception as e:
         print(f"❌ Backend integration test failed: {e}")
         return False
