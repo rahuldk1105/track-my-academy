@@ -185,8 +185,10 @@ async def logout(current_user = Depends(get_current_user)):
 @api_router.get("/auth/user", response_model=UserResponse)
 async def get_user(current_user = Depends(get_current_user)):
     if current_user:
+        # Convert user object to dictionary
+        user_dict = current_user.model_dump() if hasattr(current_user, 'model_dump') else dict(current_user)
         return UserResponse(
-            user=current_user,
+            user=user_dict,
             message="User retrieved successfully"
         )
     else:
