@@ -80,10 +80,136 @@ class SupabaseHealthResponse(BaseModel):
     supabase_url: str
     connection: str
 
+# Authentication helper functions
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if credentials is None:
+        return None
+    
+    try:
+        # Verify JWT token with Supabase
+        user = supabase.auth.get_user(credentials.credentials)
+        return user.user if user.user else None
+    except Exception as e:
+        logger.error(f"Authentication error: {e}")
+        return None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+# Supabase Health Check
+@api_router.get("/supabase/health", response_model=SupabaseHealthResponse)
+async def supabase_health_check():
+    try:
+        # Test connection by getting user (will return None for anon key)
+        test_response = supabase.auth.get_user()
+        return SupabaseHealthResponse(
+            status="healthy",
+            supabase_url=supabase_url,
+            connection="active"
+        )
+    except Exception as e:
+        logger.error(f"Supabase health check failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Supabase connection failed: {str(e)}")
+
+# Authentication Endpoints
+@api_router.post("/auth/signup", response_model=AuthResponse)
+async def signup(request: SignUpRequest):
+    try:
+        # Prepare user metadata
+        user_metadata = {}
+        if request.academy_name:
+            user_metadata['academy_name'] = request.academy_name
+        if request.owner_name:
+            user_metadata['owner_name'] = request.owner_name
+        if request.phone:
+            user_metadata['phone'] = request.phone
+        if request.location:
+            user_metadata['location'] = request.location
+        if request.sports_type:
+            user_metadata['sports_type'] = request.sports_type
+        
+        # Sign up with Supabase
+        response = supabase.auth.sign_up({
+            "email": request.email,
+            "password": request.password,
+            "options": {
+                "data": user_metadata
+            }
+        })
+        
+        if response.user:
+            return AuthResponse(
+                user=response.user.model_dump() if hasattr(response.user, 'model_dump') else dict(response.user),
+                session=response.session.model_dump() if response.session and hasattr(response.session, 'model_dump') else dict(response.session) if response.session else {},
+                message="User created successfully"
+            )
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create user")
+            
+    except Exception as e:
+        logger.error(f"Signup error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.post("/auth/login", response_model=AuthResponse)
+async def login(request: SignInRequest):
+    try:
+        response = supabase.auth.sign_in_with_password({
+            "email": request.email,
+            "password": request.password
+        })
+        
+        if response.user:
+            return AuthResponse(
+                user=response.user.model_dump() if hasattr(response.user, 'model_dump') else dict(response.user),
+                session=response.session.model_dump() if response.session and hasattr(response.session, 'model_dump') else dict(response.session) if response.session else {},
+                message="Login successful"
+            )
+        else:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+            
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@api_router.post("/auth/logout")
+async def logout(current_user = Depends(get_current_user)):
+    try:
+        supabase.auth.sign_out()
+        return {"message": "Logout successful"}
+    except Exception as e:
+        logger.error(f"Logout error: {e}")
+        raise HTTPException(status_code=500, detail="Logout failed")
+
+@api_router.get("/auth/user", response_model=UserResponse)
+async def get_user(current_user = Depends(get_current_user)):
+    if current_user:
+        return UserResponse(
+            user=current_user,
+            message="User retrieved successfully"
+        )
+    else:
+        return UserResponse(
+            user=None,
+            message="No authenticated user"
+        )
+
+@api_router.post("/auth/refresh", response_model=AuthResponse)
+async def refresh_token():
+    try:
+        response = supabase.auth.refresh_session()
+        if response.session:
+            return AuthResponse(
+                user=response.user.model_dump() if response.user and hasattr(response.user, 'model_dump') else dict(response.user) if response.user else {},
+                session=response.session.model_dump() if hasattr(response.session, 'model_dump') else dict(response.session),
+                message="Token refreshed successfully"
+            )
+        else:
+            raise HTTPException(status_code=401, detail="Failed to refresh token")
+    except Exception as e:
+        logger.error(f"Token refresh error: {e}")
+        raise HTTPException(status_code=401, detail="Failed to refresh token")
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
