@@ -80,6 +80,36 @@ class SupabaseHealthResponse(BaseModel):
     supabase_url: str
     connection: str
 
+# Academy Models
+class Academy(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    owner_name: str
+    email: str
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    sports_type: Optional[str] = None
+    status: str = "pending"  # pending, approved, rejected, suspended
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    supabase_user_id: Optional[str] = None
+
+class AcademyCreate(BaseModel):
+    name: str
+    owner_name: str
+    email: str
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    sports_type: Optional[str] = None
+
+class AcademyUpdate(BaseModel):
+    name: Optional[str] = None
+    owner_name: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    sports_type: Optional[str] = None
+    status: Optional[str] = None
+
 # Authentication helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
