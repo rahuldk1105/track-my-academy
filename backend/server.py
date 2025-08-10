@@ -114,9 +114,22 @@ async def supabase_health_check():
         raise HTTPException(status_code=500, detail=f"Supabase connection failed: {str(e)}")
 
 # Authentication Endpoints
-@api_router.post("/auth/signup", response_model=AuthResponse)
-async def signup(request: SignUpRequest):
+
+# DISABLED: Public signup endpoint - SaaS model requires admin-controlled user creation
+# @api_router.post("/auth/signup", response_model=AuthResponse)
+# async def signup(request: SignUpRequest):
+#     # This endpoint is disabled for SaaS model
+#     # Only admin can create academy accounts through admin dashboard
+#     raise HTTPException(status_code=403, detail="Public signup disabled. Contact administrator for academy registration.")
+
+# Admin-Only Signup Endpoint (for future admin dashboard integration)
+@api_router.post("/admin/create-academy", response_model=AuthResponse)
+async def admin_create_academy(request: SignUpRequest, current_user = Depends(get_current_user)):
     try:
+        # TODO: Add admin role verification here
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
         # Prepare user metadata
         user_metadata = {}
         if request.academy_name:
@@ -130,26 +143,25 @@ async def signup(request: SignUpRequest):
         if request.sports_type:
             user_metadata['sports_type'] = request.sports_type
         
-        # Sign up with Supabase
-        response = supabase.auth.sign_up({
+        # Create academy account using admin privileges
+        response = supabase_admin.auth.admin.create_user({
             "email": request.email,
             "password": request.password,
-            "options": {
-                "data": user_metadata
-            }
+            "email_confirm": True,  # Skip email confirmation for admin-created accounts
+            "user_metadata": user_metadata
         })
         
         if response.user:
             return AuthResponse(
                 user=response.user.model_dump() if hasattr(response.user, 'model_dump') else dict(response.user),
-                session=response.session.model_dump() if response.session and hasattr(response.session, 'model_dump') else dict(response.session) if response.session else {},
-                message="User created successfully"
+                session={},  # No session for admin-created users
+                message="Academy account created successfully by admin"
             )
         else:
-            raise HTTPException(status_code=400, detail="Failed to create user")
+            raise HTTPException(status_code=400, detail="Failed to create academy account")
             
     except Exception as e:
-        logger.error(f"Signup error: {e}")
+        logger.error(f"Admin academy creation error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
 @api_router.post("/auth/login", response_model=AuthResponse)
