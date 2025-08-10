@@ -251,4 +251,4 @@ test_plan:
 
 agent_communication:
     - agent: "testing"
-      message: "Comprehensive testing of SportsTech landing page completed successfully. All major features tested including navigation, mobile responsiveness, interactive elements, animations, and visual elements. No critical issues found. The landing page is fully functional and ready for production. Screenshots taken of all major sections for documentation."
+      message: "Comprehensive testing of Track My Academy landing page completed successfully. All major features tested including navigation, mobile responsiveness, interactive elements, animations, and visual elements. No critical issues found. The landing page is fully functional and ready for production. Screenshots taken of all major sections for documentation."
