@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +20,10 @@ const Navbar = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
     setIsMobileMenuOpen(false);
+  };
+
+  const handleJoinBeta = () => {
+    navigate('/signup');
   };
 
   return (
@@ -51,7 +57,10 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-sky-500/25">
+            <button 
+              onClick={handleJoinBeta}
+              className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-sky-500/25"
+            >
               Join Beta
             </button>
           </div>
@@ -82,7 +91,10 @@ const Navbar = () => {
               <button onClick={() => scrollToSection('about')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">About</button>
               <button onClick={() => scrollToSection('pricing')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">Pricing</button>
               <button onClick={() => scrollToSection('testimonials')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">Testimonials</button>
-              <button className="w-full mt-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300">
+              <button 
+                onClick={handleJoinBeta}
+                className="w-full mt-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300"
+              >
                 Join Beta
               </button>
             </div>
