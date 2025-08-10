@@ -21,6 +21,21 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Supabase connection
+supabase_url = os.environ.get('SUPABASE_URL')
+supabase_key = os.environ.get('SUPABASE_KEY')
+supabase_service_key = os.environ.get('SUPABASE_SERVICE_KEY')
+
+if not all([supabase_url, supabase_key, supabase_service_key]):
+    raise ValueError("Missing required Supabase environment variables")
+
+# Initialize Supabase clients
+supabase: Client = create_client(supabase_url, supabase_key)
+supabase_admin: Client = create_client(supabase_url, supabase_service_key)
+
+# Security
+security = HTTPBearer(auto_error=False)
+
 # Create the main app without a prefix
 app = FastAPI()
 
