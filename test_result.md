@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the backend authentication system integration with Supabase for Track My Academy project"
+user_problem_statement: "Implement Priority 2: Admin-Controlled User Creation for Track My Academy SaaS platform - Build admin user creation interface, academy management APIs, and real dashboard functionality"
 
 backend:
   - task: "Backend Server Health Check"
