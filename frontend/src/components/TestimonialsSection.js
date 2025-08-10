@@ -56,7 +56,7 @@ const TestimonialsSection = ({ scrollY }) => {
       name: 'Arun Patel',
       role: 'Owner, Mumbai Tennis Center',
       image: 'https://images.pexels.com/photos/159573/lacrosse-lax-lacrosse-game-game-159573.jpeg',
-      quote: "The SaaS solution has streamlined our entire academy operations. Being part of the beta program gives us early access to cutting-edge sports technology. Highly recommend to fellow academy owners!",
+      quote: "Track My Academy has streamlined our entire academy operations. Being part of the beta program gives us early access to cutting-edge academy management features. Highly recommend to fellow academy owners!",
       rating: 5,
       sport: 'Tennis Academy',
       location: 'Mumbai'
