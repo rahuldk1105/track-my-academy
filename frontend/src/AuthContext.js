@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     user,
     session,
     loading,
+    token: session?.access_token,
     signIn,
     signUp,
     signOut,
