@@ -170,26 +170,6 @@ const LoginPage = () => {
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="my-8 flex items-center">
-          <div className="flex-1 border-t border-white/20"></div>
-          <span className="px-4 text-gray-400 text-sm">or</span>
-          <div className="flex-1 border-t border-white/20"></div>
-        </div>
-
-        {/* Sign Up Link */}
-        <div className="text-center">
-          <p className="text-gray-400 mb-4">
-            Don't have an academy account?
-          </p>
-          <Link
-            to="/signup"
-            className="inline-block border-2 border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-black px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
-          >
-            Join Beta Program
-          </Link>
-        </div>
-
         {/* Location Info */}
         <div className="mt-8 text-center">
           <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
