@@ -371,8 +371,8 @@ agent_communication:
 
 backend:
   - task: "Academy Management APIs - GET all academies"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
@@ -381,10 +381,13 @@ backend:
         - working: false
           agent: "main"
           comment: "Need to implement GET /api/admin/academies endpoint to list all academies from database"
+        - working: true
+          agent: "main"
+          comment: "Implemented GET /api/admin/academies endpoint with authentication and MongoDB integration"
 
   - task: "Academy Management APIs - UPDATE academy"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
@@ -393,10 +396,13 @@ backend:
         - working: false
           agent: "main"
           comment: "Need to implement PUT /api/admin/academies/{id} endpoint for updating academy information"
+        - working: true
+          agent: "main"
+          comment: "Implemented PUT /api/admin/academies/{id} endpoint with validation and MongoDB updates"
 
   - task: "Academy Management APIs - DELETE academy"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
@@ -405,10 +411,13 @@ backend:
         - working: false
           agent: "main"
           comment: "Need to implement DELETE /api/admin/academies/{id} endpoint for removing academies"
+        - working: true
+          agent: "main"
+          comment: "Implemented DELETE /api/admin/academies/{id} endpoint with proper error handling"
 
   - task: "Academy Database Models"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
@@ -417,6 +426,9 @@ backend:
         - working: false
           agent: "main"
           comment: "Need to create Academy model and MongoDB integration for storing academy data separately from Supabase auth"
+        - working: true
+          agent: "main"
+          comment: "Created Academy, AcademyCreate, and AcademyUpdate models. Updated admin/create-academy endpoint to store data in MongoDB with auto-approval for admin-created academies"
 
 frontend:
   - task: "Academy Creation Form in Dashboard"
