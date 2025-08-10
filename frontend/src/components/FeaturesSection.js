@@ -59,7 +59,7 @@ const FeaturesSection = ({ scrollY }) => {
         </svg>
       ),
       title: 'Beta Testing Program',
-      description: 'Join our exclusive beta program to experience cutting-edge sports technology before public launch and help shape the future of academy management.',
+      description: 'Join our exclusive beta program to experience cutting-edge academy management technology before public launch and help shape the future of Track My Academy.',
       image: 'https://images.unsplash.com/photo-1705593349153-0e21c38c8ff2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxhdGhsZXRpYyUyMGVxdWlwbWVudHxlbnwwfHx8fDE3NTQ4MTcwNTh8MA&ixlib=rb-4.1.0&q=85'
     }
   ];
