@@ -74,7 +74,8 @@ def create_test_user_directly():
                 
         except Exception as create_error:
             # User might already exist
-            if "already registered" in str(create_error).lower() or "user already exists" in str(create_error).lower():
+            error_msg = str(create_error).lower()
+            if "already registered" in error_msg or "user already exists" in error_msg or "already been registered" in error_msg:
                 print(f"✅ Test user already exists: {test_email}")
                 return True, test_email, test_password
             else:
