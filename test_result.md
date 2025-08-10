@@ -376,7 +376,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -384,6 +384,9 @@ backend:
         - working: true
           agent: "main"
           comment: "Implemented GET /api/admin/academies endpoint with authentication and MongoDB integration"
+        - working: true
+          agent: "testing"
+          comment: "GET /api/admin/academies endpoint working correctly. Successfully retrieves all academies from MongoDB with proper Academy model structure. Returns list of academies with all required fields (id, name, owner_name, email, status, created_at, updated_at). Authentication structure in place (admin role verification commented out but JWT token handling ready). Data persistence confirmed."
 
   - task: "Academy Management APIs - UPDATE academy"
     implemented: true
@@ -391,7 +394,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -399,6 +402,9 @@ backend:
         - working: true
           agent: "main"
           comment: "Implemented PUT /api/admin/academies/{id} endpoint with validation and MongoDB updates"
+        - working: true
+          agent: "testing"
+          comment: "PUT /api/admin/academies/{id} endpoint working perfectly. Successfully updates academy information in MongoDB. Tested updating name, owner_name, phone, location, sports_type, and status fields. Proper validation and error handling for non-existent academies (404). Updated_at timestamp automatically set. Changes persist correctly in database."
 
   - task: "Academy Management APIs - DELETE academy"
     implemented: true
@@ -406,7 +412,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -414,6 +420,9 @@ backend:
         - working: true
           agent: "main"
           comment: "Implemented DELETE /api/admin/academies/{id} endpoint with proper error handling"
+        - working: true
+          agent: "testing"
+          comment: "DELETE /api/admin/academies/{id} endpoint working correctly. Successfully removes academies from MongoDB. Proper error handling for non-existent academies (404). Returns success message upon deletion. Database cleanup confirmed. Note: Supabase user deletion is commented out but structure is ready for future implementation."
 
   - task: "Academy Database Models"
     implemented: true
@@ -421,7 +430,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -429,6 +438,9 @@ backend:
         - working: true
           agent: "main"
           comment: "Created Academy, AcademyCreate, and AcademyUpdate models. Updated admin/create-academy endpoint to store data in MongoDB with auto-approval for admin-created academies"
+        - working: true
+          agent: "testing"
+          comment: "Academy database models working perfectly. Academy model includes all required fields: id (UUID), name, owner_name, email, phone, location, sports_type, status, created_at, updated_at, supabase_user_id. AcademyCreate and AcademyUpdate models provide proper validation. MongoDB integration confirmed - data persists correctly with proper field mapping. Auto-approval for admin-created academies working (status='approved'). UUID generation working correctly."
 
 frontend:
   - task: "Academy Creation Form in Dashboard"
