@@ -13,6 +13,15 @@ import sys
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv('/app/frontend/.env')
+load_dotenv('/app/backend/.env')
+
+# Import Supabase client
+try:
+    from supabase import create_client, Client
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    print("⚠️ Supabase client not available")
 
 # Get backend URL from frontend environment
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
