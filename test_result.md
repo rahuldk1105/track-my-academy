@@ -447,8 +447,8 @@ frontend:
           comment: "Implemented CreateAcademyModal component with form validation and connection to backend API. Added success/error handling and integrated with Dashboard component."
 
   - task: "Real Data Integration in Dashboard"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/frontend/src/components/Dashboard.js"
     stuck_count: 0
     priority: "high"
@@ -457,6 +457,9 @@ frontend:
         - working: false
           agent: "main"
           comment: "Replace mock data with real API calls to academy management endpoints"
+        - working: true
+          agent: "main"
+          comment: "Replaced mock data with real API calls to GET /api/admin/academies. Added fallback to mock data if API fails. Updated stats calculation based on real academy data."
 
   - task: "Academy Management Interface"
     implemented: false
