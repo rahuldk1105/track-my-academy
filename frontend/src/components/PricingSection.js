@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import DemoRequestModal from './DemoRequestModal';
 
 const PricingSection = ({ scrollY }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('pro');
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const sectionRef = useRef(null);
 
   useEffect(() => {
