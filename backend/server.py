@@ -92,6 +92,9 @@ class Academy(BaseModel):
     phone: Optional[str] = None
     location: Optional[str] = None
     sports_type: Optional[str] = None
+    logo_url: Optional[str] = None
+    player_limit: int = 50  # Default limit for player accounts
+    coach_limit: int = 10   # Default limit for coach accounts
     status: str = "pending"  # pending, approved, rejected, suspended
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -104,6 +107,8 @@ class AcademyCreate(BaseModel):
     phone: Optional[str] = None
     location: Optional[str] = None
     sports_type: Optional[str] = None
+    player_limit: Optional[int] = 50
+    coach_limit: Optional[int] = 10
 
 class AcademyUpdate(BaseModel):
     name: Optional[str] = None
