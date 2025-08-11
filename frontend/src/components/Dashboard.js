@@ -641,6 +641,12 @@ const Dashboard = () => {
               </div>
             </div>
           )}
+
+          {activeTab === 'demo-requests' && (
+            <div className="p-6">
+              <DemoRequestsTable />
+            </div>
+          )}
         </div>
       </div>
 
