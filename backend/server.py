@@ -156,6 +156,61 @@ class DemoRequestCreate(BaseModel):
 class DemoRequestUpdate(BaseModel):
     status: str  # pending, contacted, closed
 
+# Subscription and Billing Models
+class SubscriptionPlan(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # e.g., "Basic", "Pro", "Enterprise", "Custom"
+    price_monthly: Optional[float] = None  # USD monthly price
+    price_annual: Optional[float] = None   # USD annual price (with discount)
+    features: List[str] = []               # List of features included
+    player_limit: int = 50                 # Maximum players allowed
+    coach_limit: int = 10                  # Maximum coaches allowed
+    is_custom: bool = False                # True for custom pricing plans
+    is_active: bool = True                 # Plan availability
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class AcademySubscription(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    academy_id: str
+    plan_id: str
+    billing_cycle: str = "monthly"  # monthly, annual
+    amount: float                   # Custom amount for this academy
+    currency: str = "usd"
+    status: str = "active"          # active, cancelled, suspended, pending
+    current_period_start: datetime
+    current_period_end: datetime
+    stripe_customer_id: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    auto_renew: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class PaymentTransaction(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    academy_id: Optional[str] = None
+    subscription_id: Optional[str] = None
+    session_id: str                 # Stripe session ID
+    amount: float
+    currency: str = "usd"
+    payment_status: str = "pending" # pending, paid, failed, expired
+    stripe_status: str = "pending"  # Stripe checkout session status
+    billing_cycle: Optional[str] = None
+    description: Optional[str] = None
+    metadata: Optional[Dict[str, str]] = {}
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class SubscriptionCreateRequest(BaseModel):
+    academy_id: str
+    billing_cycle: str  # monthly, annual
+    custom_amount: Optional[float] = None  # For custom pricing
+
+class PaymentSessionRequest(BaseModel):
+    academy_id: str
+    billing_cycle: str  # monthly, annual
+    origin_url: str     # Frontend origin for success/cancel URLs
+
 # Authentication helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
