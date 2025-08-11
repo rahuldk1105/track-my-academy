@@ -59,52 +59,58 @@ app.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="up
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Subscription Plans Configuration (Backend-defined for security)
+# Subscription Plans Configuration (Backend-defined for security) - INR Pricing
 SUBSCRIPTION_PLANS = {
     "starter_monthly": {
         "name": "Starter Monthly",
-        "price": 29.99,
+        "price": 2499.00,  # ₹2,499 per month
         "billing_cycle": "monthly",
+        "currency": "inr",
         "player_limit": 50,
         "coach_limit": 5,
         "features": ["Basic player management", "Coach assignment", "Performance tracking", "Email support"]
     },
     "starter_annual": {
         "name": "Starter Annual",
-        "price": 299.99,  # 2 months free
+        "price": 24990.00,  # ₹24,990 per year (2 months free)
         "billing_cycle": "annual",
+        "currency": "inr",
         "player_limit": 50,
         "coach_limit": 5,
         "features": ["Basic player management", "Coach assignment", "Performance tracking", "Email support"]
     },
     "pro_monthly": {
         "name": "Pro Monthly", 
-        "price": 59.99,
+        "price": 4999.00,  # ₹4,999 per month
         "billing_cycle": "monthly",
+        "currency": "inr",
         "player_limit": 200,
         "coach_limit": 20,
         "features": ["Advanced analytics", "Custom reports", "API access", "Priority support", "Mobile app access"]
     },
     "pro_annual": {
         "name": "Pro Annual",
-        "price": 599.99,  # 2 months free
-        "billing_cycle": "annual", 
+        "price": 49990.00,  # ₹49,990 per year (2 months free)
+        "billing_cycle": "annual",
+        "currency": "inr", 
         "player_limit": 200,
         "coach_limit": 20,
         "features": ["Advanced analytics", "Custom reports", "API access", "Priority support", "Mobile app access"]
     },
     "enterprise_monthly": {
         "name": "Enterprise Monthly",
-        "price": 149.99,
+        "price": 12499.00,  # ₹12,499 per month
         "billing_cycle": "monthly",
+        "currency": "inr",
         "player_limit": 1000,
         "coach_limit": 100,
         "features": ["Unlimited everything", "Custom integrations", "Dedicated support", "Training sessions", "White labeling"]
     },
     "enterprise_annual": {
         "name": "Enterprise Annual", 
-        "price": 1499.99,  # 2 months free
+        "price": 124990.00,  # ₹1,24,990 per year (2 months free)
         "billing_cycle": "annual",
+        "currency": "inr",
         "player_limit": 1000,
         "coach_limit": 100,
         "features": ["Unlimited everything", "Custom integrations", "Dedicated support", "Training sessions", "White labeling"]
