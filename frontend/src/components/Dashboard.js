@@ -22,12 +22,37 @@ const Dashboard = () => {
   const [selectedAcademy, setSelectedAcademy] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [selectedAcademies, setSelectedAcademies] = useState([]);
+  const [systemOverview, setSystemOverview] = useState(null);
+  const [overviewLoading, setOverviewLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Load dashboard data
     loadDashboardData();
+    loadSystemOverview();
   }, []);
+
+  const loadSystemOverview = async () => {
+    try {
+      setOverviewLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/system-overview`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSystemOverview(data);
+      } else {
+        console.error('Failed to load system overview');
+      }
+    } catch (error) {
+      console.error('Error loading system overview:', error);
+    } finally {
+      setOverviewLoading(false);
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
