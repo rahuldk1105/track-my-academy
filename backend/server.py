@@ -583,6 +583,35 @@ async def get_user(current_user = Depends(get_current_user)):
     if current_user:
         # Convert user object to dictionary
         user_dict = current_user.model_dump() if hasattr(current_user, 'model_dump') else dict(current_user)
+        
+        # Determine user role and academy information
+        user_email = user_dict.get('email', '')
+        user_id = user_dict.get('id', '')
+        
+        # Check if user is super admin
+        is_super_admin = user_email == 'admin@trackmyacademy.com'
+        
+        # Initialize role info
+        role_info = {
+            'role': 'super_admin' if is_super_admin else 'academy_user',
+            'academy_id': None,
+            'academy_name': None,
+            'permissions': []
+        }
+        
+        if is_super_admin:
+            role_info['permissions'] = ['manage_all_academies', 'view_all_data', 'create_academies', 'manage_billing']
+        else:
+            # Find academy for this user
+            academy = await db.academies.find_one({"supabase_user_id": user_id})
+            if academy:
+                role_info['academy_id'] = academy['id']
+                role_info['academy_name'] = academy['name']
+                role_info['permissions'] = ['manage_own_academy', 'create_coaches', 'view_own_data']
+        
+        # Add role info to user data
+        user_dict['role_info'] = role_info
+        
         return UserResponse(
             user=user_dict,
             message="User retrieved successfully"
