@@ -339,6 +339,24 @@ const Dashboard = () => {
     );
   }
 
+  // Show access denied if user is not super admin
+  if (userRole && userRole.role !== 'super_admin') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-xl mb-4">Access Denied</div>
+          <div className="text-gray-400 mb-6">You don't have permission to access the super admin dashboard.</div>
+          <button
+            onClick={handleSignOut}
+            className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg transition-all duration-300"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
       {/* Header */}
