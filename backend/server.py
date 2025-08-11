@@ -454,28 +454,17 @@ async def create_status_check(input: StatusCheckCreate):
     _ = await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
-
-# Include the router in the main app
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+@api_router.get("/status", response_model=List[StatusCheck])
+async def get_status_checks():
+    status_checks = await db.status_checks.find().to_list(1000)
+    return [StatusCheck(**status_check) for status_check in status_checks]
 
 # Demo Request Endpoints
 
@@ -535,6 +524,17 @@ async def update_demo_request(request_id: str, request_update: DemoRequestUpdate
     except Exception as e:
         logger.error(f"Error updating demo request: {e}")
         raise HTTPException(status_code=500, detail="Failed to update demo request")
+
+# Include the router in the main app
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
