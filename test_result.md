@@ -515,12 +515,15 @@ frontend:
           agent: "testing"
   - task: "Academy Logo Upload and Account Limits"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/components/CreateAcademyModal.js, /app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "ACADEMY LOGO UPLOAD AND ACCOUNT LIMITS IMPLEMENTED: 1) Enhanced backend Academy model with logo_url, player_limit (default 50), coach_limit (default 10) fields. 2) Added file upload endpoint POST /api/upload/logo for logo uploads. 3) Updated POST /api/admin/create-academy to accept FormData with logo file upload. 4) Added static file serving for uploaded logos at /uploads/logos/. 5) Updated CreateAcademyModal with logo upload functionality, file preview, and player/coach limit inputs. 6) Enhanced academy table to display logos and account limits. Backend supports image validation, unique filename generation, and proper file storage. Frontend shows logo preview during upload and displays logos in academy table. Needs testing to verify file upload, logo display, and limit management works correctly."
+        - working: true
+          agent: "testing"
+          comment: "ACADEMY LOGO UPLOAD AND ACCOUNT LIMITS TESTING COMPLETED SUCCESSFULLY! All enhanced features are working perfectly: 1) ✅ Logo Upload Endpoint: POST /api/upload/logo validates image files, generates unique UUIDs for filenames, stores files in /uploads/logos/ directory, returns proper logo_url paths, serves uploaded files via static file serving. 2) ✅ File Upload Security: Properly validates image file types, rejects non-image files with 400 status and clear error message 'File must be an image', handles upload failures gracefully. 3) ✅ Enhanced Academy Creation: FormData support working correctly, accepts logo file uploads during academy creation, stores logo_url in database, player_limit and coach_limit fields properly stored with custom values (tested with 75 players, 15 coaches). 4) ✅ Database Integration: All new fields (logo_url, player_limit, coach_limit) properly stored in MongoDB, GET /api/admin/academies returns all enhanced fields, PUT operations support updating account limits. 5) ✅ Static File Serving: Uploaded logos accessible via /uploads/logos/ URLs, proper content-type headers, files persist correctly. The complete logo upload and account limits system is production-ready and fully functional."
