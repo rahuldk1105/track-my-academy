@@ -1130,6 +1130,222 @@ async def update_academy_subscription(
         logger.error(f"Error updating academy subscription: {e}")
         raise HTTPException(status_code=500, detail="Failed to update subscription")
 
+# ========== MANUAL BILLING ENDPOINTS ==========
+
+# Admin: Create Manual Payment Record
+@api_router.post("/admin/billing/payments/manual", response_model=PaymentTransaction)
+async def create_manual_payment(payment_data: ManualPaymentCreate, current_user = Depends(get_current_user)):
+    """Admin endpoint to create manual payment records"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Verify academy exists
+        academy = await db.academies.find_one({"id": payment_data.academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Create payment transaction
+        payment_transaction = PaymentTransaction(
+            academy_id=payment_data.academy_id,
+            amount=payment_data.amount,
+            currency="inr",
+            payment_method=payment_data.payment_method,
+            payment_date=payment_data.payment_date,
+            payment_status="paid",  # Manual payments are typically already paid
+            billing_cycle=payment_data.billing_cycle,
+            description=payment_data.description,
+            admin_notes=payment_data.admin_notes,
+            receipt_url=payment_data.receipt_url
+        )
+        
+        # Save to database
+        await db.payment_transactions.insert_one(payment_transaction.dict())
+        
+        return payment_transaction
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating manual payment: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create manual payment")
+
+# Admin: Update Manual Payment Record
+@api_router.put("/admin/billing/payments/{payment_id}", response_model=PaymentTransaction)
+async def update_manual_payment(
+    payment_id: str, 
+    payment_data: ManualPaymentUpdate,
+    current_user = Depends(get_current_user)
+):
+    """Admin endpoint to update manual payment records"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Check if payment exists
+        existing_payment = await db.payment_transactions.find_one({"id": payment_id})
+        if not existing_payment:
+            raise HTTPException(status_code=404, detail="Payment transaction not found")
+        
+        # Prepare update data (only include non-None fields)
+        update_data = {k: v for k, v in payment_data.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow()
+        
+        # Update payment transaction
+        await db.payment_transactions.update_one(
+            {"id": payment_id},
+            {"$set": update_data}
+        )
+        
+        # Get updated payment
+        updated_payment = await db.payment_transactions.find_one({"id": payment_id})
+        
+        return PaymentTransaction(**updated_payment)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating manual payment: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update manual payment")
+
+# Admin: Get Payment History for Academy
+@api_router.get("/admin/billing/academy/{academy_id}/payments", response_model=List[PaymentTransaction])
+async def get_academy_payment_history(academy_id: str, current_user = Depends(get_current_user)):
+    """Admin endpoint to get payment history for specific academy"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Verify academy exists
+        academy = await db.academies.find_one({"id": academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Get payment history
+        payments = await db.payment_transactions.find(
+            {"academy_id": academy_id}
+        ).sort("created_at", -1).to_list(1000)
+        
+        return [PaymentTransaction(**payment) for payment in payments]
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching academy payment history: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch payment history")
+
+# Admin: Create Manual Subscription
+@api_router.post("/admin/billing/subscriptions/manual", response_model=AcademySubscription)
+async def create_manual_subscription(subscription_data: SubscriptionManualCreate, current_user = Depends(get_current_user)):
+    """Admin endpoint to create manual subscriptions"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Verify academy exists
+        academy = await db.academies.find_one({"id": subscription_data.academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Verify plan exists
+        if subscription_data.plan_id not in SUBSCRIPTION_PLANS:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        # Get plan details
+        plan = SUBSCRIPTION_PLANS[subscription_data.plan_id]
+        
+        # Determine amount (use custom amount or plan price)
+        amount = subscription_data.custom_amount if subscription_data.custom_amount else plan["price"]
+        
+        # Create subscription
+        subscription = AcademySubscription(
+            academy_id=subscription_data.academy_id,
+            plan_id=subscription_data.plan_id,
+            billing_cycle=subscription_data.billing_cycle,
+            amount=amount,
+            currency="inr",
+            status=subscription_data.status,
+            current_period_start=subscription_data.current_period_start,
+            current_period_end=subscription_data.current_period_end,
+            auto_renew=subscription_data.auto_renew,
+            notes=subscription_data.notes
+        )
+        
+        # Save to database (upsert to replace existing subscription)
+        await db.academy_subscriptions.update_one(
+            {"academy_id": subscription_data.academy_id},
+            {"$set": subscription.dict()},
+            upsert=True
+        )
+        
+        return subscription
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating manual subscription: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create manual subscription")
+
+# Admin: Update Manual Subscription
+@api_router.put("/admin/billing/subscriptions/{subscription_id}", response_model=AcademySubscription)
+async def update_manual_subscription(
+    subscription_id: str,
+    subscription_data: SubscriptionManualUpdate,
+    current_user = Depends(get_current_user)
+):
+    """Admin endpoint to update manual subscriptions"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Check if subscription exists
+        existing_subscription = await db.academy_subscriptions.find_one({"id": subscription_id})
+        if not existing_subscription:
+            raise HTTPException(status_code=404, detail="Subscription not found")
+        
+        # Prepare update data (only include non-None fields)
+        update_data = {k: v for k, v in subscription_data.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow()
+        
+        # If plan_id is being updated, validate it exists and update amount if no custom amount
+        if "plan_id" in update_data and update_data["plan_id"] not in SUBSCRIPTION_PLANS:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        # Update subscription
+        await db.academy_subscriptions.update_one(
+            {"id": subscription_id},
+            {"$set": update_data}
+        )
+        
+        # Get updated subscription
+        updated_subscription = await db.academy_subscriptions.find_one({"id": subscription_id})
+        
+        return AcademySubscription(**updated_subscription)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating manual subscription: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update manual subscription")
+
+# Admin: Delete Payment Transaction
+@api_router.delete("/admin/billing/payments/{payment_id}")
+async def delete_payment_transaction(payment_id: str, current_user = Depends(get_current_user)):
+    """Admin endpoint to delete payment transactions"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Check if payment exists
+        existing_payment = await db.payment_transactions.find_one({"id": payment_id})
+        if not existing_payment:
+            raise HTTPException(status_code=404, detail="Payment transaction not found")
+        
+        # Delete payment transaction
+        await db.payment_transactions.delete_one({"id": payment_id})
+        
+        return {"message": "Payment transaction deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting payment transaction: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete payment transaction")
+
 # Include the router in the main app
 app.include_router(api_router)
 
