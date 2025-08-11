@@ -270,6 +270,48 @@ class SubscriptionCreateRequest(BaseModel):
     billing_cycle: str  # monthly, annual
     custom_amount: Optional[float] = None  # For custom pricing
 
+# Manual Billing Models
+class ManualPaymentCreate(BaseModel):
+    academy_id: str
+    amount: float
+    payment_method: str  # GPay, Cash, Bank Transfer, UPI, etc.
+    payment_date: datetime
+    billing_cycle: Optional[str] = None
+    description: Optional[str] = None
+    admin_notes: Optional[str] = None
+    receipt_url: Optional[str] = None
+
+class ManualPaymentUpdate(BaseModel):
+    amount: Optional[float] = None
+    payment_method: Optional[str] = None
+    payment_date: Optional[datetime] = None
+    payment_status: Optional[str] = None  # pending, paid, failed, cancelled
+    billing_cycle: Optional[str] = None
+    description: Optional[str] = None
+    admin_notes: Optional[str] = None
+    receipt_url: Optional[str] = None
+
+class SubscriptionManualCreate(BaseModel):
+    academy_id: str
+    plan_id: str  # Reference to SUBSCRIPTION_PLANS key
+    billing_cycle: str  # monthly, annual
+    custom_amount: Optional[float] = None  # Override plan price if needed
+    current_period_start: datetime
+    current_period_end: datetime
+    status: str = "active"  # active, cancelled, suspended, pending, trial
+    auto_renew: bool = True
+    notes: Optional[str] = None
+
+class SubscriptionManualUpdate(BaseModel):
+    plan_id: Optional[str] = None
+    billing_cycle: Optional[str] = None
+    amount: Optional[float] = None
+    status: Optional[str] = None
+    current_period_start: Optional[datetime] = None
+    current_period_end: Optional[datetime] = None
+    auto_renew: Optional[bool] = None
+    notes: Optional[str] = None
+
 class PaymentSessionRequest(BaseModel):
     academy_id: str
     billing_cycle: str  # monthly, annual
