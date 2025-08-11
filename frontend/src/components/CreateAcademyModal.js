@@ -27,19 +27,46 @@ const CreateAcademyModal = ({ isOpen, onClose, onSuccess }) => {
     }));
   };
 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogo(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('owner_name', formData.owner_name);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('sports_type', formData.sports_type);
+      formDataToSend.append('player_limit', formData.player_limit);
+      formDataToSend.append('coach_limit', formData.coach_limit);
+      
+      if (logo) {
+        formDataToSend.append('logo', logo);
+      }
+
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/create-academy`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: formDataToSend
       });
 
       const data = await response.json();
@@ -50,12 +77,16 @@ const CreateAcademyModal = ({ isOpen, onClose, onSuccess }) => {
         setFormData({
           email: '',
           password: '',
-          academy_name: '',
+          name: '',
           owner_name: '',
           phone: '',
           location: '',
-          sports_type: ''
+          sports_type: '',
+          player_limit: 50,
+          coach_limit: 10
         });
+        setLogo(null);
+        setLogoPreview(null);
         onClose();
       } else {
         setError(data.detail || 'Failed to create academy');
