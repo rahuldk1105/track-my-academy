@@ -865,6 +865,10 @@ async def create_payment_session(request: PaymentSessionRequest, http_request: R
 async def check_payment_status(session_id: str, http_request: Request):
     """Check the status of a payment session and update subscription if paid"""
     try:
+        # Check if Stripe is enabled
+        if not stripe_api_key:
+            raise HTTPException(status_code=503, detail="Payment processing is currently disabled. Please contact support for manual billing.")
+        
         # Initialize Stripe
         host_url = str(http_request.base_url).rstrip('/')
         webhook_url = f"{host_url}/api/webhook/stripe"
