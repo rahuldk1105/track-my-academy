@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import DemoRequestModal from './DemoRequestModal';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   const footerSections = [
     {
