@@ -127,6 +127,34 @@ class AcademyUpdate(BaseModel):
     coach_limit: Optional[int] = None
     status: Optional[str] = None
 
+# Demo Request Models
+class DemoRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    full_name: str
+    email: str
+    phone: Optional[str] = None
+    academy_name: str
+    location: str
+    sports_type: str
+    current_students: Optional[str] = None
+    message: Optional[str] = None
+    status: str = "pending"  # pending, contacted, closed
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class DemoRequestCreate(BaseModel):
+    full_name: str
+    email: str
+    phone: Optional[str] = None
+    academy_name: str
+    location: str
+    sports_type: str
+    current_students: Optional[str] = None
+    message: Optional[str] = None
+
+class DemoRequestUpdate(BaseModel):
+    status: str  # pending, contacted, closed
+
 # Authentication helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
