@@ -24,8 +24,9 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const handleJoinBeta = () => {
-    navigate('/signup');
+  const handleRequestDemo = () => {
+    setIsDemoModalOpen(true);
+    setIsMobileMenuOpen(false); // Close mobile menu if open
   };
 
   return (
