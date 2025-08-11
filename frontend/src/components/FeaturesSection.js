@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import DemoRequestModal from './DemoRequestModal';
 
 const FeaturesSection = ({ scrollY }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const sectionRef = useRef(null);
 
   useEffect(() => {
