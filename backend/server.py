@@ -182,6 +182,9 @@ async def upload_academy_logo(file: UploadFile = File(...)):
         logo_url = f"/uploads/logos/{unique_filename}"
         return {"logo_url": logo_url, "message": "Logo uploaded successfully"}
         
+    except HTTPException:
+        # Re-raise HTTP exceptions (like validation errors)
+        raise
     except Exception as e:
         logger.error(f"File upload error: {e}")
         raise HTTPException(status_code=500, detail="Failed to upload logo")
