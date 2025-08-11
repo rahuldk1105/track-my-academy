@@ -78,11 +78,6 @@
 - ✅ **Footer CTAs** - UPDATED: "Join Beta List" → "Request Demo List"
 - ✅ **Pricing Section** - UPDATED: CTA button text updated to "Request Demo"
 
-### 🔄 **Features to Modify for SaaS**
-- 🔄 **Admin Dashboard** - Add academy creation functionality for admin
-- 🔄 **User Creation** - Only admin can create academy accounts
-- 🔄 **Demo Request System** - Convert "Request Demo" to actual lead capture form
-
 ### 🆕 **New Features Needed for SaaS**
 - ❌ **Admin User Creation** - Form to create academy accounts
 - ❌ **Academy Profile Management** - CRUD operations for academies
@@ -147,10 +142,9 @@
 4. ✅ **User Role Management** - Admin vs Academy user permissions
 
 ### **🔄 PRIORITY 3: SaaS Features - IN PROGRESS**
-1. ❌ **Demo Request System** - Replace "Request Demo" with lead capture form
-2. ❌ **Multi-tenant Data** - Ensure academy data isolation
-3. ❌ **Billing Integration** - Subscription management system
-4. ❌ **Academy Onboarding** - Process for new client setup
+1. ❌ **Multi-tenant Data** - Ensure academy data isolation
+2. ❌ **Billing Integration** - Subscription management system
+3. ❌ **Academy Onboarding** - Process for new client setup
 
 ### **🆕 PRIORITY 4: Academy Portal Development**
 1. ❌ **Academy Dashboard** - Build actual academy-side interfaces for managing their players and coaches
