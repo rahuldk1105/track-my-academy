@@ -406,6 +406,12 @@ const Dashboard = () => {
             active={activeTab === 'academies'}
             onClick={setActiveTab}
           />
+          <TabButton
+            id="demo-requests"
+            label="Demo Requests"
+            active={activeTab === 'demo-requests'}
+            onClick={setActiveTab}
+          />
         </div>
 
         {/* Content */}
