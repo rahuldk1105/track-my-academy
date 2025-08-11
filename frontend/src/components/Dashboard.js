@@ -545,17 +545,48 @@ const Dashboard = () => {
                   <tbody>
                     {academies.map((academy) => (
                       <tr key={academy.id} className="border-b border-white/5">
-                        <td className="py-3 px-4 text-white">{academy.name}</td>
+                        <td className="py-3 px-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedAcademies.includes(academy.id)}
+                            onChange={() => handleSelectAcademy(academy.id)}
+                            className="rounded bg-gray-700 border-gray-600 text-sky-600 focus:ring-sky-500"
+                          />
+                        </td>
+                        <td className="py-3 px-4">
+                          {academy.logo_url ? (
+                            <img
+                              src={`${process.env.REACT_APP_BACKEND_URL}${academy.logo_url}`}
+                              alt={`${academy.name} logo`}
+                              className="w-10 h-10 rounded-full object-cover bg-gray-700"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                              <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a2 2 0 011.732-1.732l.268.268a2 2 0 002.828 0l.268-.268A2 2 0 0112 8a2 2 0 11-4 4 2 2 0 01-2-2z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-white font-medium">{academy.name}</td>
                         <td className="py-3 px-4 text-gray-300">{academy.owner_name}</td>
                         <td className="py-3 px-4 text-gray-300">{academy.sports_type || 'Not specified'}</td>
                         <td className="py-3 px-4 text-gray-300">{academy.location || 'Not specified'}</td>
+                        <td className="py-3 px-4 text-gray-300">
+                          <div className="text-xs">
+                            <div>Players: {academy.player_limit || 50}</div>
+                            <div>Coaches: {academy.coach_limit || 10}</div>
+                          </div>
+                        </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             academy.status === 'approved' 
                               ? 'bg-green-500/20 text-green-400' 
                               : academy.status === 'pending'
                               ? 'bg-orange-500/20 text-orange-400'
-                              : 'bg-red-500/20 text-red-400'
+                              : academy.status === 'rejected'
+                              ? 'bg-red-500/20 text-red-400'
+                              : 'bg-gray-500/20 text-gray-400'
                           }`}>
                             {academy.status}
                           </span>
@@ -563,10 +594,37 @@ const Dashboard = () => {
                         <td className="py-3 px-4">
                           <div className="flex space-x-2">
                             {academy.status === 'pending' && (
-                              <button className="text-green-400 hover:text-green-300">Approve</button>
+                              <>
+                                <button 
+                                  onClick={() => handleApproveAcademy(academy.id, academy.name)}
+                                  className="text-green-400 hover:text-green-300 text-sm font-medium"
+                                  title="Approve Academy"
+                                >
+                                  Approve
+                                </button>
+                                <button 
+                                  onClick={() => handleRejectAcademy(academy.id, academy.name)}
+                                  className="text-red-400 hover:text-red-300 text-sm font-medium"
+                                  title="Reject Academy"
+                                >
+                                  Reject
+                                </button>
+                              </>
                             )}
-                            <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                            <button className="text-red-400 hover:text-red-300">Delete</button>
+                            <button 
+                              onClick={() => handleEditAcademy(academy)}
+                              className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                              title="Edit Academy"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteAcademy(academy.id, academy.name)}
+                              className="text-red-400 hover:text-red-300 text-sm font-medium"
+                              title="Delete Academy"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
