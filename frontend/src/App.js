@@ -24,6 +24,30 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/billing" 
+              element={
+                <ProtectedRoute>
+                  <SubscriptionPayment />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/billing/success" 
+              element={
+                <ProtectedRoute>
+                  <SubscriptionPayment />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/billing/cancel" 
+              element={
+                <ProtectedRoute>
+                  <SubscriptionPayment />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
