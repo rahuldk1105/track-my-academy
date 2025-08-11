@@ -235,10 +235,16 @@ const PricingSection = ({ scrollY }) => {
               and dedicated support.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setIsDemoModalOpen(true)}
+                className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105"
+              >
                 Schedule Demo
               </button>
-              <button className="border-2 border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-black px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setIsDemoModalOpen(true)}
+                className="border-2 border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-black px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105"
+              >
                 Contact Team
               </button>
             </div>
