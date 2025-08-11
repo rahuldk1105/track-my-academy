@@ -240,28 +240,28 @@ class AcademySubscription(BaseModel):
     plan_id: str
     billing_cycle: str = "monthly"  # monthly, annual
     amount: float                   # Custom amount for this academy
-    currency: str = "usd"
-    status: str = "active"          # active, cancelled, suspended, pending
+    currency: str = "inr"           # Changed to INR for Indian market
+    status: str = "active"          # active, cancelled, suspended, pending, trial
     current_period_start: datetime
     current_period_end: datetime
-    stripe_customer_id: Optional[str] = None
-    stripe_subscription_id: Optional[str] = None
     auto_renew: bool = True
+    notes: Optional[str] = None     # Admin notes about subscription
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 class PaymentTransaction(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    academy_id: Optional[str] = None
+    academy_id: str
     subscription_id: Optional[str] = None
-    session_id: str                 # Stripe session ID
     amount: float
-    currency: str = "usd"
-    payment_status: str = "pending" # pending, paid, failed, expired
-    stripe_status: str = "pending"  # Stripe checkout session status
+    currency: str = "inr"           # Changed to INR
+    payment_method: str             # GPay, Cash, Bank Transfer, UPI, etc.
+    payment_status: str = "pending" # pending, paid, failed, cancelled
+    payment_date: Optional[datetime] = None  # Actual payment date
     billing_cycle: Optional[str] = None
     description: Optional[str] = None
-    metadata: Optional[Dict[str, str]] = {}
+    admin_notes: Optional[str] = None # Admin notes about the payment
+    receipt_url: Optional[str] = None # URL to receipt/proof if uploaded
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
