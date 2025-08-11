@@ -439,6 +439,12 @@ const Dashboard = () => {
             active={activeTab === 'demo-requests'}
             onClick={setActiveTab}
           />
+          <TabButton
+            id="billing"
+            label="Billing"
+            active={activeTab === 'billing'}
+            onClick={setActiveTab}
+          />
         </div>
 
         {/* Content */}
