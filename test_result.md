@@ -486,16 +486,19 @@ frontend:
           comment: "REAL DATA INTEGRATION WORKING PERFECTLY! Dashboard successfully loads real academy data from GET /api/admin/academies endpoint: 1) Stats calculations working correctly (Total Users: 3, Total Academies: 3, Pending: 0, Active: 3) ✅ 2) Academy table displays correct field data (name, owner_name, sports_type, location, status) ✅ 3) Users tab shows converted academy data with proper status mapping ✅ 4) Real-time updates after academy creation - stats automatically refresh ✅ 5) JWT token properly sent with API requests via AuthContext ✅ 6) Fallback to mock data if API fails (tested and working) ✅ 7) User context integration showing logged-in user email ✅. Dashboard data integration is production-ready."
 
   - task: "Academy Management Interface"
-    implemented: false
+    implemented: true
     working: false
-    file: "/app/frontend/src/components/Dashboard.js"
+    file: "/app/frontend/src/components/Dashboard.js, /app/frontend/src/components/EditAcademyModal.js"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: true
     status_history:
         - working: false
           agent: "main"
           comment: "Implement academy editing, approval workflow, and management features in dashboard"
+        - working: false
+          agent: "main"
+          comment: "ENHANCED ACADEMY MANAGEMENT INTERFACE IMPLEMENTED: 1) Created EditAcademyModal component for editing academies with all fields including player/coach limits. 2) Added academy logo upload support in CreateAcademyModal with file upload functionality. 3) Enhanced Dashboard with comprehensive management features: edit, delete, approve, reject actions. 4) Added bulk selection and bulk approve functionality. 5) Updated academy table with logo display, account limits display, and enhanced status management. 6) Added proper file upload handling in backend with logo storage. 7) Enhanced backend Academy model with logo_url, player_limit, coach_limit fields. 8) Updated create-academy endpoint to handle FormData for file uploads. Backend now supports file uploads to /uploads/logos/ directory and serves static files. Frontend shows logo previews and manages all CRUD operations. Needs testing to verify all functionality works correctly."
 
   - task: "Admin Account Creation for User Access"
     implemented: true
