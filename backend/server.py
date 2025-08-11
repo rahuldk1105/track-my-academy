@@ -959,59 +959,60 @@ async def get_academy_subscription(academy_id: str, current_user = Depends(get_c
 #         logger.error(f"Error checking payment status: {e}")
 #         raise HTTPException(status_code=500, detail="Failed to check payment status")
 
-async def process_successful_payment(payment_transaction: dict, checkout_status: CheckoutStatusResponse):
-    """Process successful payment and create/update subscription"""
-    try:
-        academy_id = payment_transaction["academy_id"]
-        billing_cycle = payment_transaction["billing_cycle"]
-        
-        # Calculate subscription period
-        start_date = datetime.utcnow()
-        if billing_cycle == "monthly":
-            end_date = start_date + timedelta(days=30)
-        elif billing_cycle == "annual":
-            end_date = start_date + timedelta(days=365)
-        else:
-            raise ValueError(f"Invalid billing cycle: {billing_cycle}")
-        
-        # Check if academy already has a subscription
-        existing_subscription = await db.academy_subscriptions.find_one({"academy_id": academy_id})
-        
-        if existing_subscription:
-            # Update existing subscription
-            update_data = {
-                "billing_cycle": billing_cycle,
-                "amount": payment_transaction["amount"],
-                "status": "active",
-                "current_period_start": start_date,
-                "current_period_end": end_date,
-                "updated_at": start_date
-            }
-            
-            await db.academy_subscriptions.update_one(
-                {"academy_id": academy_id},
-                {"$set": update_data}
-            )
-            
-            logger.info(f"Updated subscription for academy {academy_id}")
-        else:
-            # Create new subscription
-            subscription = AcademySubscription(
-                academy_id=academy_id,
-                plan_id="starter",  # Default plan for now
-                billing_cycle=billing_cycle,
-                amount=payment_transaction["amount"],
-                current_period_start=start_date,
-                current_period_end=end_date,
-                status="active"
-            )
-            
-            await db.academy_subscriptions.insert_one(subscription.dict())
-            logger.info(f"Created new subscription for academy {academy_id}")
-        
-    except Exception as e:
-        logger.error(f"Error processing successful payment: {e}")
-        raise
+# DISABLED: Stripe payment processing function - removed for manual billing
+# async def process_successful_payment(payment_transaction: dict, checkout_status: CheckoutStatusResponse):
+#     """Process successful payment and create/update subscription"""
+#     try:
+#         academy_id = payment_transaction["academy_id"]
+#         billing_cycle = payment_transaction["billing_cycle"]
+#         
+#         # Calculate subscription period
+#         start_date = datetime.utcnow()
+#         if billing_cycle == "monthly":
+#             end_date = start_date + timedelta(days=30)
+#         elif billing_cycle == "annual":
+#             end_date = start_date + timedelta(days=365)
+#         else:
+#             raise ValueError(f"Invalid billing cycle: {billing_cycle}")
+#         
+#         # Check if academy already has a subscription
+#         existing_subscription = await db.academy_subscriptions.find_one({"academy_id": academy_id})
+#         
+#         if existing_subscription:
+#             # Update existing subscription
+#             update_data = {
+#                 "billing_cycle": billing_cycle,
+#                 "amount": payment_transaction["amount"],
+#                 "status": "active",
+#                 "current_period_start": start_date,
+#                 "current_period_end": end_date,
+#                 "updated_at": start_date
+#             }
+#             
+#             await db.academy_subscriptions.update_one(
+#                 {"academy_id": academy_id},
+#                 {"$set": update_data}
+#             )
+#             
+#             logger.info(f"Updated subscription for academy {academy_id}")
+#         else:
+#             # Create new subscription
+#             subscription = AcademySubscription(
+#                 academy_id=academy_id,
+#                 plan_id="starter",  # Default plan for now
+#                 billing_cycle=billing_cycle,
+#                 amount=payment_transaction["amount"],
+#                 current_period_start=start_date,
+#                 current_period_end=end_date,
+#                 status="active"
+#             )
+#             
+#             await db.academy_subscriptions.insert_one(subscription.dict())
+#             logger.info(f"Created new subscription for academy {academy_id}")
+#         
+#     except Exception as e:
+#         logger.error(f"Error processing successful payment: {e}")
+#         raise
 
 # DISABLED: Stripe webhook handler - removed for manual billing
 # @api_router.post("/webhook/stripe")
