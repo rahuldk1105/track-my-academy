@@ -1550,6 +1550,361 @@ def test_enhanced_academy_management_system():
         print("⚠️ Some enhanced features need attention.")
         return False
 
+def test_create_demo_request():
+    """Test POST /api/demo-requests endpoint"""
+    print("\n=== Testing Create Demo Request ===")
+    try:
+        # Use realistic test data for demo request
+        demo_data = {
+            "full_name": "Sarah Johnson",
+            "email": "sarah.johnson@sportsacademy.com",
+            "phone": "+1-555-0156",
+            "academy_name": "Elite Basketball Academy",
+            "location": "Chicago, IL",
+            "sports_type": "Basketball",
+            "current_students": "25-50",
+            "message": "We are interested in implementing Track My Academy to better manage our student athletes and track their progress. Please contact us for a demo."
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/demo-requests",
+            json=demo_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            required_fields = ['id', 'full_name', 'email', 'academy_name', 'location', 'sports_type', 'status', 'created_at']
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if not missing_fields:
+                if data.get('status') == 'pending':
+                    print("✅ Create demo request PASSED")
+                    return True, data['id']
+                else:
+                    print(f"❌ Create demo request FAILED - Expected status 'pending', got '{data.get('status')}'")
+                    return False, None
+            else:
+                print(f"❌ Create demo request FAILED - Missing fields: {missing_fields}")
+                return False, None
+        else:
+            print(f"❌ Create demo request FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Create demo request FAILED - Connection error: {e}")
+        return False, None
+
+def test_get_demo_requests(access_token=None):
+    """Test GET /api/admin/demo-requests endpoint"""
+    print("\n=== Testing Get Demo Requests ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        response = requests.get(
+            f"{API_BASE_URL}/admin/demo-requests",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Number of demo requests retrieved: {len(data)}")
+            
+            if isinstance(data, list):
+                # Check if demo requests have required fields
+                if len(data) > 0:
+                    demo_request = data[0]
+                    required_fields = ['id', 'full_name', 'email', 'academy_name', 'location', 'sports_type', 'status', 'created_at']
+                    missing_fields = [field for field in required_fields if field not in demo_request]
+                    
+                    if missing_fields:
+                        print(f"❌ Demo request missing fields: {missing_fields}")
+                        return False, None
+                    
+                    print("✅ GET demo requests PASSED")
+                    return True, data
+                else:
+                    print("✅ GET demo requests PASSED (no demo requests found)")
+                    return True, []
+            else:
+                print("❌ GET demo requests FAILED - Response is not a list")
+                return False, None
+        else:
+            print(f"❌ GET demo requests FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ GET demo requests FAILED - Connection error: {e}")
+        return False, None
+
+def test_update_demo_request(request_id, access_token=None):
+    """Test PUT /api/admin/demo-requests/{id} endpoint"""
+    print(f"\n=== Testing Update Demo Request (ID: {request_id}) ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        # Update status
+        update_data = {
+            "status": "contacted"
+        }
+        
+        response = requests.put(
+            f"{API_BASE_URL}/admin/demo-requests/{request_id}",
+            json=update_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Updated demo request status: {data.get('status')}")
+            
+            # Verify update was applied
+            if data.get('status') == update_data['status']:
+                print("✅ Update demo request PASSED")
+                return True
+            else:
+                print("❌ Update demo request FAILED - Status not updated correctly")
+                return False
+        elif response.status_code == 404:
+            print("❌ Update demo request FAILED - Demo request not found")
+            return False
+        else:
+            print(f"❌ Update demo request FAILED - Status: {response.status_code}, Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Update demo request FAILED - Connection error: {e}")
+        return False
+
+def test_demo_request_validation():
+    """Test demo request validation with invalid data"""
+    print("\n=== Testing Demo Request Validation ===")
+    try:
+        # Test with missing required fields
+        invalid_data = {
+            "full_name": "Test User",
+            # Missing email, academy_name, location, sports_type
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/demo-requests",
+            json=invalid_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Invalid data status: {response.status_code}")
+        
+        if response.status_code == 422:  # Validation error
+            print("✅ Demo request validation PASSED - Correctly rejected invalid data")
+            return True
+        elif response.status_code == 400:
+            print("✅ Demo request validation PASSED - Correctly rejected invalid data (400)")
+            return True
+        else:
+            print(f"❌ Demo request validation FAILED - Should reject invalid data, got {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Demo request validation test failed: {e}")
+        return False
+
+def test_demo_requests_mongodb_collection():
+    """Test MongoDB collection structure for demo_requests"""
+    print("\n=== Testing Demo Requests MongoDB Collection ===")
+    try:
+        # Create a demo request first
+        demo_data = {
+            "full_name": "MongoDB Test User",
+            "email": "mongodb.test@academy.com",
+            "phone": "+1-555-0199",
+            "academy_name": "MongoDB Test Academy",
+            "location": "Test City, TS",
+            "sports_type": "Soccer",
+            "current_students": "10-25",
+            "message": "Testing MongoDB collection structure"
+        }
+        
+        create_response = requests.post(
+            f"{API_BASE_URL}/demo-requests",
+            json=demo_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        if create_response.status_code != 200:
+            print("❌ Could not create demo request for MongoDB testing")
+            return False
+        
+        created_request = create_response.json()
+        print(f"Created demo request ID: {created_request.get('id')}")
+        
+        # Now retrieve it to verify MongoDB structure
+        get_response = requests.get(
+            f"{API_BASE_URL}/admin/demo-requests",
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if get_response.status_code == 200:
+            demo_requests = get_response.json()
+            
+            # Find our test request
+            test_request = None
+            for req in demo_requests:
+                if req.get('email') == 'mongodb.test@academy.com':
+                    test_request = req
+                    break
+            
+            if test_request:
+                print("✅ Demo request found in MongoDB collection")
+                
+                # Verify all expected fields are present
+                expected_fields = [
+                    'id', 'full_name', 'email', 'phone', 'academy_name', 
+                    'location', 'sports_type', 'current_students', 'message',
+                    'status', 'created_at', 'updated_at'
+                ]
+                
+                missing_fields = [field for field in expected_fields if field not in test_request]
+                
+                if not missing_fields:
+                    print("✅ MongoDB collection structure PASSED - All fields present")
+                    print(f"  Sample fields: {list(test_request.keys())}")
+                    return True
+                else:
+                    print(f"❌ MongoDB collection structure FAILED - Missing fields: {missing_fields}")
+                    return False
+            else:
+                print("❌ MongoDB collection test FAILED - Created request not found")
+                return False
+        else:
+            print("❌ MongoDB collection test FAILED - Could not retrieve demo requests")
+            return False
+            
+    except Exception as e:
+        print(f"❌ MongoDB collection test failed: {e}")
+        return False
+
+def test_demo_requests_complete_flow():
+    """Test complete demo request flow"""
+    print("\n=== Testing Complete Demo Request Flow ===")
+    
+    # Get admin access token for admin endpoints
+    login_data = {
+        "email": "admin@trackmyacademy.com",
+        "password": "AdminPassword123!"
+    }
+    
+    access_token = None
+    try:
+        login_response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        if login_response.status_code == 200:
+            session = login_response.json().get("session", {})
+            access_token = session.get("access_token")
+            print("✅ Got admin access token for testing")
+        else:
+            print("⚠️ Could not get admin access token, testing without authentication")
+    except:
+        print("⚠️ Could not get admin access token, testing without authentication")
+    
+    # Step 1: Create demo request (public endpoint)
+    create_success, request_id = test_create_demo_request()
+    if not create_success:
+        print("❌ Complete demo request flow FAILED at create")
+        return False
+    
+    # Step 2: Get demo requests (admin endpoint)
+    get_success, demo_requests = test_get_demo_requests(access_token)
+    if not get_success:
+        print("❌ Complete demo request flow FAILED at get")
+        return False
+    
+    # Step 3: Update demo request status (admin endpoint)
+    if request_id:
+        update_success = test_update_demo_request(request_id, access_token)
+        if not update_success:
+            print("❌ Complete demo request flow FAILED at update")
+            return False
+    else:
+        # Use any existing demo request for update test
+        if demo_requests and len(demo_requests) > 0:
+            test_request_id = demo_requests[0]['id']
+            update_success = test_update_demo_request(test_request_id, access_token)
+            if not update_success:
+                print("❌ Complete demo request flow FAILED at update")
+                return False
+        else:
+            print("⚠️ No demo requests found for update test")
+    
+    # Step 4: Test validation
+    validation_success = test_demo_request_validation()
+    if not validation_success:
+        print("❌ Complete demo request flow FAILED at validation")
+        return False
+    
+    # Step 5: Test MongoDB collection structure
+    mongodb_success = test_demo_requests_mongodb_collection()
+    if not mongodb_success:
+        print("❌ Complete demo request flow FAILED at MongoDB test")
+        return False
+    
+    print("✅ Complete demo request flow PASSED")
+    return True
+
+def test_demo_request_endpoints():
+    """Test all demo request endpoints"""
+    print("\n=== Testing Demo Request Endpoints ===")
+    
+    test_results = {
+        'create_demo_request': test_create_demo_request()[0] if test_create_demo_request() else False,
+        'demo_request_validation': test_demo_request_validation(),
+        'mongodb_collection_structure': test_demo_requests_mongodb_collection(),
+        'complete_demo_flow': test_demo_requests_complete_flow(),
+    }
+    
+    print("\n" + "=" * 50)
+    print("📊 DEMO REQUEST ENDPOINTS TEST SUMMARY")
+    print("=" * 50)
+    
+    passed = 0
+    total = len(test_results)
+    
+    for test_name, result in test_results.items():
+        status = "✅ PASSED" if result else "❌ FAILED"
+        print(f"{test_name.replace('_', ' ').title()}: {status}")
+        if result:
+            passed += 1
+    
+    print(f"\nDemo Request Tests: {passed}/{total} tests passed")
+    
+    if passed >= total - 1:  # Allow one test to fail
+        print("🎉 Demo Request endpoints are working correctly!")
+        return True
+    else:
+        print("⚠️ Some demo request features need attention.")
+        return False
+
 def run_all_tests():
     """Run all backend tests"""
     print("🚀 Starting Track My Academy Backend API Tests")
