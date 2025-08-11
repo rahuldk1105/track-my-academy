@@ -190,7 +190,10 @@ const Footer = () => {
                 placeholder="Enter your academy email"
                 className="flex-1 bg-white/10 border border-white/20 rounded-full px-6 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-400 transition-colors duration-300"
               />
-              <button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setIsDemoModalOpen(true)}
+                className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105"
+              >
                 Request Demo List
               </button>
             </div>
