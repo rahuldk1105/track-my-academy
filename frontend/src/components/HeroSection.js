@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DemoRequestModal from './DemoRequestModal';
 
 const HeroSection = ({ scrollY }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
