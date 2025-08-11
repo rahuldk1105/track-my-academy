@@ -2106,7 +2106,7 @@ def setup_admin_account():
     print("🎉 ADMIN ACCOUNT SETUP COMPLETE!")
     print("=" * 60)
     print("📋 LOGIN CREDENTIALS FOR USER:")
-    print(f"URL: https://370e9f94-8af4-4978-99b9-8b94e8058707.preview.emergentagent.com/login")
+    print(f"URL: https://881d41ba-5038-4237-a8bd-0843d7dada88.preview.emergentagent.com/login")
     print(f"Email: admin@trackmyacademy.com")
     print(f"Password: AdminPassword123!")
     print("\n📊 ACCOUNT DETAILS:")
