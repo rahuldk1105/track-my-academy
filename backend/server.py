@@ -466,6 +466,128 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
+# System Overview Models
+class SystemStats(BaseModel):
+    total_academies: int
+    active_academies: int
+    pending_academies: int
+    total_demo_requests: int
+    pending_demo_requests: int
+    recent_activity_count: int
+
+class RecentActivity(BaseModel):
+    id: str
+    type: str  # academy_created, demo_request, academy_approved, etc.
+    description: str
+    timestamp: datetime
+    status: str  # success, pending, info
+
+class RecentAcademy(BaseModel):
+    id: str
+    name: str
+    owner_name: str
+    location: str
+    sports_type: str
+    status: str
+    created_at: datetime
+
+class SystemOverview(BaseModel):
+    stats: SystemStats
+    recent_activities: List[RecentActivity]
+    recent_academies: List[RecentAcademy]
+    server_status: str
+
+# System Overview Endpoint
+@api_router.get("/admin/system-overview", response_model=SystemOverview)
+async def get_system_overview(current_user = Depends(get_current_user)):
+    try:
+        # TODO: Add admin role verification
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Get academy stats
+        academies = await db.academies.find().to_list(1000)
+        total_academies = len(academies)
+        active_academies = len([a for a in academies if a.get('status') == 'approved'])
+        pending_academies = len([a for a in academies if a.get('status') == 'pending'])
+        
+        # Get demo request stats
+        demo_requests = await db.demo_requests.find().to_list(1000)
+        total_demo_requests = len(demo_requests)
+        pending_demo_requests = len([d for d in demo_requests if d.get('status') == 'pending'])
+        
+        # Create stats
+        stats = SystemStats(
+            total_academies=total_academies,
+            active_academies=active_academies,
+            pending_academies=pending_academies,
+            total_demo_requests=total_demo_requests,
+            pending_demo_requests=pending_demo_requests,
+            recent_activity_count=len(academies) + len(demo_requests)
+        )
+        
+        # Get recent activities (last 10)
+        recent_activities = []
+        
+        # Recent academy activities
+        recent_academy_activities = await db.academies.find().sort("created_at", -1).limit(5).to_list(5)
+        for academy in recent_academy_activities:
+            activity = RecentActivity(
+                id=str(uuid.uuid4()),
+                type="academy_created",
+                description=f"New academy registration: {academy.get('name', 'Unknown')}",
+                timestamp=academy.get('created_at', datetime.utcnow()),
+                status="success" if academy.get('status') == 'approved' else "pending"
+            )
+            recent_activities.append(activity)
+        
+        # Recent demo request activities
+        recent_demo_activities = await db.demo_requests.find().sort("created_at", -1).limit(5).to_list(5)
+        for demo in recent_demo_activities:
+            activity = RecentActivity(
+                id=str(uuid.uuid4()),
+                type="demo_request",
+                description=f"Demo request from: {demo.get('academy_name', 'Unknown Academy')}",
+                timestamp=demo.get('created_at', datetime.utcnow()),
+                status=demo.get('status', 'pending')
+            )
+            recent_activities.append(activity)
+        
+        # Sort by timestamp (newest first) and limit to 10
+        recent_activities.sort(key=lambda x: x.timestamp, reverse=True)
+        recent_activities = recent_activities[:10]
+        
+        # Get recently added academies (last 5)
+        recent_academies_data = await db.academies.find().sort("created_at", -1).limit(5).to_list(5)
+        recent_academies = []
+        for academy in recent_academies_data:
+            academy_obj = RecentAcademy(
+                id=academy.get('id', str(uuid.uuid4())),
+                name=academy.get('name', 'Unknown'),
+                owner_name=academy.get('owner_name', 'Unknown'),
+                location=academy.get('location', 'Unknown'),
+                sports_type=academy.get('sports_type', 'Unknown'),
+                status=academy.get('status', 'pending'),
+                created_at=academy.get('created_at', datetime.utcnow())
+            )
+            recent_academies.append(academy_obj)
+        
+        # Server status (always healthy for now)
+        server_status = "healthy"
+        
+        overview = SystemOverview(
+            stats=stats,
+            recent_activities=recent_activities,
+            recent_academies=recent_academies,
+            server_status=server_status
+        )
+        
+        return overview
+        
+    except Exception as e:
+        logger.error(f"Error fetching system overview: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch system overview")
+
 # Demo Request Endpoints
 
 # Public endpoint for demo requests (no authentication required)
