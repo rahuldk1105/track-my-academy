@@ -41,6 +41,11 @@ if not all([supabase_url, supabase_key, supabase_service_key]):
 supabase: Client = create_client(supabase_url, supabase_key)
 supabase_admin: Client = create_client(supabase_url, supabase_service_key)
 
+# Stripe configuration
+stripe_api_key = os.environ.get('STRIPE_API_KEY')
+if not stripe_api_key:
+    raise ValueError("Missing STRIPE_API_KEY environment variable")
+
 # Security
 security = HTTPBearer(auto_error=False)
 
@@ -52,6 +57,58 @@ app.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="up
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+# Subscription Plans Configuration (Backend-defined for security)
+SUBSCRIPTION_PLANS = {
+    "starter_monthly": {
+        "name": "Starter Monthly",
+        "price": 29.99,
+        "billing_cycle": "monthly",
+        "player_limit": 50,
+        "coach_limit": 5,
+        "features": ["Basic player management", "Coach assignment", "Performance tracking", "Email support"]
+    },
+    "starter_annual": {
+        "name": "Starter Annual",
+        "price": 299.99,  # 2 months free
+        "billing_cycle": "annual",
+        "player_limit": 50,
+        "coach_limit": 5,
+        "features": ["Basic player management", "Coach assignment", "Performance tracking", "Email support"]
+    },
+    "pro_monthly": {
+        "name": "Pro Monthly", 
+        "price": 59.99,
+        "billing_cycle": "monthly",
+        "player_limit": 200,
+        "coach_limit": 20,
+        "features": ["Advanced analytics", "Custom reports", "API access", "Priority support", "Mobile app access"]
+    },
+    "pro_annual": {
+        "name": "Pro Annual",
+        "price": 599.99,  # 2 months free
+        "billing_cycle": "annual", 
+        "player_limit": 200,
+        "coach_limit": 20,
+        "features": ["Advanced analytics", "Custom reports", "API access", "Priority support", "Mobile app access"]
+    },
+    "enterprise_monthly": {
+        "name": "Enterprise Monthly",
+        "price": 149.99,
+        "billing_cycle": "monthly",
+        "player_limit": 1000,
+        "coach_limit": 100,
+        "features": ["Unlimited everything", "Custom integrations", "Dedicated support", "Training sessions", "White labeling"]
+    },
+    "enterprise_annual": {
+        "name": "Enterprise Annual", 
+        "price": 1499.99,  # 2 months free
+        "billing_cycle": "annual",
+        "player_limit": 1000,
+        "coach_limit": 100,
+        "features": ["Unlimited everything", "Custom integrations", "Dedicated support", "Training sessions", "White labeling"]
+    }
+}
 
 
 # Define Models
