@@ -41,10 +41,11 @@ if not all([supabase_url, supabase_key, supabase_service_key]):
 supabase: Client = create_client(supabase_url, supabase_key)
 supabase_admin: Client = create_client(supabase_url, supabase_service_key)
 
-# Stripe configuration
-stripe_api_key = os.environ.get('STRIPE_API_KEY')
-if not stripe_api_key:
-    raise ValueError("Missing STRIPE_API_KEY environment variable")
+# Stripe configuration - REMOVED for manual billing
+# stripe_api_key = os.environ.get('STRIPE_API_KEY')
+# if not stripe_api_key:
+#     raise ValueError("Missing STRIPE_API_KEY environment variable")
+stripe_api_key = None  # Disabled for manual billing
 
 # Security
 security = HTTPBearer(auto_error=False)
