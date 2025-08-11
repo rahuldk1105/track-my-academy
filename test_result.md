@@ -510,4 +510,14 @@ frontend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "Successfully created dedicated admin account for user access. Account details: Email: admin@trackmyacademy.com, Password: AdminPassword123!, Academy: Track My Academy Admin, Owner: System Administrator. Account verified in database with ID: 5a78d9e9-f6f0-4270-a6c0-78e6ded1cf9f, Status: approved. Login functionality tested and confirmed working. User can now access super admin dashboard at provided URL."
+  - task: "Academy Logo Upload and Account Limits"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/CreateAcademyModal.js, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "ACADEMY LOGO UPLOAD AND ACCOUNT LIMITS IMPLEMENTED: 1) Enhanced backend Academy model with logo_url, player_limit (default 50), coach_limit (default 10) fields. 2) Added file upload endpoint POST /api/upload/logo for logo uploads. 3) Updated POST /api/admin/create-academy to accept FormData with logo file upload. 4) Added static file serving for uploaded logos at /uploads/logos/. 5) Updated CreateAcademyModal with logo upload functionality, file preview, and player/coach limit inputs. 6) Enhanced academy table to display logos and account limits. Backend supports image validation, unique filename generation, and proper file storage. Frontend shows logo preview during upload and displays logos in academy table. Needs testing to verify file upload, logo display, and limit management works correctly."
