@@ -143,7 +143,8 @@ const Dashboard = () => {
     setSuccessMessage(`Academy "${newAcademy.user?.user_metadata?.academy_name || 'New Academy'}" created successfully!`);
     setTimeout(() => setSuccessMessage(''), 5000);
     // Refresh dashboard data
-    loadDashboardData();
+    loadDashboardData(); // Reload academy data and stats
+    loadSystemOverview(); // Reload system overview data
   };
 
   const handleEditAcademy = (academy) => {
