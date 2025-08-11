@@ -116,6 +116,8 @@ class AcademyUpdate(BaseModel):
     phone: Optional[str] = None
     location: Optional[str] = None
     sports_type: Optional[str] = None
+    player_limit: Optional[int] = None
+    coach_limit: Optional[int] = None
     status: Optional[str] = None
 
 # Authentication helper functions
