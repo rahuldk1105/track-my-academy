@@ -794,6 +794,10 @@ async def get_academy_subscription(academy_id: str, current_user = Depends(get_c
 async def create_payment_session(request: PaymentSessionRequest, http_request: Request, current_user = Depends(get_current_user)):
     """Create Stripe payment session for academy subscription"""
     try:
+        # Check if Stripe is enabled
+        if not stripe_api_key:
+            raise HTTPException(status_code=503, detail="Payment processing is currently disabled. Please contact support for manual billing.")
+        
         # Validate academy exists
         academy = await db.academies.find_one({"id": request.academy_id})
         if not academy:
