@@ -85,7 +85,7 @@ class AcademyUpdate(BaseModel)
 ## 🚀 **HOW TO ACCESS THE SUPER ADMIN DASHBOARD**
 
 ### **Step 1: Access the Application**
-🌐 **Application URL:** https://b7331240-66d3-4a57-8ed9-6a0fa593b6a3.preview.emergentagent.com
+🌐 **Application URL:** https://370e9f94-8af4-4978-99b9-8b94e8058707.preview.emergentagent.com
 
 ### **Step 2: Login Options**
 
