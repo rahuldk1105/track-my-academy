@@ -760,6 +760,315 @@ async def update_demo_request(request_id: str, request_update: DemoRequestUpdate
         logger.error(f"Error updating demo request: {e}")
         raise HTTPException(status_code=500, detail="Failed to update demo request")
 
+# ========== BILLING AND SUBSCRIPTION ENDPOINTS ==========
+
+# Get Available Subscription Plans
+@api_router.get("/billing/plans")
+async def get_subscription_plans():
+    """Get all available subscription plans with pricing"""
+    try:
+        return {"plans": SUBSCRIPTION_PLANS}
+    except Exception as e:
+        logger.error(f"Error fetching subscription plans: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch subscription plans")
+
+# Get Academy Subscription Status
+@api_router.get("/billing/academy/{academy_id}/subscription")
+async def get_academy_subscription(academy_id: str, current_user = Depends(get_current_user)):
+    """Get current subscription status for an academy"""
+    try:
+        # TODO: Add proper authorization (admin or academy owner)
+        
+        subscription = await db.academy_subscriptions.find_one({"academy_id": academy_id})
+        if not subscription:
+            return {"subscription": None, "status": "no_subscription"}
+        
+        return {"subscription": AcademySubscription(**subscription)}
+    except Exception as e:
+        logger.error(f"Error fetching academy subscription: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch subscription")
+
+# Create Payment Session for Academy Subscription
+@api_router.post("/billing/create-payment-session")
+async def create_payment_session(request: PaymentSessionRequest, http_request: Request, current_user = Depends(get_current_user)):
+    """Create Stripe payment session for academy subscription"""
+    try:
+        # Validate academy exists
+        academy = await db.academies.find_one({"id": request.academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Get plan pricing - support custom amounts
+        plan_key = f"starter_{request.billing_cycle}"  # Default plan
+        if plan_key not in SUBSCRIPTION_PLANS:
+            raise HTTPException(status_code=400, detail="Invalid billing cycle")
+        
+        # For now, use default pricing - in future, support custom amounts per academy
+        amount = SUBSCRIPTION_PLANS[plan_key]["price"]
+        
+        # Initialize Stripe
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Build dynamic URLs from frontend origin
+        success_url = f"{request.origin_url}/billing/success?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{request.origin_url}/billing/cancel"
+        
+        # Create checkout session
+        checkout_request = CheckoutSessionRequest(
+            amount=amount,
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "academy_id": request.academy_id,
+                "billing_cycle": request.billing_cycle,
+                "source": "academy_subscription",
+                "plan": plan_key
+            }
+        )
+        
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Create payment transaction record
+        payment_transaction = PaymentTransaction(
+            academy_id=request.academy_id,
+            session_id=session.session_id,
+            amount=amount,
+            currency="usd",
+            payment_status="pending",
+            stripe_status="pending",
+            billing_cycle=request.billing_cycle,
+            description=f"Subscription - {SUBSCRIPTION_PLANS[plan_key]['name']}",
+            metadata=checkout_request.metadata
+        )
+        
+        await db.payment_transactions.insert_one(payment_transaction.dict())
+        
+        logger.info(f"Payment session created for academy {request.academy_id}: {session.session_id}")
+        return {"checkout_url": session.url, "session_id": session.session_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating payment session: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create payment session")
+
+# Check Payment Status
+@api_router.get("/billing/payment-status/{session_id}")
+async def check_payment_status(session_id: str, http_request: Request):
+    """Check the status of a payment session and update subscription if paid"""
+    try:
+        # Initialize Stripe
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Get payment status from Stripe
+        checkout_status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Find payment transaction
+        payment_transaction = await db.payment_transactions.find_one({"session_id": session_id})
+        if not payment_transaction:
+            raise HTTPException(status_code=404, detail="Payment transaction not found")
+        
+        # Update payment transaction status
+        update_data = {
+            "payment_status": checkout_status.payment_status,
+            "stripe_status": checkout_status.status,
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": update_data}
+        )
+        
+        # If payment is successful and not already processed
+        if checkout_status.payment_status == "paid" and payment_transaction.get("payment_status") != "paid":
+            await process_successful_payment(payment_transaction, checkout_status)
+        
+        return {
+            "payment_status": checkout_status.payment_status,
+            "status": checkout_status.status,
+            "amount_total": checkout_status.amount_total,
+            "currency": checkout_status.currency
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error checking payment status: {e}")
+        raise HTTPException(status_code=500, detail="Failed to check payment status")
+
+async def process_successful_payment(payment_transaction: dict, checkout_status: CheckoutStatusResponse):
+    """Process successful payment and create/update subscription"""
+    try:
+        academy_id = payment_transaction["academy_id"]
+        billing_cycle = payment_transaction["billing_cycle"]
+        
+        # Calculate subscription period
+        start_date = datetime.utcnow()
+        if billing_cycle == "monthly":
+            end_date = start_date + timedelta(days=30)
+        elif billing_cycle == "annual":
+            end_date = start_date + timedelta(days=365)
+        else:
+            raise ValueError(f"Invalid billing cycle: {billing_cycle}")
+        
+        # Check if academy already has a subscription
+        existing_subscription = await db.academy_subscriptions.find_one({"academy_id": academy_id})
+        
+        if existing_subscription:
+            # Update existing subscription
+            update_data = {
+                "billing_cycle": billing_cycle,
+                "amount": payment_transaction["amount"],
+                "status": "active",
+                "current_period_start": start_date,
+                "current_period_end": end_date,
+                "updated_at": start_date
+            }
+            
+            await db.academy_subscriptions.update_one(
+                {"academy_id": academy_id},
+                {"$set": update_data}
+            )
+            
+            logger.info(f"Updated subscription for academy {academy_id}")
+        else:
+            # Create new subscription
+            subscription = AcademySubscription(
+                academy_id=academy_id,
+                plan_id="starter",  # Default plan for now
+                billing_cycle=billing_cycle,
+                amount=payment_transaction["amount"],
+                current_period_start=start_date,
+                current_period_end=end_date,
+                status="active"
+            )
+            
+            await db.academy_subscriptions.insert_one(subscription.dict())
+            logger.info(f"Created new subscription for academy {academy_id}")
+        
+    except Exception as e:
+        logger.error(f"Error processing successful payment: {e}")
+        raise
+
+# Stripe Webhook Handler
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks for payment events"""
+    try:
+        # Get request body as bytes
+        body = await request.body()
+        stripe_signature = request.headers.get("stripe-signature", "")
+        
+        # Initialize Stripe
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Handle webhook
+        webhook_response = await stripe_checkout.handle_webhook(body, stripe_signature)
+        
+        # Process webhook event based on type
+        if webhook_response.event_type in ["checkout.session.completed", "payment_intent.succeeded"]:
+            # Find and update payment transaction
+            payment_transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
+            if payment_transaction and payment_transaction.get("payment_status") != "paid":
+                
+                # Update payment status
+                await db.payment_transactions.update_one(
+                    {"session_id": webhook_response.session_id},
+                    {"$set": {
+                        "payment_status": "paid",
+                        "stripe_status": "completed",
+                        "updated_at": datetime.utcnow()
+                    }}
+                )
+                
+                # Process successful payment
+                checkout_status = CheckoutStatusResponse(
+                    status="complete",
+                    payment_status="paid",
+                    amount_total=int(payment_transaction["amount"] * 100),  # Convert to cents
+                    currency=payment_transaction["currency"],
+                    metadata=webhook_response.metadata or {}
+                )
+                
+                await process_successful_payment(payment_transaction, checkout_status)
+                logger.info(f"Webhook processed: payment completed for session {webhook_response.session_id}")
+        
+        return {"status": "success"}
+        
+    except Exception as e:
+        logger.error(f"Error processing webhook: {e}")
+        raise HTTPException(status_code=500, detail="Webhook processing failed")
+
+# Admin: Get All Subscriptions
+@api_router.get("/admin/billing/subscriptions", response_model=List[AcademySubscription])
+async def get_all_subscriptions(current_user = Depends(get_current_user)):
+    """Admin endpoint to get all academy subscriptions"""
+    try:
+        # TODO: Add admin role verification
+        
+        subscriptions = await db.academy_subscriptions.find().to_list(1000)
+        return [AcademySubscription(**sub) for sub in subscriptions]
+    except Exception as e:
+        logger.error(f"Error fetching subscriptions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch subscriptions")
+
+# Admin: Get All Payment Transactions
+@api_router.get("/admin/billing/transactions", response_model=List[PaymentTransaction])
+async def get_payment_transactions(current_user = Depends(get_current_user)):
+    """Admin endpoint to get all payment transactions"""
+    try:
+        # TODO: Add admin role verification
+        
+        transactions = await db.payment_transactions.find().sort("created_at", -1).to_list(1000)
+        return [PaymentTransaction(**txn) for txn in transactions]
+    except Exception as e:
+        logger.error(f"Error fetching payment transactions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch payment transactions")
+
+# Admin: Update Academy Subscription
+@api_router.put("/admin/billing/academy/{academy_id}/subscription")
+async def update_academy_subscription(
+    academy_id: str, 
+    subscription_data: dict,
+    current_user = Depends(get_current_user)
+):
+    """Admin endpoint to manually update academy subscription"""
+    try:
+        # TODO: Add admin role verification
+        
+        # Check if academy exists
+        academy = await db.academies.find_one({"id": academy_id})
+        if not academy:
+            raise HTTPException(status_code=404, detail="Academy not found")
+        
+        # Update subscription
+        subscription_data["updated_at"] = datetime.utcnow()
+        
+        result = await db.academy_subscriptions.update_one(
+            {"academy_id": academy_id},
+            {"$set": subscription_data},
+            upsert=True
+        )
+        
+        # Get updated subscription
+        updated_subscription = await db.academy_subscriptions.find_one({"academy_id": academy_id})
+        
+        return {"message": "Subscription updated successfully", "subscription": updated_subscription}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating academy subscription: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update subscription")
+
 # Include the router in the main app
 app.include_router(api_router)
 
