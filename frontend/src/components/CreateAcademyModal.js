@@ -241,6 +241,70 @@ const CreateAcademyModal = ({ isOpen, onClose, onSuccess }) => {
                 <option value="Other">Other</option>
               </select>
             </div>
+
+            {/* Academy Logo Upload */}
+            <div>
+              <label htmlFor="logo" className="block text-sm font-medium text-gray-300 mb-1">
+                Academy Logo
+              </label>
+              <div className="flex items-center space-x-4">
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    id="logo"
+                    name="logo"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-sky-500 file:text-white file:rounded-lg hover:file:bg-sky-600"
+                  />
+                </div>
+                {logoPreview && (
+                  <div className="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                    <img
+                      src={logoPreview}
+                      alt="Logo preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Account Limits */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="player_limit" className="block text-sm font-medium text-gray-300 mb-1">
+                  Player Accounts Limit
+                </label>
+                <input
+                  type="number"
+                  id="player_limit"
+                  name="player_limit"
+                  value={formData.player_limit}
+                  onChange={handleInputChange}
+                  min="1"
+                  max="1000"
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  placeholder="50"
+                />
+              </div>
+              <div>
+                <label htmlFor="coach_limit" className="block text-sm font-medium text-gray-300 mb-1">
+                  Coach Accounts Limit
+                </label>
+                <input
+                  type="number"
+                  id="coach_limit"
+                  name="coach_limit"
+                  value={formData.coach_limit}
+                  onChange={handleInputChange}
+                  min="1"
+                  max="100"
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  placeholder="10"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
