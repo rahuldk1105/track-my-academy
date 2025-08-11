@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DemoRequestModal from './DemoRequestModal';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
