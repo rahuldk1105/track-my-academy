@@ -503,12 +503,22 @@ const Dashboard = () => {
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-white">Academy Management</h2>
-                <button 
-                  onClick={() => setShowCreateModal(true)}
-                  className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors"
-                >
-                  Add New Academy
-                </button>
+                <div className="flex space-x-3">
+                  {selectedAcademies.length > 0 && (
+                    <button 
+                      onClick={handleBulkApprove}
+                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      Approve Selected ({selectedAcademies.length})
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => setShowCreateModal(true)}
+                    className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors"
+                  >
+                    Add New Academy
+                  </button>
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
