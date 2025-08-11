@@ -31,8 +31,11 @@ const LoginPage = () => {
       if (error) {
         setError(error.message);
       } else {
-        // Successful login, redirect to dashboard
-        navigate('/dashboard');
+        // Wait a moment for the auth context to update with role information
+        setTimeout(() => {
+          // Redirect to role-based redirect component which will handle the appropriate dashboard
+          navigate('/dashboard');
+        }, 500);
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
