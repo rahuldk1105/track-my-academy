@@ -117,10 +117,17 @@
 ### Backend Structure
 ```
 /app/backend/
-├── server.py                  ✅ Working (signup restricted to admin-only)
+├── server.py                  ✅ Working - Enhanced with role-based authentication
 ├── requirements.txt           ✅ Updated with Supabase
 └── .env                      ✅ Configured with Supabase credentials
 ```
+
+### New API Endpoints Added
+- `GET /api/auth/user` - ✅ Enhanced with role detection (super_admin vs academy_user)
+- `GET /api/auth/user.role_info` - Returns role, academy_id, academy_name, permissions
+
+### New Routes Added  
+- `/academy` - ✅ Academy Dashboard route for academy users
 
 ### Environment Files
 - `/app/frontend/.env` - ✅ Contains REACT_APP_BACKEND_URL + Supabase config
