@@ -160,6 +160,32 @@ async def supabase_health_check():
         logger.error(f"Supabase health check failed: {e}")
         raise HTTPException(status_code=500, detail=f"Supabase connection failed: {str(e)}")
 
+# File Upload Endpoints
+@api_router.post("/upload/logo")
+async def upload_academy_logo(file: UploadFile = File(...)):
+    try:
+        # Validate file type
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Generate unique filename
+        file_extension = file.filename.split(".")[-1]
+        unique_filename = f"{str(uuid.uuid4())}.{file_extension}"
+        file_path = UPLOAD_DIR / unique_filename
+        
+        # Save file
+        async with aiofiles.open(file_path, 'wb') as f:
+            content = await file.read()
+            await f.write(content)
+        
+        # Return the URL path
+        logo_url = f"/uploads/logos/{unique_filename}"
+        return {"logo_url": logo_url, "message": "Logo uploaded successfully"}
+        
+    except Exception as e:
+        logger.error(f"File upload error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to upload logo")
+
 # Authentication Endpoints
 
 # DISABLED: Public signup endpoint - SaaS model requires admin-controlled user creation
