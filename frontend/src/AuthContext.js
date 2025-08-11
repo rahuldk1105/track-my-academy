@@ -15,20 +15,58 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [userRole, setUserRole] = useState(null)
+
+  const fetchUserRole = async (session) => {
+    if (!session?.access_token) {
+      setUserRole(null)
+      return
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user`, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        if (userData.user && userData.user.role_info) {
+          setUserRole(userData.user.role_info)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error)
+      setUserRole(null)
+    }
+  }
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
+      
+      if (session) {
+        await fetchUserRole(session)
+      }
+      
       setLoading(false)
     })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
+        
+        if (session) {
+          await fetchUserRole(session)
+        } else {
+          setUserRole(null)
+        }
+        
         setLoading(false)
       }
     )
