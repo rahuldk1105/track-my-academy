@@ -477,6 +477,65 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Demo Request Endpoints
+
+# Public endpoint for demo requests (no authentication required)
+@api_router.post("/demo-requests", response_model=DemoRequest)
+async def create_demo_request(request: DemoRequestCreate):
+    try:
+        demo_request_data = DemoRequest(**request.dict())
+        await db.demo_requests.insert_one(demo_request_data.dict())
+        
+        logger.info(f"Demo request created: {demo_request_data.full_name} - {demo_request_data.academy_name}")
+        return demo_request_data
+    except Exception as e:
+        logger.error(f"Error creating demo request: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create demo request")
+
+# Admin endpoints for managing demo requests
+@api_router.get("/admin/demo-requests", response_model=List[DemoRequest])
+async def get_demo_requests(current_user = Depends(get_current_user)):
+    try:
+        # TODO: Add admin role verification
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
+        demo_requests = await db.demo_requests.find().sort("created_at", -1).to_list(1000)
+        return [DemoRequest(**request) for request in demo_requests]
+    except Exception as e:
+        logger.error(f"Error fetching demo requests: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch demo requests")
+
+@api_router.put("/admin/demo-requests/{request_id}", response_model=DemoRequest)
+async def update_demo_request(request_id: str, request_update: DemoRequestUpdate, current_user = Depends(get_current_user)):
+    try:
+        # TODO: Add admin role verification
+        # if not current_user or current_user.get('role') != 'admin':
+        #     raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Find the request
+        demo_request = await db.demo_requests.find_one({"id": request_id})
+        if not demo_request:
+            raise HTTPException(status_code=404, detail="Demo request not found")
+        
+        # Update fields
+        update_data = request_update.dict(exclude_unset=True)
+        if update_data:
+            update_data["updated_at"] = datetime.utcnow()
+            await db.demo_requests.update_one(
+                {"id": request_id},
+                {"$set": update_data}
+            )
+        
+        # Return updated request
+        updated_request = await db.demo_requests.find_one({"id": request_id})
+        return DemoRequest(**updated_request)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating demo request: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update demo request")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
