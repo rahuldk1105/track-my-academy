@@ -143,8 +143,6 @@
 
 ### **🔄 PRIORITY 3: SaaS Features - IN PROGRESS**
 1. ❌ **Multi-tenant Data** - Ensure academy data isolation
-2. ❌ **Billing Integration** - Subscription management system
-3. ❌ **Academy Onboarding** - Process for new client setup
 
 ### **🆕 PRIORITY 4: Academy Portal Development**
 1. ❌ **Academy Dashboard** - Build actual academy-side interfaces for managing their players and coaches
