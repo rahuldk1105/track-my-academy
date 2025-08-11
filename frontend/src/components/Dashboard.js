@@ -17,7 +17,10 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedAcademy, setSelectedAcademy] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const [selectedAcademies, setSelectedAcademies] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
