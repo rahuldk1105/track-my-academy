@@ -195,31 +195,59 @@ async def upload_academy_logo(file: UploadFile = File(...)):
 #     # Only admin can create academy accounts through admin dashboard
 #     raise HTTPException(status_code=403, detail="Public signup disabled. Contact administrator for academy registration.")
 
-# Admin-Only Signup Endpoint (for future admin dashboard integration)
+# Admin-Only Academy Creation Endpoint (Enhanced with new fields)
 @api_router.post("/admin/create-academy", response_model=AuthResponse)
-async def admin_create_academy(request: SignUpRequest, current_user = Depends(get_current_user)):
+async def admin_create_academy(
+    email: str = Form(...),
+    password: str = Form(...),
+    name: str = Form(...),
+    owner_name: str = Form(...),
+    phone: Optional[str] = Form(None),
+    location: Optional[str] = Form(None),
+    sports_type: Optional[str] = Form(None),
+    player_limit: int = Form(50),
+    coach_limit: int = Form(10),
+    logo: Optional[UploadFile] = File(None),
+    current_user = Depends(get_current_user)
+):
     try:
         # TODO: Add admin role verification here
         # if not current_user or current_user.get('role') != 'admin':
         #     raise HTTPException(status_code=403, detail="Admin access required")
         
+        # Handle logo upload if provided
+        logo_url = None
+        if logo:
+            if not logo.content_type.startswith("image/"):
+                raise HTTPException(status_code=400, detail="Logo must be an image file")
+            
+            # Generate unique filename
+            file_extension = logo.filename.split(".")[-1] if logo.filename else "png"
+            unique_filename = f"{str(uuid.uuid4())}.{file_extension}"
+            file_path = UPLOAD_DIR / unique_filename
+            
+            # Save file
+            async with aiofiles.open(file_path, 'wb') as f:
+                content = await logo.read()
+                await f.write(content)
+            
+            logo_url = f"/uploads/logos/{unique_filename}"
+        
         # Prepare user metadata
-        user_metadata = {}
-        if request.academy_name:
-            user_metadata['academy_name'] = request.academy_name
-        if request.owner_name:
-            user_metadata['owner_name'] = request.owner_name
-        if request.phone:
-            user_metadata['phone'] = request.phone
-        if request.location:
-            user_metadata['location'] = request.location
-        if request.sports_type:
-            user_metadata['sports_type'] = request.sports_type
+        user_metadata = {
+            'academy_name': name,
+            'owner_name': owner_name,
+            'phone': phone,
+            'location': location,
+            'sports_type': sports_type,
+            'player_limit': player_limit,
+            'coach_limit': coach_limit
+        }
         
         # Create academy account using admin privileges
         response = supabase_admin.auth.admin.create_user({
-            "email": request.email,
-            "password": request.password,
+            "email": email,
+            "password": password,
             "email_confirm": True,  # Skip email confirmation for admin-created accounts
             "user_metadata": user_metadata
         })
@@ -227,12 +255,15 @@ async def admin_create_academy(request: SignUpRequest, current_user = Depends(ge
         if response.user:
             # Store academy data in MongoDB
             academy_data = Academy(
-                name=request.academy_name or "Unnamed Academy",
-                owner_name=request.owner_name or "Unknown Owner",
-                email=request.email,
-                phone=request.phone,
-                location=request.location,
-                sports_type=request.sports_type,
+                name=name,
+                owner_name=owner_name,
+                email=email,
+                phone=phone,
+                location=location,
+                sports_type=sports_type,
+                logo_url=logo_url,
+                player_limit=player_limit,
+                coach_limit=coach_limit,
                 status="approved",  # Admin-created academies are auto-approved
                 supabase_user_id=response.user.id
             )
