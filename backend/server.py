@@ -970,6 +970,10 @@ async def process_successful_payment(payment_transaction: dict, checkout_status:
 async def stripe_webhook(request: Request):
     """Handle Stripe webhooks for payment events"""
     try:
+        # Check if Stripe is enabled
+        if not stripe_api_key:
+            raise HTTPException(status_code=503, detail="Payment processing is currently disabled.")
+        
         # Get request body as bytes
         body = await request.body()
         stripe_signature = request.headers.get("stripe-signature", "")
