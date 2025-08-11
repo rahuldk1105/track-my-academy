@@ -120,6 +120,145 @@ const Dashboard = () => {
     loadDashboardData();
   };
 
+  const handleEditAcademy = (academy) => {
+    setSelectedAcademy(academy);
+    setShowEditModal(true);
+  };
+
+  const handleAcademyUpdated = (updatedAcademy) => {
+    setSuccessMessage(`Academy "${updatedAcademy.name}" updated successfully!`);
+    setTimeout(() => setSuccessMessage(''), 5000);
+    // Refresh dashboard data
+    loadDashboardData();
+  };
+
+  const handleDeleteAcademy = async (academyId, academyName) => {
+    if (!window.confirm(`Are you sure you want to delete "${academyName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/academies/${academyId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        setSuccessMessage(`Academy "${academyName}" deleted successfully!`);
+        setTimeout(() => setSuccessMessage(''), 5000);
+        // Refresh dashboard data
+        loadDashboardData();
+      } else {
+        const data = await response.json();
+        alert(`Failed to delete academy: ${data.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting academy:', error);
+      alert('Network error. Please try again.');
+    }
+  };
+
+  const handleApproveAcademy = async (academyId, academyName) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/academies/${academyId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'approved' })
+      });
+
+      if (response.ok) {
+        setSuccessMessage(`Academy "${academyName}" approved successfully!`);
+        setTimeout(() => setSuccessMessage(''), 5000);
+        // Refresh dashboard data
+        loadDashboardData();
+      } else {
+        const data = await response.json();
+        alert(`Failed to approve academy: ${data.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error approving academy:', error);
+      alert('Network error. Please try again.');
+    }
+  };
+
+  const handleRejectAcademy = async (academyId, academyName) => {
+    if (!window.confirm(`Are you sure you want to reject "${academyName}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/academies/${academyId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'rejected' })
+      });
+
+      if (response.ok) {
+        setSuccessMessage(`Academy "${academyName}" rejected successfully!`);
+        setTimeout(() => setSuccessMessage(''), 5000);
+        // Refresh dashboard data
+        loadDashboardData();
+      } else {
+        const data = await response.json();
+        alert(`Failed to reject academy: ${data.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error rejecting academy:', error);
+      alert('Network error. Please try again.');
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedAcademies.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to approve ${selectedAcademies.length} selected academies?`)) {
+      return;
+    }
+
+    try {
+      const promises = selectedAcademies.map(academyId =>
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/academies/${academyId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: 'approved' })
+        })
+      );
+
+      await Promise.all(promises);
+      setSuccessMessage(`${selectedAcademies.length} academies approved successfully!`);
+      setTimeout(() => setSuccessMessage(''), 5000);
+      setSelectedAcademies([]);
+      loadDashboardData();
+    } catch (error) {
+      console.error('Error in bulk approve:', error);
+      alert('Some academies could not be approved. Please try again.');
+    }
+  };
+
+  const handleSelectAcademy = (academyId) => {
+    setSelectedAcademies(prev => 
+      prev.includes(academyId) 
+        ? prev.filter(id => id !== academyId)
+        : [...prev, academyId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const allIds = academies.map(academy => academy.id);
+    setSelectedAcademies(selectedAcademies.length === allIds.length ? [] : allIds);
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
