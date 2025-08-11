@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from supabase import create_client, Client
 import shutil
 import aiofiles
-from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+# Removed Stripe imports for manual billing
 
 
 ROOT_DIR = Path(__file__).parent
