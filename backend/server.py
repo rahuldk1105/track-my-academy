@@ -837,76 +837,76 @@ async def get_academy_subscription(academy_id: str, current_user = Depends(get_c
         logger.error(f"Error fetching academy subscription: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch subscription")
 
-# Create Payment Session for Academy Subscription
-@api_router.post("/billing/create-payment-session")
-async def create_payment_session(request: PaymentSessionRequest, http_request: Request, current_user = Depends(get_current_user)):
-    """Create Stripe payment session for academy subscription"""
-    try:
-        # Check if Stripe is enabled
-        if not stripe_api_key:
-            raise HTTPException(status_code=503, detail="Payment processing is currently disabled. Please contact support for manual billing.")
-        
-        # Validate academy exists
-        academy = await db.academies.find_one({"id": request.academy_id})
-        if not academy:
-            raise HTTPException(status_code=404, detail="Academy not found")
-        
-        # Get plan pricing - support custom amounts
-        plan_key = f"starter_{request.billing_cycle}"  # Default plan
-        if plan_key not in SUBSCRIPTION_PLANS:
-            raise HTTPException(status_code=400, detail="Invalid billing cycle")
-        
-        # For now, use default pricing - in future, support custom amounts per academy
-        amount = SUBSCRIPTION_PLANS[plan_key]["price"]
-        
-        # Initialize Stripe
-        host_url = str(http_request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        
-        # Build dynamic URLs from frontend origin
-        success_url = f"{request.origin_url}/billing/success?session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{request.origin_url}/billing/cancel"
-        
-        # Create checkout session
-        checkout_request = CheckoutSessionRequest(
-            amount=amount,
-            currency="usd",
-            success_url=success_url,
-            cancel_url=cancel_url,
-            metadata={
-                "academy_id": request.academy_id,
-                "billing_cycle": request.billing_cycle,
-                "source": "academy_subscription",
-                "plan": plan_key
-            }
-        )
-        
-        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
-        
-        # Create payment transaction record
-        payment_transaction = PaymentTransaction(
-            academy_id=request.academy_id,
-            session_id=session.session_id,
-            amount=amount,
-            currency="usd",
-            payment_status="pending",
-            stripe_status="pending",
-            billing_cycle=request.billing_cycle,
-            description=f"Subscription - {SUBSCRIPTION_PLANS[plan_key]['name']}",
-            metadata=checkout_request.metadata
-        )
-        
-        await db.payment_transactions.insert_one(payment_transaction.dict())
-        
-        logger.info(f"Payment session created for academy {request.academy_id}: {session.session_id}")
-        return {"checkout_url": session.url, "session_id": session.session_id}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error creating payment session: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create payment session")
+# DISABLED: Stripe payment session creation - removed for manual billing
+# @api_router.post("/billing/create-payment-session")
+# async def create_payment_session(request: PaymentSessionRequest, http_request: Request, current_user = Depends(get_current_user)):
+#     """Create Stripe payment session for academy subscription"""
+#     try:
+#         # Check if Stripe is enabled
+#         if not stripe_api_key:
+#             raise HTTPException(status_code=503, detail="Payment processing is currently disabled. Please contact support for manual billing.")
+#         
+#         # Validate academy exists
+#         academy = await db.academies.find_one({"id": request.academy_id})
+#         if not academy:
+#             raise HTTPException(status_code=404, detail="Academy not found")
+#         
+#         # Get plan pricing - support custom amounts
+#         plan_key = f"starter_{request.billing_cycle}"  # Default plan
+#         if plan_key not in SUBSCRIPTION_PLANS:
+#             raise HTTPException(status_code=400, detail="Invalid billing cycle")
+#         
+#         # For now, use default pricing - in future, support custom amounts per academy
+#         amount = SUBSCRIPTION_PLANS[plan_key]["price"]
+#         
+#         # Initialize Stripe
+#         host_url = str(http_request.base_url).rstrip('/')
+#         webhook_url = f"{host_url}/api/webhook/stripe"
+#         stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+#         
+#         # Build dynamic URLs from frontend origin
+#         success_url = f"{request.origin_url}/billing/success?session_id={{CHECKOUT_SESSION_ID}}"
+#         cancel_url = f"{request.origin_url}/billing/cancel"
+#         
+#         # Create checkout session
+#         checkout_request = CheckoutSessionRequest(
+#             amount=amount,
+#             currency="usd",
+#             success_url=success_url,
+#             cancel_url=cancel_url,
+#             metadata={
+#                 "academy_id": request.academy_id,
+#                 "billing_cycle": request.billing_cycle,
+#                 "source": "academy_subscription",
+#                 "plan": plan_key
+#             }
+#         )
+#         
+#         session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+#         
+#         # Create payment transaction record
+#         payment_transaction = PaymentTransaction(
+#             academy_id=request.academy_id,
+#             session_id=session.session_id,
+#             amount=amount,
+#             currency="usd",
+#             payment_status="pending",
+#             stripe_status="pending",
+#             billing_cycle=request.billing_cycle,
+#             description=f"Subscription - {SUBSCRIPTION_PLANS[plan_key]['name']}",
+#             metadata=checkout_request.metadata
+#         )
+#         
+#         await db.payment_transactions.insert_one(payment_transaction.dict())
+#         
+#         logger.info(f"Payment session created for academy {request.academy_id}: {session.session_id}")
+#         return {"checkout_url": session.url, "session_id": session.session_id}
+#         
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         logger.error(f"Error creating payment session: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to create payment session")
 
 # Check Payment Status
 @api_router.get("/billing/payment-status/{session_id}")
