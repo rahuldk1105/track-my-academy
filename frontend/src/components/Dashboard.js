@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateAcademyModal from './CreateAcademyModal';
 import EditAcademyModal from './EditAcademyModal';
 import DemoRequestsTable from './DemoRequestsTable';
+import BillingDashboard from './BillingDashboard';
 
 const Dashboard = () => {
   const { user, signOut, token } = useAuth();
