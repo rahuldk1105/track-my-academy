@@ -572,13 +572,10 @@ const Dashboard = () => {
           {activeTab === 'users' && (
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-white">User Management</h2>
-                <button 
-                  onClick={() => setShowCreateModal(true)}
-                  className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors"
-                >
-                  Add New User
-                </button>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">User Management</h2>
+                  <p className="text-sm text-gray-400 mt-1">Academy owners and administrators</p>
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
