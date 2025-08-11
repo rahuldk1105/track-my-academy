@@ -103,9 +103,11 @@ export const AuthProvider = ({ children }) => {
     session,
     loading,
     token: session?.access_token,
+    userRole,
     signIn,
     signUp,
     signOut,
+    refreshUserRole: () => fetchUserRole(session),
   }
 
   return (
