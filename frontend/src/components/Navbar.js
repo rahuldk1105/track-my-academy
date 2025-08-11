@@ -104,6 +104,12 @@ const Navbar = () => {
           </div>
         )}
       </div>
+      
+      {/* Demo Request Modal */}
+      <DemoRequestModal 
+        isOpen={isDemoModalOpen} 
+        onClose={() => setIsDemoModalOpen(false)} 
+      />
     </nav>
   );
 };
