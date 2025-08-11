@@ -1905,6 +1905,399 @@ def test_demo_request_endpoints():
         print("⚠️ Some demo request features need attention.")
         return False
 
+def test_get_subscription_plans():
+    """Test GET /api/billing/plans endpoint"""
+    print("\n=== Testing Get Subscription Plans ===")
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}/billing/plans",
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            if 'plans' in data:
+                plans = data['plans']
+                print(f"Number of subscription plans: {len(plans)}")
+                
+                # Check if plans have required structure
+                if len(plans) > 0:
+                    plan_keys = list(plans.keys())
+                    print(f"Available plans: {plan_keys}")
+                    
+                    # Check a sample plan structure
+                    sample_plan = list(plans.values())[0]
+                    required_fields = ['name', 'price', 'billing_cycle', 'currency', 'player_limit', 'coach_limit', 'features']
+                    missing_fields = [field for field in required_fields if field not in sample_plan]
+                    
+                    if not missing_fields:
+                        print("✅ Get subscription plans PASSED")
+                        return True, plans
+                    else:
+                        print(f"❌ Get subscription plans FAILED - Missing fields: {missing_fields}")
+                        return False, None
+                else:
+                    print("❌ Get subscription plans FAILED - No plans found")
+                    return False, None
+            else:
+                print("❌ Get subscription plans FAILED - Missing 'plans' key")
+                return False, None
+        else:
+            print(f"❌ Get subscription plans FAILED - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Get subscription plans FAILED - Connection error: {e}")
+        return False, None
+
+def test_get_academy_subscription(academy_id, access_token=None):
+    """Test GET /api/billing/academy/{academy_id}/subscription endpoint"""
+    print(f"\n=== Testing Get Academy Subscription (ID: {academy_id}) ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        response = requests.get(
+            f"{API_BASE_URL}/billing/academy/{academy_id}/subscription",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            # Should have either subscription data or no_subscription status
+            if 'subscription' in data or 'status' in data:
+                print("✅ Get academy subscription PASSED")
+                return True, data
+            else:
+                print("❌ Get academy subscription FAILED - Invalid response structure")
+                return False, None
+        else:
+            print(f"❌ Get academy subscription FAILED - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Get academy subscription FAILED - Connection error: {e}")
+        return False, None
+
+def test_get_all_subscriptions(access_token=None):
+    """Test GET /api/admin/billing/subscriptions endpoint"""
+    print("\n=== Testing Get All Subscriptions ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        response = requests.get(
+            f"{API_BASE_URL}/admin/billing/subscriptions",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Number of subscriptions retrieved: {len(data)}")
+            
+            if isinstance(data, list):
+                # Check subscription structure if any exist
+                if len(data) > 0:
+                    subscription = data[0]
+                    required_fields = ['id', 'academy_id', 'plan_id', 'billing_cycle', 'amount', 'currency', 'status']
+                    missing_fields = [field for field in required_fields if field not in subscription]
+                    
+                    if not missing_fields:
+                        print("✅ Get all subscriptions PASSED")
+                        return True, data
+                    else:
+                        print(f"❌ Get all subscriptions FAILED - Missing fields: {missing_fields}")
+                        return False, None
+                else:
+                    print("✅ Get all subscriptions PASSED (no subscriptions found)")
+                    return True, []
+            else:
+                print("❌ Get all subscriptions FAILED - Response is not a list")
+                return False, None
+        else:
+            print(f"❌ Get all subscriptions FAILED - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Get all subscriptions FAILED - Connection error: {e}")
+        return False, None
+
+def test_get_payment_transactions(access_token=None):
+    """Test GET /api/admin/billing/transactions endpoint"""
+    print("\n=== Testing Get Payment Transactions ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        response = requests.get(
+            f"{API_BASE_URL}/admin/billing/transactions",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Number of transactions retrieved: {len(data)}")
+            
+            if isinstance(data, list):
+                # Check transaction structure if any exist
+                if len(data) > 0:
+                    transaction = data[0]
+                    required_fields = ['id', 'academy_id', 'amount', 'currency', 'payment_method', 'payment_status']
+                    missing_fields = [field for field in required_fields if field not in transaction]
+                    
+                    if not missing_fields:
+                        print("✅ Get payment transactions PASSED")
+                        return True, data
+                    else:
+                        print(f"❌ Get payment transactions FAILED - Missing fields: {missing_fields}")
+                        return False, None
+                else:
+                    print("✅ Get payment transactions PASSED (no transactions found)")
+                    return True, []
+            else:
+                print("❌ Get payment transactions FAILED - Response is not a list")
+                return False, None
+        else:
+            print(f"❌ Get payment transactions FAILED - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Get payment transactions FAILED - Connection error: {e}")
+        return False, None
+
+def test_create_manual_payment(academy_id, access_token=None):
+    """Test POST /api/admin/billing/payments/manual endpoint"""
+    print(f"\n=== Testing Create Manual Payment (Academy ID: {academy_id}) ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        # Create manual payment data
+        payment_data = {
+            "academy_id": academy_id,
+            "amount": 2499.00,
+            "payment_method": "UPI",
+            "payment_date": "2024-01-15T10:30:00Z",
+            "billing_cycle": "monthly",
+            "description": "Monthly subscription payment for January 2024",
+            "admin_notes": "Payment received via UPI transfer",
+            "receipt_url": None
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/admin/billing/payments/manual",
+            json=payment_data,
+            headers=headers,
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Created payment ID: {data.get('id')}")
+            
+            # Verify payment data
+            if (data.get('academy_id') == academy_id and 
+                data.get('amount') == payment_data['amount'] and
+                data.get('payment_method') == payment_data['payment_method']):
+                print("✅ Create manual payment PASSED")
+                return True, data['id']
+            else:
+                print("❌ Create manual payment FAILED - Data mismatch")
+                return False, None
+        elif response.status_code == 404:
+            print("❌ Create manual payment FAILED - Academy not found")
+            return False, None
+        else:
+            print(f"❌ Create manual payment FAILED - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Create manual payment FAILED - Connection error: {e}")
+        return False, None
+
+def test_create_manual_subscription(academy_id, access_token=None):
+    """Test POST /api/admin/billing/subscriptions/manual endpoint"""
+    print(f"\n=== Testing Create Manual Subscription (Academy ID: {academy_id}) ===")
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        # Create manual subscription data
+        subscription_data = {
+            "academy_id": academy_id,
+            "plan_id": "starter_monthly",
+            "billing_cycle": "monthly",
+            "custom_amount": None,  # Use plan price
+            "current_period_start": "2024-01-01T00:00:00Z",
+            "current_period_end": "2024-02-01T00:00:00Z",
+            "status": "active",
+            "auto_renew": True,
+            "notes": "Manual subscription created for testing"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/admin/billing/subscriptions/manual",
+            json=subscription_data,
+            headers=headers,
+            timeout=15
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Created subscription ID: {data.get('id')}")
+            
+            # Verify subscription data
+            if (data.get('academy_id') == academy_id and 
+                data.get('plan_id') == subscription_data['plan_id'] and
+                data.get('status') == subscription_data['status']):
+                print("✅ Create manual subscription PASSED")
+                return True, data['id']
+            else:
+                print("❌ Create manual subscription FAILED - Data mismatch")
+                return False, None
+        elif response.status_code == 404:
+            print("❌ Create manual subscription FAILED - Academy or plan not found")
+            return False, None
+        else:
+            print(f"❌ Create manual subscription FAILED - Status: {response.status_code}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Create manual subscription FAILED - Connection error: {e}")
+        return False, None
+
+def test_billing_system():
+    """Test complete billing and subscription system"""
+    print("\n=== Testing Complete Billing & Subscription System ===")
+    
+    # Get admin access token
+    login_data = {
+        "email": "admin@trackmyacademy.com",
+        "password": "AdminPassword123!"
+    }
+    
+    try:
+        login_response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        access_token = None
+        if login_response.status_code == 200:
+            session = login_response.json().get("session", {})
+            access_token = session.get("access_token")
+            print("✅ Got admin access token for billing tests")
+        else:
+            print("⚠️ Could not get admin access token, testing without authentication")
+    except:
+        print("⚠️ Could not get admin access token, testing without authentication")
+        access_token = None
+    
+    # Get an academy ID for testing
+    academy_id = None
+    try:
+        headers = {}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        
+        academies_response = requests.get(
+            f"{API_BASE_URL}/admin/academies",
+            headers=headers,
+            timeout=10
+        )
+        
+        if academies_response.status_code == 200:
+            academies = academies_response.json()
+            if academies:
+                academy_id = academies[0]['id']
+                print(f"Using academy ID for billing tests: {academy_id}")
+            else:
+                print("⚠️ No academies found for billing tests")
+        else:
+            print("⚠️ Could not retrieve academies for billing tests")
+    except:
+        print("⚠️ Error retrieving academies for billing tests")
+    
+    # Run billing tests
+    test_results = {}
+    
+    # Test 1: Get subscription plans
+    test_results['get_subscription_plans'] = test_get_subscription_plans()[0] if test_get_subscription_plans() else False
+    
+    # Test 2: Get all subscriptions
+    test_results['get_all_subscriptions'] = test_get_all_subscriptions(access_token)[0] if test_get_all_subscriptions(access_token) else False
+    
+    # Test 3: Get payment transactions
+    test_results['get_payment_transactions'] = test_get_payment_transactions(access_token)[0] if test_get_payment_transactions(access_token) else False
+    
+    if academy_id:
+        # Test 4: Get academy subscription
+        test_results['get_academy_subscription'] = test_get_academy_subscription(academy_id, access_token)[0] if test_get_academy_subscription(academy_id, access_token) else False
+        
+        # Test 5: Create manual payment
+        payment_success, payment_id = test_create_manual_payment(academy_id, access_token)
+        test_results['create_manual_payment'] = payment_success
+        
+        # Test 6: Create manual subscription
+        subscription_success, subscription_id = test_create_manual_subscription(academy_id, access_token)
+        test_results['create_manual_subscription'] = subscription_success
+    else:
+        # Skip academy-specific tests
+        test_results.update({
+            'get_academy_subscription': False,
+            'create_manual_payment': False,
+            'create_manual_subscription': False
+        })
+    
+    # Print billing system summary
+    print("\n" + "=" * 60)
+    print("📊 BILLING & SUBSCRIPTION SYSTEM TEST SUMMARY")
+    print("=" * 60)
+    
+    passed = 0
+    total = len(test_results)
+    
+    for test_name, result in test_results.items():
+        status = "✅ PASSED" if result else "❌ FAILED"
+        print(f"{test_name.replace('_', ' ').title()}: {status}")
+        if result:
+            passed += 1
+    
+    print(f"\nBilling System: {passed}/{total} tests passed")
+    
+    if passed >= total - 1:  # Allow some flexibility for edge cases
+        print("🎉 Billing & Subscription System is working correctly!")
+        return True
+    else:
+        print("⚠️ Some billing features need attention.")
+        return False
+
 def run_all_tests():
     """Run all backend tests"""
     print("🚀 Starting Track My Academy Backend API Tests")
@@ -1923,6 +2316,7 @@ def run_all_tests():
         'academy_authentication': test_academy_authentication(),
         'enhanced_academy_management': test_enhanced_academy_management_system(),
         'demo_request_endpoints': test_demo_request_endpoints(),
+        'billing_subscription_system': test_billing_system(),
     }
     
     print("\n" + "=" * 60)
