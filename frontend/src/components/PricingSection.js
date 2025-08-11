@@ -251,6 +251,12 @@ const PricingSection = ({ scrollY }) => {
           </div>
         </div>
       </div>
+      
+      {/* Demo Request Modal */}
+      <DemoRequestModal 
+        isOpen={isDemoModalOpen} 
+        onClose={() => setIsDemoModalOpen(false)} 
+      />
     </section>
   );
 };
