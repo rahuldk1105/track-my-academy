@@ -5,12 +5,16 @@ const CreateAcademyModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    academy_name: '',
+    name: '',
     owner_name: '',
     phone: '',
     location: '',
-    sports_type: ''
+    sports_type: '',
+    player_limit: 50,
+    coach_limit: 10
   });
+  const [logo, setLogo] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { token } = useAuth();
