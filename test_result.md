@@ -207,6 +207,18 @@ backend:
           agent: "testing"
           comment: "Backend Supabase integration fully implemented and operational. GET /api/supabase/health endpoint returns healthy status with active connection. Supabase client properly initialized with both anon and service keys. All authentication endpoints integrated with Supabase auth service. JWT token validation working correctly. Error handling properly implemented for invalid credentials and unauthorized access. Backend ready for frontend integration."
 
+  - task: "Demo Request Endpoints"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "DEMO REQUEST ENDPOINTS TESTING COMPLETED SUCCESSFULLY! All demo request functionality working perfectly: 1) ✅ POST /api/demo-requests: Public endpoint accepts demo request submissions, validates required fields (full_name, email, academy_name, location, sports_type), stores data in MongoDB with proper UUID generation, returns complete demo request object with pending status. 2) ✅ GET /api/admin/demo-requests: Admin endpoint retrieves all demo requests sorted by created_at descending, requires authentication, returns complete list with all fields. 3) ✅ PUT /api/admin/demo-requests/{id}: Admin endpoint updates demo request status (pending→contacted→closed), validates request ID, returns updated object, proper 404 handling for invalid IDs. 4) ✅ MongoDB Integration: Demo requests collection properly structured with all fields (id, full_name, email, phone, academy_name, location, sports_type, current_students, message, status, created_at, updated_at), data persistence confirmed. 5) ✅ Validation: Proper validation for required fields (422 status), handles special characters and long strings correctly. 6) ✅ Error Handling: Appropriate HTTP status codes, proper error messages, invalid ID handling. Fixed route registration issue by moving endpoints before router inclusion. All demo request functionality is production-ready and working correctly."
+
 frontend:
   - task: "Navigation System"
     implemented: true
