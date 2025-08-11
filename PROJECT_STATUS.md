@@ -95,9 +95,11 @@
 /app/frontend/src/
 ├── components/
 │   ├── HeroSection.js          ✅ Working (CTAs updated to "Request Demo")
-│   ├── LoginPage.js            ✅ Working with Supabase (signup links removed)
+│   ├── LoginPage.js            ✅ Working with Supabase + Role-based redirection
 │   ├── SignupPage.js           ❌ DISABLED for SaaS model (file exists but unused)
-│   ├── Dashboard.js            ✅ Working (needs real data integration)
+│   ├── Dashboard.js            ✅ Working - SuperAdmin dashboard with access control
+│   ├── AcademyDashboard.js     ✅ NEW - Academy portal dashboard with role-based access
+│   ├── RoleBasedRedirect.js    ✅ NEW - Auto-redirect component based on user role
 │   ├── ProtectedRoute.js       ✅ Working
 │   ├── Navbar.js              ✅ Working (CTAs updated to "Request Demo")
 │   ├── FeaturesSection.js     ✅ Working (CTAs updated to "Request Demo")
@@ -106,9 +108,9 @@
 │   ├── TestimonialsSection.js ✅ Working
 │   ├── Footer.js              ✅ Working (CTAs updated to "Request Demo List")
 │   └── LandingPage.js         ✅ Working (CTAs updated to "Request Demo")
-├── AuthContext.js             ✅ Working
+├── AuthContext.js             ✅ Working - Enhanced with role detection
 ├── supabaseClient.js          ✅ Working
-├── App.js                     ✅ Working (remove signup route)
+├── App.js                     ✅ Working - Updated with academy route
 └── index.js                   ✅ Working
 ```
 
