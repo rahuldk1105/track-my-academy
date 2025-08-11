@@ -198,7 +198,9 @@ const PricingSection = ({ scrollY }) => {
                   </div>
 
                   {/* CTA Button */}
-                  <button className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
+                  <button 
+                    onClick={() => setIsDemoModalOpen(true)}
+                    className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
                     plan.popular
                       ? 'bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white shadow-lg hover:shadow-sky-500/25'
                       : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-sky-400/50'
