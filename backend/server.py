@@ -908,56 +908,56 @@ async def get_academy_subscription(academy_id: str, current_user = Depends(get_c
 #         logger.error(f"Error creating payment session: {e}")
 #         raise HTTPException(status_code=500, detail="Failed to create payment session")
 
-# Check Payment Status
-@api_router.get("/billing/payment-status/{session_id}")
-async def check_payment_status(session_id: str, http_request: Request):
-    """Check the status of a payment session and update subscription if paid"""
-    try:
-        # Check if Stripe is enabled
-        if not stripe_api_key:
-            raise HTTPException(status_code=503, detail="Payment processing is currently disabled. Please contact support for manual billing.")
-        
-        # Initialize Stripe
-        host_url = str(http_request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        
-        # Get payment status from Stripe
-        checkout_status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
-        
-        # Find payment transaction
-        payment_transaction = await db.payment_transactions.find_one({"session_id": session_id})
-        if not payment_transaction:
-            raise HTTPException(status_code=404, detail="Payment transaction not found")
-        
-        # Update payment transaction status
-        update_data = {
-            "payment_status": checkout_status.payment_status,
-            "stripe_status": checkout_status.status,
-            "updated_at": datetime.utcnow()
-        }
-        
-        await db.payment_transactions.update_one(
-            {"session_id": session_id},
-            {"$set": update_data}
-        )
-        
-        # If payment is successful and not already processed
-        if checkout_status.payment_status == "paid" and payment_transaction.get("payment_status") != "paid":
-            await process_successful_payment(payment_transaction, checkout_status)
-        
-        return {
-            "payment_status": checkout_status.payment_status,
-            "status": checkout_status.status,
-            "amount_total": checkout_status.amount_total,
-            "currency": checkout_status.currency
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error checking payment status: {e}")
-        raise HTTPException(status_code=500, detail="Failed to check payment status")
+# DISABLED: Stripe payment status check - removed for manual billing
+# @api_router.get("/billing/payment-status/{session_id}")
+# async def check_payment_status(session_id: str, http_request: Request):
+#     """Check the status of a payment session and update subscription if paid"""
+#     try:
+#         # Check if Stripe is enabled
+#         if not stripe_api_key:
+#             raise HTTPException(status_code=503, detail="Payment processing is currently disabled. Please contact support for manual billing.")
+#         
+#         # Initialize Stripe
+#         host_url = str(http_request.base_url).rstrip('/')
+#         webhook_url = f"{host_url}/api/webhook/stripe"
+#         stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+#         
+#         # Get payment status from Stripe
+#         checkout_status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+#         
+#         # Find payment transaction
+#         payment_transaction = await db.payment_transactions.find_one({"session_id": session_id})
+#         if not payment_transaction:
+#             raise HTTPException(status_code=404, detail="Payment transaction not found")
+#         
+#         # Update payment transaction status
+#         update_data = {
+#             "payment_status": checkout_status.payment_status,
+#             "stripe_status": checkout_status.status,
+#             "updated_at": datetime.utcnow()
+#         }
+#         
+#         await db.payment_transactions.update_one(
+#             {"session_id": session_id},
+#             {"$set": update_data}
+#         )
+#         
+#         # If payment is successful and not already processed
+#         if checkout_status.payment_status == "paid" and payment_transaction.get("payment_status") != "paid":
+#             await process_successful_payment(payment_transaction, checkout_status)
+#         
+#         return {
+#             "payment_status": checkout_status.payment_status,
+#             "status": checkout_status.status,
+#             "amount_total": checkout_status.amount_total,
+#             "currency": checkout_status.currency
+#         }
+#         
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         logger.error(f"Error checking payment status: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to check payment status")
 
 async def process_successful_payment(payment_transaction: dict, checkout_status: CheckoutStatusResponse):
     """Process successful payment and create/update subscription"""
