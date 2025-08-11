@@ -1013,60 +1013,60 @@ async def process_successful_payment(payment_transaction: dict, checkout_status:
         logger.error(f"Error processing successful payment: {e}")
         raise
 
-# Stripe Webhook Handler
-@api_router.post("/webhook/stripe")
-async def stripe_webhook(request: Request):
-    """Handle Stripe webhooks for payment events"""
-    try:
-        # Check if Stripe is enabled
-        if not stripe_api_key:
-            raise HTTPException(status_code=503, detail="Payment processing is currently disabled.")
-        
-        # Get request body as bytes
-        body = await request.body()
-        stripe_signature = request.headers.get("stripe-signature", "")
-        
-        # Initialize Stripe
-        host_url = str(request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        
-        # Handle webhook
-        webhook_response = await stripe_checkout.handle_webhook(body, stripe_signature)
-        
-        # Process webhook event based on type
-        if webhook_response.event_type in ["checkout.session.completed", "payment_intent.succeeded"]:
-            # Find and update payment transaction
-            payment_transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
-            if payment_transaction and payment_transaction.get("payment_status") != "paid":
-                
-                # Update payment status
-                await db.payment_transactions.update_one(
-                    {"session_id": webhook_response.session_id},
-                    {"$set": {
-                        "payment_status": "paid",
-                        "stripe_status": "completed",
-                        "updated_at": datetime.utcnow()
-                    }}
-                )
-                
-                # Process successful payment
-                checkout_status = CheckoutStatusResponse(
-                    status="complete",
-                    payment_status="paid",
-                    amount_total=int(payment_transaction["amount"] * 100),  # Convert to cents
-                    currency=payment_transaction["currency"],
-                    metadata=webhook_response.metadata or {}
-                )
-                
-                await process_successful_payment(payment_transaction, checkout_status)
-                logger.info(f"Webhook processed: payment completed for session {webhook_response.session_id}")
-        
-        return {"status": "success"}
-        
-    except Exception as e:
-        logger.error(f"Error processing webhook: {e}")
-        raise HTTPException(status_code=500, detail="Webhook processing failed")
+# DISABLED: Stripe webhook handler - removed for manual billing
+# @api_router.post("/webhook/stripe")
+# async def stripe_webhook(request: Request):
+#     """Handle Stripe webhooks for payment events"""
+#     try:
+#         # Check if Stripe is enabled
+#         if not stripe_api_key:
+#             raise HTTPException(status_code=503, detail="Payment processing is currently disabled.")
+#         
+#         # Get request body as bytes
+#         body = await request.body()
+#         stripe_signature = request.headers.get("stripe-signature", "")
+#         
+#         # Initialize Stripe
+#         host_url = str(request.base_url).rstrip('/')
+#         webhook_url = f"{host_url}/api/webhook/stripe"
+#         stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+#         
+#         # Handle webhook
+#         webhook_response = await stripe_checkout.handle_webhook(body, stripe_signature)
+#         
+#         # Process webhook event based on type
+#         if webhook_response.event_type in ["checkout.session.completed", "payment_intent.succeeded"]:
+#             # Find and update payment transaction
+#             payment_transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
+#             if payment_transaction and payment_transaction.get("payment_status") != "paid":
+#                 
+#                 # Update payment status
+#                 await db.payment_transactions.update_one(
+#                     {"session_id": webhook_response.session_id},
+#                     {"$set": {
+#                         "payment_status": "paid",
+#                         "stripe_status": "completed",
+#                         "updated_at": datetime.utcnow()
+#                     }}
+#                 )
+#                 
+#                 # Process successful payment
+#                 checkout_status = CheckoutStatusResponse(
+#                     status="complete",
+#                     payment_status="paid",
+#                     amount_total=int(payment_transaction["amount"] * 100),  # Convert to cents
+#                     currency=payment_transaction["currency"],
+#                     metadata=webhook_response.metadata or {}
+#                 )
+#                 
+#                 await process_successful_payment(payment_transaction, checkout_status)
+#                 logger.info(f"Webhook processed: payment completed for session {webhook_response.session_id}")
+#         
+#         return {"status": "success"}
+#         
+#     except Exception as e:
+#         logger.error(f"Error processing webhook: {e}")
+#         raise HTTPException(status_code=500, detail="Webhook processing failed")
 
 # Admin: Get All Subscriptions
 @api_router.get("/admin/billing/subscriptions", response_model=List[AcademySubscription])
