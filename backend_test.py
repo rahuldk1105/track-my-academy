@@ -1922,6 +1922,7 @@ def run_all_tests():
         'academy_management_apis': test_academy_management_apis(),
         'academy_authentication': test_academy_authentication(),
         'enhanced_academy_management': test_enhanced_academy_management_system(),
+        'demo_request_endpoints': test_demo_request_endpoints(),
     }
     
     print("\n" + "=" * 60)
