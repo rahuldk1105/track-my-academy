@@ -95,7 +95,7 @@ const Navbar = () => {
               <button onClick={() => scrollToSection('pricing')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">Pricing</button>
               <button onClick={() => scrollToSection('testimonials')} className="block text-white hover:text-sky-400 px-3 py-2 text-base font-medium w-full text-left">Testimonials</button>
               <button 
-                onClick={handleJoinBeta}
+                onClick={handleRequestDemo}
                 className="w-full mt-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 px-6 py-2 rounded-full text-white font-semibold transition-all duration-300"
               >
                 Request Demo
