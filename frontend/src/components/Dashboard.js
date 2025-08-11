@@ -7,7 +7,7 @@ import DemoRequestsTable from './DemoRequestsTable';
 import BillingDashboard from './BillingDashboard';
 
 const Dashboard = () => {
-  const { user, signOut, token } = useAuth();
+  const { user, signOut, token, userRole } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAcademies: 0,
@@ -28,10 +28,18 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load dashboard data
-    loadDashboardData();
-    loadSystemOverview();
-  }, []);
+    // Redirect academy users to academy dashboard
+    if (userRole && userRole.role === 'academy_user') {
+      navigate('/academy');
+      return;
+    }
+    
+    // Only load dashboard data if user is super admin
+    if (userRole && userRole.role === 'super_admin') {
+      loadDashboardData();
+      loadSystemOverview();
+    }
+  }, [userRole, navigate]);
 
   const loadSystemOverview = async () => {
     try {
