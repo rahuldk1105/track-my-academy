@@ -643,6 +643,17 @@ const Dashboard = () => {
         onClose={() => setShowCreateModal(false)}
         onSuccess={handleAcademyCreated}
       />
+
+      {/* Edit Academy Modal */}
+      <EditAcademyModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedAcademy(null);
+        }}
+        onSuccess={handleAcademyUpdated}
+        academy={selectedAcademy}
+      />
     </div>
   );
 };
