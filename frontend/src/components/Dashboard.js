@@ -444,39 +444,128 @@ const Dashboard = () => {
           {activeTab === 'overview' && (
             <div className="p-6">
               <h2 className="text-xl font-semibold text-white mb-4">System Overview</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-300 mb-3">Recent Activity</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center p-3 bg-white/5 rounded-lg">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                      <p className="text-gray-300">New academy registration: Football Masters</p>
+              
+              {overviewLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-white">Loading system overview...</div>
+                </div>
+              ) : systemOverview ? (
+                <div className="space-y-6">
+                  {/* Real-time Statistics */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                      <h3 className="text-lg font-semibold text-sky-400 mb-2">Total Academies</h3>
+                      <p className="text-2xl font-bold text-white">{systemOverview.stats.total_academies}</p>
+                      <p className="text-sm text-gray-400">Active: {systemOverview.stats.active_academies}</p>
                     </div>
-                    <div className="flex items-center p-3 bg-white/5 rounded-lg">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-                      <p className="text-gray-300">User login: admin@academy1.com</p>
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                      <h3 className="text-lg font-semibold text-green-400 mb-2">Pending Academies</h3>
+                      <p className="text-2xl font-bold text-white">{systemOverview.stats.pending_academies}</p>
+                      <p className="text-sm text-gray-400">Awaiting approval</p>
                     </div>
-                    <div className="flex items-center p-3 bg-white/5 rounded-lg">
-                      <div className="w-2 h-2 bg-orange-400 rounded-full mr-3"></div>
-                      <p className="text-gray-300">Academy approval pending: Tennis Pro Center</p>
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                      <h3 className="text-lg font-semibold text-purple-400 mb-2">Demo Requests</h3>
+                      <p className="text-2xl font-bold text-white">{systemOverview.stats.total_demo_requests}</p>
+                      <p className="text-sm text-gray-400">Pending: {systemOverview.stats.pending_demo_requests}</p>
+                    </div>
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                      <h3 className="text-lg font-semibold text-orange-400 mb-2">Server Status</h3>
+                      <p className="text-2xl font-bold text-green-400 capitalize">{systemOverview.server_status}</p>
+                      <p className="text-sm text-gray-400">System operational</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Recent Activities */}
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-300 mb-3">Recent Activity</h3>
+                      <div className="space-y-3 max-h-80 overflow-y-auto">
+                        {systemOverview.recent_activities.length > 0 ? systemOverview.recent_activities.map((activity) => (
+                          <div key={activity.id} className="flex items-center p-3 bg-white/5 rounded-lg">
+                            <div className={`w-2 h-2 rounded-full mr-3 ${
+                              activity.status === 'success' ? 'bg-green-400' : 
+                              activity.status === 'pending' ? 'bg-orange-400' : 'bg-blue-400'
+                            }`}></div>
+                            <div className="flex-1">
+                              <p className="text-gray-300">{activity.description}</p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {new Date(activity.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        )) : (
+                          <div className="text-gray-400 text-center py-4">No recent activities</div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Recently Added Academies */}
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-300 mb-3">Recently Added Academies</h3>
+                      <div className="space-y-3 max-h-80 overflow-y-auto">
+                        {systemOverview.recent_academies.length > 0 ? systemOverview.recent_academies.map((academy) => (
+                          <div key={academy.id} className="p-3 bg-white/5 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="text-white font-medium">{academy.name}</h4>
+                                <p className="text-sm text-gray-400">Owner: {academy.owner_name}</p>
+                                <p className="text-sm text-gray-400">{academy.location} • {academy.sports_type}</p>
+                              </div>
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                academy.status === 'approved' 
+                                  ? 'bg-green-500/20 text-green-400' 
+                                  : 'bg-orange-500/20 text-orange-400'
+                              }`}>
+                                {academy.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                              Added: {new Date(academy.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        )) : (
+                          <div className="text-gray-400 text-center py-4">No academies yet</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-300 mb-3">Quick Actions</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <button 
+                        onClick={() => setActiveTab('academies')}
+                        className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                      >
+                        Review Pending Academies ({systemOverview.stats.pending_academies})
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('demo-requests')}
+                        className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                      >
+                        Review Demo Requests ({systemOverview.stats.pending_demo_requests})
+                      </button>
+                      <button 
+                        onClick={loadSystemOverview}
+                        className="bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                      >
+                        Refresh System Data
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-300 mb-3">Quick Actions</h3>
-                  <div className="space-y-3">
-                    <button className="w-full bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left">
-                      Review Pending Academies
-                    </button>
-                    <button className="w-full bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left">
-                      Send Bulk Notifications
-                    </button>
-                    <button className="w-full bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left">
-                      Generate Analytics Report
-                    </button>
-                  </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-gray-400">Failed to load system overview. Please try again.</div>
+                  <button 
+                    onClick={loadSystemOverview}
+                    className="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors"
+                  >
+                    Retry
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
