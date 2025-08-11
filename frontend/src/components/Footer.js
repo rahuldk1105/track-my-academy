@@ -233,6 +233,12 @@ const Footer = () => {
           </button>
         </div>
       </div>
+      
+      {/* Demo Request Modal */}
+      <DemoRequestModal 
+        isOpen={isDemoModalOpen} 
+        onClose={() => setIsDemoModalOpen(false)} 
+      />
     </footer>
   );
 };
