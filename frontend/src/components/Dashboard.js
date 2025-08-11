@@ -524,10 +524,20 @@ const Dashboard = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={selectedAcademies.length === academies.length && academies.length > 0}
+                          onChange={handleSelectAll}
+                          className="rounded bg-gray-700 border-gray-600 text-sky-600 focus:ring-sky-500"
+                        />
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-300">Logo</th>
                       <th className="text-left py-3 px-4 text-gray-300">Academy Name</th>
                       <th className="text-left py-3 px-4 text-gray-300">Owner</th>
                       <th className="text-left py-3 px-4 text-gray-300">Sport</th>
                       <th className="text-left py-3 px-4 text-gray-300">Location</th>
+                      <th className="text-left py-3 px-4 text-gray-300">Limits</th>
                       <th className="text-left py-3 px-4 text-gray-300">Status</th>
                       <th className="text-left py-3 px-4 text-gray-300">Actions</th>
                     </tr>
