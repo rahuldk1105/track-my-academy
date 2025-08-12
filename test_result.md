@@ -757,6 +757,42 @@ frontend:
           agent: "testing"
           comment: "COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY! Enhanced Academy Management Interface is fully operational: 1) ✅ Academy Logo Upload System: POST /api/upload/logo endpoint working perfectly - validates image file types, generates unique filenames, stores files in /uploads/logos/, serves static files correctly, properly rejects non-image files with 400 status. 2) ✅ Enhanced Academy Creation: POST /api/admin/create-academy accepts FormData with logo uploads, player_limit (default 50), coach_limit (default 10) fields, integrates file upload with academy creation, stores all new fields in MongoDB correctly. 3) ✅ Academy Management CRUD Operations: GET /api/admin/academies returns logo_url, player_limit, coach_limit fields; PUT /api/admin/academies/{id} supports updating limits and logo references; DELETE /api/admin/academies/{id} maintains existing functionality. 4) ✅ Database Model Validation: Academy model properly includes and stores logo_url (optional string), player_limit (integer, default 50), coach_limit (integer, default 10). 5) ✅ File Upload Security: Image file validation working, invalid file types properly rejected with 400 status, proper error handling for upload failures. All enhanced features tested with real data and confirmed working correctly."
 
+  - task: "Academy Dashboard Player Management Interface"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/AcademyDashboard.js, /app/frontend/src/components/PlayerModal.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Created PlayerModal component with comprehensive form for player management including all fields from backend model (first_name, last_name, email, phone, date_of_birth, age, position, jersey_number, height, weight, emergency contacts, medical notes). Integrated PlayerModal with AcademyDashboard component. Backend APIs are already working and tested."
+
+  - task: "Academy Dashboard Coach Management Interface"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/AcademyDashboard.js, /app/frontend/src/components/CoachModal.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Created CoachModal component with comprehensive form for coach management including all fields from backend model (first_name, last_name, email, phone, specialization, experience_years, qualifications, salary, hire_date, contract_end_date, emergency contacts, bio). Integrated CoachModal with AcademyDashboard component. Backend APIs are already working and tested."
+
+  - task: "Academy Dashboard Overview and Stats Display"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/AcademyDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "AcademyDashboard component already includes overview tab with stats display, player and coach tables, and quick action buttons. Connected to backend APIs for loading academy data, stats, players, and coaches. Needs frontend testing to verify complete functionality."
+
   - task: "Admin Account Creation for User Access"
     implemented: true
     working: true
