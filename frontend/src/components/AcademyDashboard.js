@@ -372,7 +372,7 @@ const AcademyDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex space-x-4 mb-6">
+        <div className="flex flex-wrap space-x-2 sm:space-x-4 mb-6">
           <TabButton
             id="overview"
             label="Overview"
@@ -389,6 +389,18 @@ const AcademyDashboard = () => {
             id="coaches"
             label="Coaches"
             active={activeTab === 'coaches'}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="attendance"
+            label="Attendance"
+            active={activeTab === 'attendance'}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="performance"
+            label="Performance"
+            active={activeTab === 'performance'}
             onClick={setActiveTab}
           />
           <TabButton
