@@ -2043,6 +2043,255 @@ async def upload_academy_logo(
         logger.error(f"Error uploading academy logo: {e}")
         raise HTTPException(status_code=500, detail="Failed to upload logo")
 
+# ========== ACADEMY ANALYTICS MODELS ==========
+
+class PlayerAnalytics(BaseModel):
+    total_players: int
+    active_players: int
+    inactive_players: int
+    age_distribution: Dict[str, int]  # {"under_18": 15, "18_25": 20, "over_25": 5}
+    position_distribution: Dict[str, int]  # {"forward": 10, "midfielder": 8, etc.}
+    status_distribution: Dict[str, int]  # {"active": 35, "inactive": 5}
+    recent_additions: int  # players added in last 30 days
+
+class CoachAnalytics(BaseModel):
+    total_coaches: int
+    active_coaches: int
+    inactive_coaches: int
+    specialization_distribution: Dict[str, int]  # {"fitness": 2, "technical": 3}
+    experience_distribution: Dict[str, int]  # {"0_2_years": 1, "3_5_years": 2}
+    average_experience: float
+    recent_additions: int  # coaches added in last 30 days
+
+class GrowthMetrics(BaseModel):
+    monthly_player_growth: List[Dict[str, int]]  # [{"month": "Jan", "count": 5}]
+    monthly_coach_growth: List[Dict[str, int]]
+    yearly_summary: Dict[str, int]  # {"players_added": 25, "coaches_added": 3}
+
+class OperationalMetrics(BaseModel):
+    capacity_utilization: Dict[str, float]  # {"players": 70.0, "coaches": 80.0}
+    academy_age: int  # days since academy creation
+    settings_completion: float  # percentage of settings filled out
+    recent_activity: Dict[str, int]  # {"players_updated": 5, "coaches_updated": 2}
+
+class AcademyAnalytics(BaseModel):
+    academy_id: str
+    academy_name: str
+    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Core Analytics
+    player_analytics: PlayerAnalytics
+    coach_analytics: CoachAnalytics
+    growth_metrics: GrowthMetrics
+    operational_metrics: OperationalMetrics
+    
+    # Quick Stats
+    total_members: int  # players + coaches
+    monthly_growth_rate: float
+    capacity_usage: float
+
+# ========== ACADEMY ANALYTICS ENDPOINTS ==========
+
+# Get comprehensive academy analytics (Academy User)
+@api_router.get("/academy/analytics", response_model=AcademyAnalytics)
+async def get_academy_analytics(user_info = Depends(require_academy_user)):
+    """Get comprehensive analytics for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        academy_name = user_info["academy"]["name"]
+        
+        # Get players and coaches
+        players = await db.players.find({"academy_id": academy_id}).to_list(1000)
+        coaches = await db.coaches.find({"academy_id": academy_id}).to_list(100)
+        academy_data = await db.academies.find_one({"id": academy_id})
+        
+        # Calculate player analytics
+        total_players = len(players)
+        active_players = len([p for p in players if p.get("status") == "active"])
+        inactive_players = total_players - active_players
+        
+        # Age distribution
+        age_distribution = {"under_18": 0, "18_25": 0, "over_25": 0}
+        position_distribution = {}
+        status_distribution = {"active": 0, "inactive": 0}
+        
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        recent_player_additions = 0
+        
+        for player in players:
+            # Age distribution
+            age = player.get("age", 0)
+            if age < 18:
+                age_distribution["under_18"] += 1
+            elif age <= 25:
+                age_distribution["18_25"] += 1
+            else:
+                age_distribution["over_25"] += 1
+            
+            # Position distribution
+            position = player.get("position", "Unknown")
+            position_distribution[position] = position_distribution.get(position, 0) + 1
+            
+            # Status distribution
+            status = player.get("status", "inactive")
+            status_distribution[status] = status_distribution.get(status, 0) + 1
+            
+            # Recent additions
+            created_at = player.get("created_at")
+            if created_at and isinstance(created_at, datetime) and created_at >= thirty_days_ago:
+                recent_player_additions += 1
+        
+        player_analytics = PlayerAnalytics(
+            total_players=total_players,
+            active_players=active_players,
+            inactive_players=inactive_players,
+            age_distribution=age_distribution,
+            position_distribution=position_distribution,
+            status_distribution=status_distribution,
+            recent_additions=recent_player_additions
+        )
+        
+        # Calculate coach analytics
+        total_coaches = len(coaches)
+        active_coaches = len([c for c in coaches if c.get("status") == "active"])
+        inactive_coaches = total_coaches - active_coaches
+        
+        specialization_distribution = {}
+        experience_distribution = {"0_2_years": 0, "3_5_years": 0, "6_10_years": 0, "over_10_years": 0}
+        total_experience = 0
+        recent_coach_additions = 0
+        
+        for coach in coaches:
+            # Specialization distribution
+            specialization = coach.get("specialization", "General")
+            specialization_distribution[specialization] = specialization_distribution.get(specialization, 0) + 1
+            
+            # Experience distribution
+            experience_years = coach.get("experience_years", 0)
+            total_experience += experience_years
+            
+            if experience_years <= 2:
+                experience_distribution["0_2_years"] += 1
+            elif experience_years <= 5:
+                experience_distribution["3_5_years"] += 1
+            elif experience_years <= 10:
+                experience_distribution["6_10_years"] += 1
+            else:
+                experience_distribution["over_10_years"] += 1
+            
+            # Recent additions
+            created_at = coach.get("created_at")
+            if created_at and isinstance(created_at, datetime) and created_at >= thirty_days_ago:
+                recent_coach_additions += 1
+        
+        average_experience = total_experience / total_coaches if total_coaches > 0 else 0
+        
+        coach_analytics = CoachAnalytics(
+            total_coaches=total_coaches,
+            active_coaches=active_coaches,
+            inactive_coaches=inactive_coaches,
+            specialization_distribution=specialization_distribution,
+            experience_distribution=experience_distribution,
+            average_experience=round(average_experience, 1),
+            recent_additions=recent_coach_additions
+        )
+        
+        # Calculate growth metrics (simplified for now)
+        monthly_player_growth = [{"month": "Current", "count": recent_player_additions}]
+        monthly_coach_growth = [{"month": "Current", "count": recent_coach_additions}]
+        yearly_summary = {"players_added": total_players, "coaches_added": total_coaches}
+        
+        growth_metrics = GrowthMetrics(
+            monthly_player_growth=monthly_player_growth,
+            monthly_coach_growth=monthly_coach_growth,
+            yearly_summary=yearly_summary
+        )
+        
+        # Calculate operational metrics
+        player_limit = academy_data.get("player_limit", 50)
+        coach_limit = academy_data.get("coach_limit", 10)
+        
+        player_capacity = (total_players / player_limit * 100) if player_limit > 0 else 0
+        coach_capacity = (total_coaches / coach_limit * 100) if coach_limit > 0 else 0
+        
+        academy_created = academy_data.get("created_at", datetime.utcnow())
+        academy_age = (datetime.utcnow() - academy_created).days if isinstance(academy_created, datetime) else 0
+        
+        # Check settings completion (simplified)
+        settings = await db.academy_settings.find_one({"academy_id": academy_id})
+        settings_filled = 0
+        total_settings = 10  # approximate number of key settings
+        
+        if settings:
+            key_fields = ["description", "website", "facility_address", "training_days", "training_time"]
+            settings_filled = sum(1 for field in key_fields if settings.get(field))
+        
+        settings_completion = (settings_filled / total_settings * 100)
+        
+        operational_metrics = OperationalMetrics(
+            capacity_utilization={"players": round(player_capacity, 1), "coaches": round(coach_capacity, 1)},
+            academy_age=academy_age,
+            settings_completion=round(settings_completion, 1),
+            recent_activity={"players_updated": recent_player_additions, "coaches_updated": recent_coach_additions}
+        )
+        
+        # Calculate summary metrics
+        total_members = total_players + total_coaches
+        monthly_growth_rate = ((recent_player_additions + recent_coach_additions) / max(total_members, 1)) * 100
+        capacity_usage = (player_capacity + coach_capacity) / 2
+        
+        return AcademyAnalytics(
+            academy_id=academy_id,
+            academy_name=academy_name,
+            player_analytics=player_analytics,
+            coach_analytics=coach_analytics,
+            growth_metrics=growth_metrics,
+            operational_metrics=operational_metrics,
+            total_members=total_members,
+            monthly_growth_rate=round(monthly_growth_rate, 1),
+            capacity_usage=round(capacity_usage, 1)
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching academy analytics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch academy analytics")
+
+# Get player-specific analytics (Academy User)
+@api_router.get("/academy/analytics/players", response_model=PlayerAnalytics)
+async def get_player_analytics(user_info = Depends(require_academy_user)):
+    """Get detailed player analytics for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Get comprehensive analytics and return just player analytics
+        analytics = await get_academy_analytics(user_info)
+        return analytics.player_analytics
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player analytics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch player analytics")
+
+# Get coach-specific analytics (Academy User)
+@api_router.get("/academy/analytics/coaches", response_model=CoachAnalytics)
+async def get_coach_analytics(user_info = Depends(require_academy_user)):
+    """Get detailed coach analytics for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Get comprehensive analytics and return just coach analytics
+        analytics = await get_academy_analytics(user_info)
+        return analytics.coach_analytics
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching coach analytics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch coach analytics")
+
 # Include the router in the main app
 app.include_router(api_router)
 
