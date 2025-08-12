@@ -1818,7 +1818,7 @@ async def mark_attendance(attendance_request: AttendanceMarkingRequest, user_inf
     """Mark attendance for multiple players with performance ratings"""
     try:
         academy_id = user_info["academy_id"]
-        marked_by = user_info["user_id"]
+        marked_by = user_info["user"].id
         
         results = []
         for record in attendance_request.attendance_records:
