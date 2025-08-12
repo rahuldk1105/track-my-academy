@@ -635,6 +635,30 @@ backend:
           agent: "testing"
           comment: "COMPREHENSIVE ACADEMY DASHBOARD TESTING COMPLETED SUCCESSFULLY! Complete academy management system tested and verified working: 1) ✅ ACADEMY AUTHENTICATION: Academy user login working with proper role detection (academy_user), correct academy_id and academy_name assignment, proper permissions array. Super admin users correctly blocked from academy endpoints with 403 status. 2) ✅ PLAYER MANAGEMENT CRUD: All operations working - GET /api/academy/players (lists academy players), POST /api/academy/players (creates players with validation), GET /api/academy/players/{id} (retrieves specific player), PUT /api/academy/players/{id} (updates player info), DELETE /api/academy/players/{id} (removes players). Jersey number duplication prevention working correctly. Created 3 test players with complete profiles. 3) ✅ COACH MANAGEMENT CRUD: All operations working - GET /api/academy/coaches (lists academy coaches), POST /api/academy/coaches (creates coaches), GET /api/academy/coaches/{id} (retrieves specific coach), PUT /api/academy/coaches/{id} (updates coach info), DELETE /api/academy/coaches/{id} (removes coaches). Coach limit enforcement working - prevents creating coaches beyond academy limit (5). Created 5 test coaches with complete profiles. 4) ✅ ACADEMY STATS API: GET /api/academy/stats returns accurate counts - total_players: 3, active_players: 3, total_coaches: 5, active_coaches: 5, player_limit: 30, coach_limit: 5. All fields present and valid. 5) ✅ DATA ISOLATION: Academy users can only access their own data - all players and coaches have correct academy_id linkage, no cross-academy data access. Fixed missing Supabase dependencies (gotrue, postgrest, realtime, storage3, supafunc) that were preventing backend startup. All 8/8 tests passed. Academy management system is production-ready and fully operational."
 
+  - task: "Academy Settings APIs - GET, PUT, Logo Upload"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "ACADEMY SETTINGS APIS TESTING COMPLETED SUCCESSFULLY! All academy settings endpoints are working perfectly: 1) ✅ GET /api/academy/settings: Creates default settings if none exist, returns all settings fields (branding, operational, notification, privacy settings), proper authentication and data isolation working. 2) ✅ PUT /api/academy/settings: Successfully updates all settings categories including branding (description, website, theme_color, social_media), operational (season dates, training days/time, facility info), notification preferences, and privacy settings. Partial updates work correctly. 3) ✅ POST /api/academy/logo: Validates image file types (JPEG, JPG, PNG), generates unique filenames with academy_id prefix, stores files in /uploads/logos/ directory, updates academy settings with logo URL, serves uploaded files via static file serving, properly rejects non-image files with 400 status. 4) ✅ Authentication & Data Isolation: Academy users can only access their own settings, super admin users correctly blocked with 403 status, JWT token validation working properly. 5) ✅ Database Integration: Settings stored in academy_settings collection with proper upsert operations, all field updates persist correctly. All academy settings functionality is production-ready and fully operational."
+
+  - task: "Academy Analytics APIs - Comprehensive Analytics"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "ACADEMY ANALYTICS APIS TESTING COMPLETED SUCCESSFULLY! All academy analytics endpoints are working perfectly: 1) ✅ GET /api/academy/analytics: Returns comprehensive analytics with all required sections (academy_id, academy_name, generated_at, player_analytics, coach_analytics, growth_metrics, operational_metrics, total_members, monthly_growth_rate, capacity_usage). Calculates accurate player analytics (total: 6, active: 6, age distribution, position distribution, recent additions). Calculates accurate coach analytics (total: 4, active: 4, specialization distribution, experience distribution, average experience: 7.0 years). 2) ✅ GET /api/academy/analytics/players: Returns detailed player-specific analytics with all required fields (total_players, active_players, age_distribution, position_distribution, status_distribution, recent_additions). Age distribution working correctly (under_18: 3, 18_25: 3, over_25: 0). Position distribution accurate (Forward: 2, Midfielder: 2, Defender: 1, Goalkeeper: 1). 3) ✅ GET /api/academy/analytics/coaches: Returns detailed coach-specific analytics with all required fields (total_coaches, active_coaches, specialization_distribution, experience_distribution, average_experience, recent_additions). Specialization distribution working (Technical: 1, Fitness: 1, Goalkeeping: 1, Youth Development: 1). Experience distribution accurate (3_5_years: 2, 6_10_years: 1, over_10_years: 1). 4) ✅ Authentication & Data Isolation: Academy users can only access their own analytics, super admin users correctly blocked with 403 status, proper JWT token validation. 5) ✅ Data Accuracy: All calculations verified with test data (6 players, 4 coaches), capacity usage calculated correctly (50.0%), growth metrics and operational metrics working. Fixed GrowthMetrics model type validation issue. All academy analytics functionality is production-ready and fully operational."
+
   - task: "Academy Management APIs - GET all academies"
     implemented: true
     working: true
