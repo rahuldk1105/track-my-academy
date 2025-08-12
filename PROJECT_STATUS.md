@@ -240,9 +240,10 @@
 4. ❌ **Academy Onboarding Workflow** - Complete client setup process
 
 ### **⏳ FUTURE PRIORITIES**
-5. ❌ **Academy Portal Development** - Academy-side interfaces for managing players/coaches (Priority 4)
-6. ❌ **Player Management System** - Player creation, performance tracking, dashboards (Priority 5)
-7. ❌ **Advanced Features** - Analytics, reporting, IoT preparation (Priority 6)
+5. ✅ **Academy Portal Development** - Academy-side interfaces for managing players/coaches (COMPLETED)
+6. ✅ **Player Management System** - Player creation, performance tracking, dashboards (COMPLETED)
+7. ❌ **Advanced Reporting Features** - Export capabilities, detailed reports, IoT preparation (Priority 4)
+8. ❌ **Mobile App APIs** - Backend preparation for mobile application (Priority 5)
 
 ---
 
