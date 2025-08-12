@@ -157,8 +157,8 @@ def test_enhanced_player_management(access_token):
             "age": 19,
             "sport": "Cricket",
             "position": "Batsman",
-            "jersey_number": 18,
-            "register_number": "CR2024001",
+            "jersey_number": 88,  # Use unique number
+            "register_number": "CR2024088",  # Use unique register number
             "height": "5'8\"",
             "weight": "65 kg",
             "training_days": ["Monday", "Wednesday", "Friday"],
