@@ -277,10 +277,10 @@ def test_enhanced_player_management(access_token):
                 print("✅ Enhanced player fields updated correctly")
             else:
                 print("❌ Enhanced player fields not updated correctly")
-                return False
+                return False, None
         else:
             print(f"❌ Update player failed - Status: {response.status_code}")
-            return False
+            return False, None
         
         print("✅ Enhanced Player Management PASSED")
         return True, player_id
