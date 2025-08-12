@@ -85,7 +85,7 @@ class AcademyUpdate(BaseModel)
 ## 🚀 **HOW TO ACCESS THE SUPER ADMIN DASHBOARD**
 
 ### **Step 1: Access the Application**
-🌐 **Application URL:** https://sports-config.preview.emergentagent.com
+🌐 **Application URL:** https://player-hub-5.preview.emergentagent.com
 
 ### **Step 2: Login Options**
 
