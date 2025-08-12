@@ -401,35 +401,47 @@ const AcademyDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
                   <h3 className="text-lg font-semibold text-blue-400 mb-2">Total Players</h3>
-                  <p className="text-2xl font-bold text-white">0</p>
-                  <p className="text-sm text-gray-400">Coming Soon</p>
+                  <p className="text-2xl font-bold text-white">{stats.total_players || 0}</p>
+                  <p className="text-sm text-gray-400">Limit: {stats.player_limit || 50}</p>
                 </div>
                 <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
                   <h3 className="text-lg font-semibold text-green-400 mb-2">Active Coaches</h3>
-                  <p className="text-2xl font-bold text-white">0</p>
-                  <p className="text-sm text-gray-400">Coming Soon</p>
+                  <p className="text-2xl font-bold text-white">{stats.active_coaches || 0}</p>
+                  <p className="text-sm text-gray-400">Limit: {stats.coach_limit || 10}</p>
                 </div>
                 <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
-                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Training Sessions</h3>
-                  <p className="text-2xl font-bold text-white">0</p>
-                  <p className="text-sm text-gray-400">Coming Soon</p>
+                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Active Players</h3>
+                  <p className="text-2xl font-bold text-white">{stats.active_players || 0}</p>
+                  <p className="text-sm text-gray-400">Currently Active</p>
                 </div>
               </div>
 
               <div className="mt-6">
                 <h3 className="text-lg font-medium text-gray-300 mb-3">Quick Actions</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <button 
-                    onClick={() => setActiveTab('coaches')}
-                    className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                    onClick={() => {
+                      setEditingPlayer(null);
+                      setShowPlayerModal(true);
+                    }}
+                    className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
                   >
-                    Manage Coaches
+                    + Add New Player
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setEditingCoach(null);
+                      setShowCoachModal(true);
+                    }}
+                    className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                  >
+                    + Add New Coach
                   </button>
                   <button 
                     onClick={() => setActiveTab('players')}
-                    className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                    className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
                   >
-                    Manage Players
+                    View All Players
                   </button>
                 </div>
               </div>
