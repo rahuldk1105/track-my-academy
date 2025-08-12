@@ -206,6 +206,7 @@ def test_enhanced_player_management(access_token):
         duplicate_player_data["first_name"] = "Duplicate"
         duplicate_player_data["last_name"] = "Player"
         duplicate_player_data["email"] = "duplicate@academy.com"
+        duplicate_player_data["jersey_number"] = 19  # Different jersey number
         # Same register_number as above
         
         response = requests.post(
@@ -219,14 +220,14 @@ def test_enhanced_player_management(access_token):
         
         if response.status_code == 400:
             error_data = response.json()
-            if "register" in str(error_data).lower() or "duplicate" in str(error_data).lower():
+            if "register" in str(error_data).lower():
                 print("✅ Register number duplication validation PASSED")
             else:
                 print(f"❌ Wrong error message for duplicate register number: {error_data}")
-                return False
+                return False, None
         else:
             print(f"❌ Duplicate register number should be rejected with 400 status")
-            return False
+            return False, None
         
         # Test 3: Get player and verify enhanced fields
         print("\n--- Testing Get Player with Enhanced Fields ---")
