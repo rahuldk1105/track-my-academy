@@ -658,6 +658,14 @@ const AcademyDashboard = () => {
             </div>
           )}
 
+          {activeTab === 'attendance' && (
+            <AttendanceTracker />
+          )}
+
+          {activeTab === 'performance' && (
+            <PerformanceAnalytics />
+          )}
+
           {activeTab === 'analytics' && (
             <AcademyAnalytics />
           )}
