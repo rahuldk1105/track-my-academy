@@ -515,7 +515,10 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Academy Dashboard Player Management Interface"
+    - "Academy Dashboard Coach Management Interface"
+    - "Academy Dashboard Overview and Stats Display"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
