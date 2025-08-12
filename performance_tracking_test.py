@@ -307,7 +307,7 @@ def test_player_management_apis(access_token):
             return False
     
     print("✅ Player Management APIs PASSED")
-    return True, created_players
+    return True, created_players, created_players
 
 def test_coach_management_apis(access_token):
     """Test all Coach Management CRUD operations"""
