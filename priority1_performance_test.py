@@ -27,7 +27,7 @@ API_BASE_URL = f"{BACKEND_URL}/api"
 print(f"Testing Priority 1 Performance Tracking APIs at: {API_BASE_URL}")
 
 # Test credentials for academy user
-ACADEMY_USER_EMAIL = "testacademy2@roletest.com"
+ACADEMY_USER_EMAIL = "testacademy@roletest.com"
 ACADEMY_USER_PASSWORD = "TestPassword123!"
 
 def get_academy_access_token():
