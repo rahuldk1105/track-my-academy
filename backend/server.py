@@ -1693,6 +1693,18 @@ async def create_player(player_data: PlayerCreate, user_info = Depends(require_a
                     detail=f"Jersey number {player_data.jersey_number} is already taken"
                 )
         
+        # Check for duplicate register number within academy (if provided)
+        if player_data.register_number:
+            existing_register = await db.players.find_one({
+                "academy_id": academy_id,
+                "register_number": player_data.register_number
+            })
+            if existing_register:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Register number {player_data.register_number} is already taken"
+                )
+        
         # Create new player
         player = Player(
             academy_id=academy_id,
