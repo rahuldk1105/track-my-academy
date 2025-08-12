@@ -317,6 +317,109 @@ class PaymentSessionRequest(BaseModel):
     billing_cycle: str  # monthly, annual
     origin_url: str     # Frontend origin for success/cancel URLs
 
+# Player and Coach Management Models
+class Player(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    academy_id: str  # Links player to academy
+    first_name: str
+    last_name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None  # Store as string for simplicity
+    age: Optional[int] = None
+    position: Optional[str] = None  # Forward, Midfielder, Defender, etc.
+    jersey_number: Optional[int] = None
+    height: Optional[str] = None  # e.g., "5'10"
+    weight: Optional[str] = None  # e.g., "70 kg"
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    medical_notes: Optional[str] = None
+    status: str = "active"  # active, inactive, suspended
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class PlayerCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    age: Optional[int] = None
+    position: Optional[str] = None
+    jersey_number: Optional[int] = None
+    height: Optional[str] = None
+    weight: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    medical_notes: Optional[str] = None
+
+class PlayerUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    age: Optional[int] = None
+    position: Optional[str] = None
+    jersey_number: Optional[int] = None
+    height: Optional[str] = None
+    weight: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    medical_notes: Optional[str] = None
+    status: Optional[str] = None
+
+class Coach(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    academy_id: str  # Links coach to academy
+    first_name: str
+    last_name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    specialization: Optional[str] = None  # Fitness, Technical, Goalkeeping, etc.
+    experience_years: Optional[int] = None
+    qualifications: Optional[str] = None  # Certifications, degrees, etc.
+    salary: Optional[float] = None
+    hire_date: Optional[str] = None
+    contract_end_date: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    bio: Optional[str] = None
+    status: str = "active"  # active, inactive, suspended
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class CoachCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    specialization: Optional[str] = None
+    experience_years: Optional[int] = None
+    qualifications: Optional[str] = None
+    salary: Optional[float] = None
+    hire_date: Optional[str] = None
+    contract_end_date: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    bio: Optional[str] = None
+
+class CoachUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    specialization: Optional[str] = None
+    experience_years: Optional[int] = None
+    qualifications: Optional[str] = None
+    salary: Optional[float] = None
+    hire_date: Optional[str] = None
+    contract_end_date: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    bio: Optional[str] = None
+    status: Optional[str] = None
+
 # Authentication helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
