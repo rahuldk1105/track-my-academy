@@ -648,6 +648,30 @@ const AcademyDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Player Modal */}
+      <PlayerModal
+        isOpen={showPlayerModal}
+        onClose={() => {
+          setShowPlayerModal(false);
+          setEditingPlayer(null);
+        }}
+        onSubmit={editingPlayer ? handleUpdatePlayer : handleCreatePlayer}
+        player={editingPlayer}
+        isEditing={!!editingPlayer}
+      />
+
+      {/* Coach Modal */}
+      <CoachModal
+        isOpen={showCoachModal}
+        onClose={() => {
+          setShowCoachModal(false);
+          setEditingCoach(null);
+        }}
+        onSubmit={editingCoach ? handleUpdateCoach : handleCreateCoach}
+        coach={editingCoach}
+        isEditing={!!editingCoach}
+      />
     </div>
   );
 };
