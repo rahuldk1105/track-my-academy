@@ -5,6 +5,8 @@ import PlayerModal from './PlayerModal';
 import CoachModal from './CoachModal';
 import AcademySettingsForm from './AcademySettingsForm';
 import AcademyAnalytics from './AcademyAnalytics';
+import AttendanceTracker from './AttendanceTracker';
+import PerformanceAnalytics from './PerformanceAnalytics';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
