@@ -607,6 +607,45 @@ async def upload_academy_logo(file: UploadFile = File(...)):
         logger.error(f"File upload error: {e}")
         raise HTTPException(status_code=500, detail="Failed to upload logo")
 
+@api_router.post("/upload/player-photo")
+async def upload_player_photo(file: UploadFile = File(...), user_info = Depends(require_academy_user)):
+    try:
+        # Validate file type
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Generate unique filename with academy prefix
+        academy_id = user_info["academy_id"]
+        file_extension = file.filename.split(".")[-1]
+        unique_filename = f"player_{academy_id}_{str(uuid.uuid4())}.{file_extension}"
+        file_path = UPLOAD_DIR / unique_filename
+        
+        # Save file
+        async with aiofiles.open(file_path, 'wb') as f:
+            content = await file.read()
+            await f.write(content)
+        
+        # Return the URL path
+        photo_url = f"/uploads/logos/{unique_filename}"
+        return {"photo_url": photo_url, "message": "Player photo uploaded successfully"}
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like validation errors)
+        raise
+    except Exception as e:
+        logger.error(f"File upload error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to upload player photo")
+
+# Sport and Position Configuration Endpoints
+@api_router.get("/sports/positions", response_model=SportPositionsResponse)
+async def get_sport_positions():
+    """Get available sports, positions, training days, and batches"""
+    return SportPositionsResponse(
+        sports=SPORT_POSITIONS,
+        training_days=TRAINING_DAYS,
+        training_batches=TRAINING_BATCHES
+    )
+
 # Authentication Endpoints
 
 # DISABLED: Public signup endpoint - SaaS model requires admin-controlled user creation
