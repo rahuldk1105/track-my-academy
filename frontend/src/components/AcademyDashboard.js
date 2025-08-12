@@ -107,6 +107,162 @@ const AcademyDashboard = () => {
     }
   };
 
+  const handleCreatePlayer = async (playerData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/players`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(playerData)
+      });
+
+      if (response.ok) {
+        await Promise.all([loadPlayers(), loadStats()]);
+        setShowPlayerModal(false);
+        alert('Player created successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Error creating player: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error creating player:', error);
+      alert('Error creating player');
+    }
+  };
+
+  const handleUpdatePlayer = async (playerId, playerData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/players/${playerId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(playerData)
+      });
+
+      if (response.ok) {
+        await Promise.all([loadPlayers(), loadStats()]);
+        setShowPlayerModal(false);
+        setEditingPlayer(null);
+        alert('Player updated successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Error updating player: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error updating player:', error);
+      alert('Error updating player');
+    }
+  };
+
+  const handleDeletePlayer = async (playerId) => {
+    if (!window.confirm('Are you sure you want to delete this player?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/players/${playerId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        await Promise.all([loadPlayers(), loadStats()]);
+        alert('Player deleted successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Error deleting player: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting player:', error);
+      alert('Error deleting player');
+    }
+  };
+
+  const handleCreateCoach = async (coachData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/coaches`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(coachData)
+      });
+
+      if (response.ok) {
+        await Promise.all([loadCoaches(), loadStats()]);
+        setShowCoachModal(false);
+        alert('Coach created successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Error creating coach: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error creating coach:', error);
+      alert('Error creating coach');
+    }
+  };
+
+  const handleUpdateCoach = async (coachId, coachData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/coaches/${coachId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(coachData)
+      });
+
+      if (response.ok) {
+        await Promise.all([loadCoaches(), loadStats()]);
+        setShowCoachModal(false);
+        setEditingCoach(null);
+        alert('Coach updated successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Error updating coach: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error updating coach:', error);
+      alert('Error updating coach');
+    }
+  };
+
+  const handleDeleteCoach = async (coachId) => {
+    if (!window.confirm('Are you sure you want to delete this coach?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/coaches/${coachId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        await Promise.all([loadCoaches(), loadStats()]);
+        alert('Coach deleted successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Error deleting coach: ${error.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting coach:', error);
+      alert('Error deleting coach');
+    }
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
