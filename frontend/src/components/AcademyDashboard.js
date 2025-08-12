@@ -8,6 +8,16 @@ const AcademyDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [academyData, setAcademyData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [players, setPlayers] = useState([]);
+  const [coaches, setCoaches] = useState([]);
+  const [stats, setStats] = useState({});
+  const [showPlayerModal, setShowPlayerModal] = useState(false);
+  const [showCoachModal, setShowCoachModal] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState(null);
+  const [editingCoach, setEditingCoach] = useState(null);
+
+  // API base URL
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     // Only load academy data if user has academy role
@@ -23,18 +33,77 @@ const AcademyDashboard = () => {
     try {
       setLoading(true);
       
-      // This will be implemented when we create academy-specific APIs
-      // For now, just set the academy data from role info
+      // Set the academy data from role info
       setAcademyData({
         id: userRole.academy_id,
         name: userRole.academy_name,
-        // More academy data will be fetched later
       });
+
+      // Load stats, players, and coaches
+      await Promise.all([
+        loadStats(),
+        loadPlayers(),
+        loadCoaches()
+      ]);
       
     } catch (error) {
       console.error('Error loading academy data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const statsData = await response.json();
+        setStats(statsData);
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
+
+  const loadPlayers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/players`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const playersData = await response.json();
+        setPlayers(playersData);
+      }
+    } catch (error) {
+      console.error('Error loading players:', error);
+    }
+  };
+
+  const loadCoaches = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/coaches`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const coachesData = await response.json();
+        setCoaches(coachesData);
+      }
+    } catch (error) {
+      console.error('Error loading coaches:', error);
     }
   };
 
