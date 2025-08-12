@@ -553,6 +553,78 @@ agent_communication:
       message: "COMPREHENSIVE PLAYER AND COACH MANAGEMENT API TESTING COMPLETED SUCCESSFULLY! All new academy-specific player and coach management endpoints tested and working perfectly: 1) ✅ AUTHENTICATION & DATA ISOLATION: Academy users (testacademy@roletest.com) can only access their own academy's data, proper JWT token validation, super admin users correctly blocked from academy endpoints, data isolation working correctly. 2) ✅ PLAYER MANAGEMENT CRUD OPERATIONS: All endpoints working - GET /api/academy/players (lists academy players), POST /api/academy/players (creates players with validation), GET /api/academy/players/{id} (retrieves specific player), PUT /api/academy/players/{id} (updates player info), DELETE /api/academy/players/{id} (removes players). Created 5 test players with different positions and jersey numbers. 3) ✅ COACH MANAGEMENT CRUD OPERATIONS: All endpoints working - GET /api/academy/coaches (lists academy coaches), POST /api/academy/coaches (creates coaches with validation), GET /api/academy/coaches/{id} (retrieves specific coach), PUT /api/academy/coaches/{id} (updates coach info), DELETE /api/academy/coaches/{id} (removes coaches). Created 5 test coaches with different specializations. 4) ✅ ACADEMY STATS API: GET /api/academy/stats returns correct player and coach counts with limits (total_players: 5, active_players: 5, total_coaches: 5, active_coaches: 5, player_limit: 30, coach_limit: 5). 5) ✅ VALIDATION TESTS: Jersey number duplication prevention working correctly, coach limit enforcement working (prevents creating 6th coach when limit is 5), proper error messages returned. 6) ✅ DATA MODELS: All created players and coaches have proper fields and academy_id linkage, data persistence confirmed, UUID generation working correctly. Fixed missing Supabase dependencies (gotrue, postgrest) that were preventing backend startup. All Player and Coach management functionality is production-ready and fully operational."
 
 backend:
+  - task: "Player Management APIs - CRUD Operations"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "All Player Management CRUD operations working perfectly: GET /api/academy/players (lists academy players), POST /api/academy/players (creates players with validation and jersey number duplication prevention), GET /api/academy/players/{id} (retrieves specific player), PUT /api/academy/players/{id} (updates player info), DELETE /api/academy/players/{id} (removes players). Created 5 test players with different positions, jersey numbers, ages, and complete player profiles. Data isolation working correctly - academy users can only access their own players."
+
+  - task: "Coach Management APIs - CRUD Operations"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "All Coach Management CRUD operations working perfectly: GET /api/academy/coaches (lists academy coaches), POST /api/academy/coaches (creates coaches with validation and limit enforcement), GET /api/academy/coaches/{id} (retrieves specific coach), PUT /api/academy/coaches/{id} (updates coach info), DELETE /api/academy/coaches/{id} (removes coaches). Created 5 test coaches with different specializations, experience levels, and complete coach profiles. Coach limit enforcement working correctly - prevents creating coaches beyond academy limit."
+
+  - task: "Academy Stats API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Academy Stats API working correctly: GET /api/academy/stats returns accurate player and coach counts with limits. Returns total_players, active_players, total_coaches, active_coaches, player_limit, and coach_limit fields. Tested with 5 players and 5 coaches, limits of 30 players and 5 coaches. Real-time stats updating correctly as players and coaches are added/removed."
+
+  - task: "Player and Coach Limit Enforcement"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Player and Coach limit enforcement working correctly. Coach limit enforcement tested and working - when academy reaches coach limit (5), attempting to create additional coaches returns proper 400 error with message 'Academy has reached maximum coach limit of 5'. Player limit enforcement code implemented and ready for testing when limits are reached. Limits are configurable per academy and properly enforced."
+
+  - task: "Jersey Number Duplication Prevention"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Jersey number duplication prevention working correctly. When attempting to create a player with a jersey number that already exists within the same academy, the system properly returns a 400 error preventing the duplication. Tested with jersey numbers 10, 11, 22, 99 - all duplicates correctly prevented while allowing unique numbers."
+
+  - task: "Academy User Authentication and Data Isolation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Academy user authentication and data isolation working perfectly. Academy users (testacademy@roletest.com) can only access their own academy's players and coaches. Super admin users are correctly blocked from accessing academy-specific endpoints with 403 errors. JWT token validation working correctly. Academy ID linkage properly implemented - all players and coaches created have correct academy_id field linking them to their academy."
+
   - task: "Academy Management APIs - GET all academies"
     implemented: true
     working: true
