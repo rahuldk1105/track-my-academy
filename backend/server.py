@@ -2064,8 +2064,8 @@ class CoachAnalytics(BaseModel):
     recent_additions: int  # coaches added in last 30 days
 
 class GrowthMetrics(BaseModel):
-    monthly_player_growth: List[Dict[str, int]]  # [{"month": "Jan", "count": 5}]
-    monthly_coach_growth: List[Dict[str, int]]
+    monthly_player_growth: List[Dict[str, any]]  # [{"month": "Jan", "count": 5}]
+    monthly_coach_growth: List[Dict[str, any]]
     yearly_summary: Dict[str, int]  # {"players_added": 25, "coaches_added": 3}
 
 class OperationalMetrics(BaseModel):
