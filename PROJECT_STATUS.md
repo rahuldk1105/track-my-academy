@@ -121,8 +121,14 @@
 │   ├── LoginPage.js            ✅ Working with Supabase + Role-based redirection
 │   ├── SignupPage.js           ❌ DISABLED for SaaS model (file exists but unused)
 │   ├── Dashboard.js            ✅ Working - SuperAdmin dashboard with access control
-│   ├── AcademyDashboard.js     ✅ NEW - Academy portal dashboard with role-based access
-│   ├── RoleBasedRedirect.js    ✅ NEW - Auto-redirect component based on user role
+│   ├── AcademyDashboard.js     ✅ Enhanced - Academy portal with 7 tabs (Overview, Players, Coaches, Attendance, Performance, Analytics, Settings)
+│   ├── PlayerModal.js          ✅ Working - Comprehensive player creation/editing form
+│   ├── CoachModal.js           ✅ Working - Comprehensive coach creation/editing form
+│   ├── AttendanceTracker.js    ✅ NEW - Daily attendance tracking with performance ratings
+│   ├── PerformanceAnalytics.js ✅ NEW - Individual player performance insights and trends
+│   ├── AcademyAnalytics.js     ✅ Working - Academy-wide analytics and reporting
+│   ├── AcademySettingsForm.js  ✅ Working - Academy configuration and settings
+│   ├── RoleBasedRedirect.js    ✅ Working - Auto-redirect component based on user role
 │   ├── ProtectedRoute.js       ✅ Working
 │   ├── Navbar.js              ✅ Working (CTAs updated to "Request Demo")
 │   ├── FeaturesSection.js     ✅ Working (CTAs updated to "Request Demo")
