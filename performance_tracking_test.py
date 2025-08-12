@@ -473,7 +473,7 @@ def test_coach_management_apis(access_token):
             return False
     
     print("✅ Coach Management APIs PASSED")
-    return True, created_coaches
+    return True, created_coaches, created_coaches
 
 def test_performance_tracking_apis(access_token, players):
     """Test Performance Tracking APIs - attendance and performance ratings"""
