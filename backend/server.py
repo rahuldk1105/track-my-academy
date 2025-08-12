@@ -1527,6 +1527,319 @@ async def delete_payment_transaction(payment_id: str, current_user = Depends(get
         logger.error(f"Error deleting payment transaction: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete payment transaction")
 
+# ========== PLAYER MANAGEMENT ENDPOINTS ==========
+
+# Get all players for an academy (Academy User)
+@api_router.get("/academy/players", response_model=List[Player])
+async def get_academy_players(user_info = Depends(require_academy_user)):
+    """Get all players for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Get players for this academy
+        players_cursor = db.players.find({"academy_id": academy_id})
+        players = await players_cursor.to_list(length=None)
+        
+        return [Player(**player) for player in players]
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching academy players: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch players")
+
+# Create a new player (Academy User)
+@api_router.post("/academy/players", response_model=Player)
+async def create_player(player_data: PlayerCreate, user_info = Depends(require_academy_user)):
+    """Create a new player for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        academy = user_info["academy"]
+        
+        # Check if academy has reached player limit
+        current_players = await db.players.count_documents({"academy_id": academy_id, "status": "active"})
+        if current_players >= academy.get("player_limit", 50):
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Academy has reached maximum player limit of {academy.get('player_limit', 50)}"
+            )
+        
+        # Check for duplicate jersey number within academy (if provided)
+        if player_data.jersey_number is not None:
+            existing_jersey = await db.players.find_one({
+                "academy_id": academy_id,
+                "jersey_number": player_data.jersey_number,
+                "status": "active"
+            })
+            if existing_jersey:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Jersey number {player_data.jersey_number} is already taken"
+                )
+        
+        # Create new player
+        player = Player(
+            academy_id=academy_id,
+            **player_data.dict()
+        )
+        
+        # Save to database
+        await db.players.insert_one(player.dict())
+        
+        return player
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating player: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create player")
+
+# Get specific player (Academy User)
+@api_router.get("/academy/players/{player_id}", response_model=Player)
+async def get_player(player_id: str, user_info = Depends(require_academy_user)):
+    """Get specific player for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Find player
+        player = await db.players.find_one({"id": player_id, "academy_id": academy_id})
+        if not player:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        return Player(**player)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch player")
+
+# Update player (Academy User)
+@api_router.put("/academy/players/{player_id}", response_model=Player)
+async def update_player(player_id: str, player_data: PlayerUpdate, user_info = Depends(require_academy_user)):
+    """Update specific player for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if player exists
+        existing_player = await db.players.find_one({"id": player_id, "academy_id": academy_id})
+        if not existing_player:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        # Check for duplicate jersey number (if updating jersey number)
+        if player_data.jersey_number is not None:
+            existing_jersey = await db.players.find_one({
+                "academy_id": academy_id,
+                "jersey_number": player_data.jersey_number,
+                "status": "active",
+                "id": {"$ne": player_id}  # Exclude current player
+            })
+            if existing_jersey:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Jersey number {player_data.jersey_number} is already taken"
+                )
+        
+        # Update player data
+        update_data = {k: v for k, v in player_data.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow()
+        
+        await db.players.update_one(
+            {"id": player_id, "academy_id": academy_id},
+            {"$set": update_data}
+        )
+        
+        # Get updated player
+        updated_player = await db.players.find_one({"id": player_id, "academy_id": academy_id})
+        return Player(**updated_player)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating player: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update player")
+
+# Delete player (Academy User)
+@api_router.delete("/academy/players/{player_id}")
+async def delete_player(player_id: str, user_info = Depends(require_academy_user)):
+    """Delete specific player for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if player exists
+        existing_player = await db.players.find_one({"id": player_id, "academy_id": academy_id})
+        if not existing_player:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        # Delete player
+        await db.players.delete_one({"id": player_id, "academy_id": academy_id})
+        
+        return {"message": "Player deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting player: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete player")
+
+# ========== COACH MANAGEMENT ENDPOINTS ==========
+
+# Get all coaches for an academy (Academy User)
+@api_router.get("/academy/coaches", response_model=List[Coach])
+async def get_academy_coaches(user_info = Depends(require_academy_user)):
+    """Get all coaches for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Get coaches for this academy
+        coaches_cursor = db.coaches.find({"academy_id": academy_id})
+        coaches = await coaches_cursor.to_list(length=None)
+        
+        return [Coach(**coach) for coach in coaches]
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching academy coaches: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch coaches")
+
+# Create a new coach (Academy User)
+@api_router.post("/academy/coaches", response_model=Coach)
+async def create_coach(coach_data: CoachCreate, user_info = Depends(require_academy_user)):
+    """Create a new coach for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        academy = user_info["academy"]
+        
+        # Check if academy has reached coach limit
+        current_coaches = await db.coaches.count_documents({"academy_id": academy_id, "status": "active"})
+        if current_coaches >= academy.get("coach_limit", 10):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Academy has reached maximum coach limit of {academy.get('coach_limit', 10)}"
+            )
+        
+        # Create new coach
+        coach = Coach(
+            academy_id=academy_id,
+            **coach_data.dict()
+        )
+        
+        # Save to database
+        await db.coaches.insert_one(coach.dict())
+        
+        return coach
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating coach: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create coach")
+
+# Get specific coach (Academy User)
+@api_router.get("/academy/coaches/{coach_id}", response_model=Coach)
+async def get_coach(coach_id: str, user_info = Depends(require_academy_user)):
+    """Get specific coach for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Find coach
+        coach = await db.coaches.find_one({"id": coach_id, "academy_id": academy_id})
+        if not coach:
+            raise HTTPException(status_code=404, detail="Coach not found")
+        
+        return Coach(**coach)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching coach: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch coach")
+
+# Update coach (Academy User)
+@api_router.put("/academy/coaches/{coach_id}", response_model=Coach)
+async def update_coach(coach_id: str, coach_data: CoachUpdate, user_info = Depends(require_academy_user)):
+    """Update specific coach for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if coach exists
+        existing_coach = await db.coaches.find_one({"id": coach_id, "academy_id": academy_id})
+        if not existing_coach:
+            raise HTTPException(status_code=404, detail="Coach not found")
+        
+        # Update coach data
+        update_data = {k: v for k, v in coach_data.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow()
+        
+        await db.coaches.update_one(
+            {"id": coach_id, "academy_id": academy_id},
+            {"$set": update_data}
+        )
+        
+        # Get updated coach
+        updated_coach = await db.coaches.find_one({"id": coach_id, "academy_id": academy_id})
+        return Coach(**updated_coach)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating coach: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update coach")
+
+# Delete coach (Academy User)
+@api_router.delete("/academy/coaches/{coach_id}")
+async def delete_coach(coach_id: str, user_info = Depends(require_academy_user)):
+    """Delete specific coach for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if coach exists
+        existing_coach = await db.coaches.find_one({"id": coach_id, "academy_id": academy_id})
+        if not existing_coach:
+            raise HTTPException(status_code=404, detail="Coach not found")
+        
+        # Delete coach
+        await db.coaches.delete_one({"id": coach_id, "academy_id": academy_id})
+        
+        return {"message": "Coach deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting coach: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete coach")
+
+# ========== ACADEMY STATS ENDPOINT ==========
+
+# Get academy stats (Academy User)
+@api_router.get("/academy/stats")
+async def get_academy_stats(user_info = Depends(require_academy_user)):
+    """Get academy statistics"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Count players and coaches
+        total_players = await db.players.count_documents({"academy_id": academy_id})
+        active_players = await db.players.count_documents({"academy_id": academy_id, "status": "active"})
+        total_coaches = await db.coaches.count_documents({"academy_id": academy_id})
+        active_coaches = await db.coaches.count_documents({"academy_id": academy_id, "status": "active"})
+        
+        return {
+            "total_players": total_players,
+            "active_players": active_players,
+            "total_coaches": total_coaches,
+            "active_coaches": active_coaches,
+            "player_limit": user_info["academy"].get("player_limit", 50),
+            "coach_limit": user_info["academy"].get("coach_limit", 10)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching academy stats: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch academy stats")
+
 # Include the router in the main app
 app.include_router(api_router)
 
