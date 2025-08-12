@@ -317,6 +317,24 @@ class PaymentSessionRequest(BaseModel):
     billing_cycle: str  # monthly, annual
     origin_url: str     # Frontend origin for success/cancel URLs
 
+# Sport-based Position Mapping
+SPORT_POSITIONS = {
+    "Football": ["Goalkeeper", "Center Back", "Left Back", "Right Back", "Defensive Midfielder", "Central Midfielder", "Attacking Midfielder", "Left Winger", "Right Winger", "Striker", "Center Forward"],
+    "Cricket": ["Wicket Keeper", "Batsman", "All Rounder", "Fast Bowler", "Spin Bowler", "Opening Batsman", "Middle Order", "Finisher"],
+    "Basketball": ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"],
+    "Tennis": ["Singles Player", "Doubles Player"],
+    "Badminton": ["Singles Player", "Doubles Player"],
+    "Hockey": ["Goalkeeper", "Defender", "Midfielder", "Forward"],
+    "Volleyball": ["Setter", "Outside Hitter", "Middle Blocker", "Opposite Hitter", "Libero", "Defensive Specialist"],
+    "Swimming": ["Freestyle", "Backstroke", "Breaststroke", "Butterfly", "Individual Medley"],
+    "Athletics": ["Sprinter", "Middle Distance", "Long Distance", "Jumper", "Thrower"],
+    "Other": ["Player"]
+}
+
+# Training Days and Batches
+TRAINING_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+TRAINING_BATCHES = ["Morning", "Evening", "Both"]
+
 # Player and Coach Management Models
 class Player(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -327,10 +345,15 @@ class Player(BaseModel):
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None  # Store as string for simplicity
     age: Optional[int] = None
-    position: Optional[str] = None  # Forward, Midfielder, Defender, etc.
+    sport: Optional[str] = None  # Sport type - determines available positions
+    position: Optional[str] = None  # Position based on sport
     jersey_number: Optional[int] = None
+    register_number: Optional[str] = None  # Academy-specific registration number
     height: Optional[str] = None  # e.g., "5'10"
     weight: Optional[str] = None  # e.g., "70 kg"
+    photo_url: Optional[str] = None  # Player photo URL
+    training_days: List[str] = []  # Days when player trains
+    training_batch: Optional[str] = None  # Morning, Evening, Both
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
     medical_notes: Optional[str] = None
