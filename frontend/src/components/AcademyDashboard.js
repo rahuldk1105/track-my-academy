@@ -390,6 +390,12 @@ const AcademyDashboard = () => {
             onClick={setActiveTab}
           />
           <TabButton
+            id="analytics"
+            label="Analytics"
+            active={activeTab === 'analytics'}
+            onClick={setActiveTab}
+          />
+          <TabButton
             id="settings"
             label="Settings"
             active={activeTab === 'settings'}
