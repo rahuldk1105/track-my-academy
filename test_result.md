@@ -733,6 +733,54 @@ backend:
           agent: "testing"
           comment: "Academy database models working perfectly. Academy model includes all required fields: id (UUID), name, owner_name, email, phone, location, sports_type, status, created_at, updated_at, supabase_user_id. AcademyCreate and AcademyUpdate models provide proper validation. MongoDB integration confirmed - data persists correctly with proper field mapping. Auto-approval for admin-created academies working (status='approved'). UUID generation working correctly."
 
+  - task: "Enhanced Player Model with Performance Tracking Fields"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Enhanced Player model with new fields: sport, register_number, photo_url, training_days, training_batch. Added sport-based position mapping (SPORT_POSITIONS). Updated PlayerCreate and PlayerUpdate models. Added register number duplication validation in create_player endpoint."
+
+  - task: "Player Photo Upload API"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented POST /api/upload/player-photo endpoint for uploading player photos with academy-specific authentication. Validates image file types and generates unique filenames with academy prefix."
+
+  - task: "Sport and Position Configuration API"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented GET /api/sports/positions endpoint returning sport-based position mapping, training days, and training batches. Supports 9 sports: Football, Cricket, Basketball, Tennis, Badminton, Hockey, Volleyball, Swimming, Athletics."
+
+  - task: "Attendance and Performance Tracking APIs"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented comprehensive attendance system: POST /api/academy/attendance (mark attendance with performance ratings), GET /api/academy/attendance/{date} (get date-specific attendance), GET /api/academy/players/{id}/performance (comprehensive performance analytics), GET /api/academy/attendance/summary (attendance summary statistics). Includes PlayerAttendance models and performance analytics calculations."
+
 frontend:
   - task: "Academy Creation Form in Dashboard"
     implemented: true
