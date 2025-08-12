@@ -453,6 +453,50 @@ class CoachUpdate(BaseModel):
     bio: Optional[str] = None
     status: Optional[str] = None
 
+# Attendance and Performance Tracking Models
+class PlayerAttendance(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    player_id: str
+    academy_id: str
+    date: str  # YYYY-MM-DD format
+    present: bool
+    performance_rating: Optional[int] = None  # 1-10 scale
+    notes: Optional[str] = None
+    marked_by: str  # User ID who marked attendance
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class PlayerAttendanceCreate(BaseModel):
+    player_id: str
+    date: str
+    present: bool
+    performance_rating: Optional[int] = None
+    notes: Optional[str] = None
+
+class PlayerAttendanceUpdate(BaseModel):
+    present: Optional[bool] = None
+    performance_rating: Optional[int] = None
+    notes: Optional[str] = None
+
+class PlayerPerformanceAnalytics(BaseModel):
+    player_id: str
+    player_name: str
+    total_sessions: int
+    attended_sessions: int
+    attendance_percentage: float
+    average_performance_rating: Optional[float] = None
+    performance_trend: List[Dict[str, Any]] = []  # Last 30 days trend
+    monthly_stats: Dict[str, Dict[str, Any]] = {}  # Monthly breakdown
+
+class AttendanceMarkingRequest(BaseModel):
+    date: str
+    attendance_records: List[PlayerAttendanceCreate]
+
+# Sport Positions API Response Model
+class SportPositionsResponse(BaseModel):
+    sports: Dict[str, List[str]]
+    training_days: List[str]
+    training_batches: List[str]
+
 # Authentication helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
