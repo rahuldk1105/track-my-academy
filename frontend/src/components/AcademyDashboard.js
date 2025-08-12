@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import PlayerModal from './PlayerModal';
+import CoachModal from './CoachModal';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
