@@ -210,7 +210,7 @@ def test_enhanced_player_management(access_token):
         duplicate_player_data["first_name"] = "Duplicate"
         duplicate_player_data["last_name"] = "Player"
         duplicate_player_data["email"] = "duplicate@academy.com"
-        duplicate_player_data["jersey_number"] = 89  # Different jersey number
+        duplicate_player_data["jersey_number"] = int(f"2{unique_suffix}")  # Different jersey number
         # Same register_number as above
         
         response = requests.post(
