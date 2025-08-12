@@ -1840,6 +1840,209 @@ async def get_academy_stats(user_info = Depends(require_academy_user)):
         logger.error(f"Error fetching academy stats: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch academy stats")
 
+# ========== ACADEMY SETTINGS MODELS ==========
+
+class AcademySettings(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    academy_id: str
+    
+    # Branding Settings (Academy can edit)
+    logo_url: Optional[str] = None
+    description: Optional[str] = None
+    website: Optional[str] = None
+    social_media: Optional[Dict[str, str]] = None  # {"facebook": "url", "twitter": "url", etc.}
+    theme_color: Optional[str] = "#0ea5e9"  # Default sky-500
+    
+    # Operational Settings (Academy can edit)
+    season_start_date: Optional[str] = None
+    season_end_date: Optional[str] = None
+    training_days: Optional[List[str]] = None  # ["Monday", "Wednesday", "Friday"]
+    training_time: Optional[str] = None  # "6:00 PM - 8:00 PM"
+    facility_address: Optional[str] = None
+    facility_amenities: Optional[List[str]] = None  # ["Gym", "Pool", "Field"]
+    
+    # Notification Settings (Academy can edit)
+    email_notifications: Optional[bool] = True
+    sms_notifications: Optional[bool] = False
+    parent_notifications: Optional[bool] = True
+    coach_notifications: Optional[bool] = True
+    
+    # Privacy Settings (Academy can edit)
+    public_profile: Optional[bool] = False
+    show_player_stats: Optional[bool] = True
+    show_coach_info: Optional[bool] = True
+    data_sharing_consent: Optional[bool] = False
+    
+    # System Settings (Read-only for academy, set by admin)
+    max_file_upload_size: Optional[int] = 5  # MB
+    allowed_file_types: Optional[List[str]] = ["jpg", "jpeg", "png", "pdf"]
+    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class AcademySettingsCreate(BaseModel):
+    # Branding Settings
+    description: Optional[str] = None
+    website: Optional[str] = None
+    social_media: Optional[Dict[str, str]] = None
+    theme_color: Optional[str] = "#0ea5e9"
+    
+    # Operational Settings
+    season_start_date: Optional[str] = None
+    season_end_date: Optional[str] = None
+    training_days: Optional[List[str]] = None
+    training_time: Optional[str] = None
+    facility_address: Optional[str] = None
+    facility_amenities: Optional[List[str]] = None
+    
+    # Notification Settings
+    email_notifications: Optional[bool] = True
+    sms_notifications: Optional[bool] = False
+    parent_notifications: Optional[bool] = True
+    coach_notifications: Optional[bool] = True
+    
+    # Privacy Settings
+    public_profile: Optional[bool] = False
+    show_player_stats: Optional[bool] = True
+    show_coach_info: Optional[bool] = True
+    data_sharing_consent: Optional[bool] = False
+
+class AcademySettingsUpdate(BaseModel):
+    # Branding Settings
+    logo_url: Optional[str] = None
+    description: Optional[str] = None
+    website: Optional[str] = None
+    social_media: Optional[Dict[str, str]] = None
+    theme_color: Optional[str] = None
+    
+    # Operational Settings
+    season_start_date: Optional[str] = None
+    season_end_date: Optional[str] = None
+    training_days: Optional[List[str]] = None
+    training_time: Optional[str] = None
+    facility_address: Optional[str] = None
+    facility_amenities: Optional[List[str]] = None
+    
+    # Notification Settings
+    email_notifications: Optional[bool] = None
+    sms_notifications: Optional[bool] = None
+    parent_notifications: Optional[bool] = None
+    coach_notifications: Optional[bool] = None
+    
+    # Privacy Settings
+    public_profile: Optional[bool] = None
+    show_player_stats: Optional[bool] = None
+    show_coach_info: Optional[bool] = None
+    data_sharing_consent: Optional[bool] = None
+
+# ========== ACADEMY SETTINGS ENDPOINTS ==========
+
+# Get academy settings (Academy User)
+@api_router.get("/academy/settings", response_model=AcademySettings)
+async def get_academy_settings(user_info = Depends(require_academy_user)):
+    """Get academy settings for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if settings exist
+        settings = await db.academy_settings.find_one({"academy_id": academy_id})
+        
+        if not settings:
+            # Create default settings if none exist
+            default_settings = AcademySettings(academy_id=academy_id)
+            settings_dict = default_settings.dict()
+            await db.academy_settings.insert_one(settings_dict)
+            return default_settings
+        
+        return AcademySettings(**settings)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching academy settings: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch academy settings")
+
+# Update academy settings (Academy User)
+@api_router.put("/academy/settings", response_model=AcademySettings)
+async def update_academy_settings(
+    settings_data: AcademySettingsUpdate, 
+    user_info = Depends(require_academy_user)
+):
+    """Update academy settings for the authenticated academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Prepare update data
+        update_data = {k: v for k, v in settings_data.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.utcnow()
+        
+        # Update settings using upsert
+        result = await db.academy_settings.update_one(
+            {"academy_id": academy_id},
+            {"$set": update_data},
+            upsert=True
+        )
+        
+        # Get updated settings
+        updated_settings = await db.academy_settings.find_one({"academy_id": academy_id})
+        return AcademySettings(**updated_settings)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating academy settings: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update academy settings")
+
+# Upload academy logo (Academy User)
+@api_router.post("/academy/logo")
+async def upload_academy_logo(
+    file: UploadFile = File(...),
+    user_info = Depends(require_academy_user)
+):
+    """Upload academy logo"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Validate file type
+        if file.content_type not in ["image/jpeg", "image/jpg", "image/png"]:
+            raise HTTPException(
+                status_code=400,
+                detail="File must be an image (JPEG, JPG, or PNG)"
+            )
+        
+        # Generate unique filename
+        file_extension = file.filename.split('.')[-1].lower()
+        filename = f"{academy_id}_{uuid.uuid4()}.{file_extension}"
+        file_path = UPLOAD_DIR / filename
+        
+        # Save file
+        async with aiofiles.open(file_path, 'wb') as f:
+            content = await file.read()
+            await f.write(content)
+        
+        # Generate URL
+        logo_url = f"/uploads/logos/{filename}"
+        
+        # Update academy settings with new logo URL
+        await db.academy_settings.update_one(
+            {"academy_id": academy_id},
+            {
+                "$set": {
+                    "logo_url": logo_url,
+                    "updated_at": datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
+        
+        return {"logo_url": logo_url, "message": "Logo uploaded successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading academy logo: {e}")
+        raise HTTPException(status_code=500, detail="Failed to upload logo")
+
 # Include the router in the main app
 app.include_router(api_router)
 
