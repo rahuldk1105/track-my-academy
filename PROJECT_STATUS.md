@@ -155,6 +155,32 @@
 - `GET /api/auth/user` - ✅ Enhanced with role detection (super_admin vs academy_user)
 - `GET /api/auth/user.role_info` - Returns role, academy_id, academy_name, permissions
 
+**Player Management APIs:**
+- `GET /api/academy/players` - List all academy players
+- `POST /api/academy/players` - Create new player
+- `GET /api/academy/players/{id}` - Get specific player
+- `PUT /api/academy/players/{id}` - Update player
+- `DELETE /api/academy/players/{id}` - Delete player
+
+**Coach Management APIs:**
+- `GET /api/academy/coaches` - List all academy coaches
+- `POST /api/academy/coaches` - Create new coach
+- `GET /api/academy/coaches/{id}` - Get specific coach
+- `PUT /api/academy/coaches/{id}` - Update coach
+- `DELETE /api/academy/coaches/{id}` - Delete coach
+
+**Performance Tracking APIs:**
+- `POST /api/academy/attendance` - Mark attendance with performance ratings
+- `GET /api/academy/attendance/{date}` - Get attendance by date
+- `GET /api/academy/players/{id}/performance` - Get player performance analytics
+- `GET /api/academy/attendance/summary` - Get academy attendance summary
+
+**Analytics & Stats APIs:**
+- `GET /api/academy/stats` - Get academy statistics
+- `GET /api/academy/analytics` - Get comprehensive academy analytics
+- `GET /api/academy/settings` - Get academy settings
+- `PUT /api/academy/settings` - Update academy settings
+
 ### New Routes Added  
 - `/academy` - ✅ Academy Dashboard route for academy users
 
