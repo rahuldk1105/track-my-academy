@@ -148,17 +148,21 @@ def test_enhanced_player_management(access_token):
         # Test 1: Create player with enhanced fields
         print("\n--- Testing Player Creation with Enhanced Fields ---")
         
+        # Use timestamp-based unique numbers to avoid conflicts
+        import time
+        unique_suffix = str(int(time.time()))[-3:]  # Last 3 digits of timestamp
+        
         player_data = {
             "first_name": "Rahul",
             "last_name": "Sharma",
-            "email": "rahul.sharma@academy.com",
+            "email": f"rahul.sharma.{unique_suffix}@academy.com",
             "phone": "+91-9876543210",
             "date_of_birth": "2005-03-15",
             "age": 19,
             "sport": "Cricket",
             "position": "Batsman",
-            "jersey_number": 88,  # Use unique number
-            "register_number": "CR2024088",  # Use unique register number
+            "jersey_number": int(f"1{unique_suffix}"),  # e.g., 1123
+            "register_number": f"CR2024{unique_suffix}",  # e.g., CR2024123
             "height": "5'8\"",
             "weight": "65 kg",
             "training_days": ["Monday", "Wednesday", "Friday"],
