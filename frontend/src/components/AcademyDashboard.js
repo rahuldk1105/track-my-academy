@@ -281,7 +281,7 @@ const AcademyDashboard = () => {
   const TabButton = ({ id, label, active, onClick }) => (
     <button
       onClick={() => onClick(id)}
-      className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+      className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base mb-2 ${
         active
           ? 'bg-sky-500 text-white shadow-lg'
           : 'text-gray-400 hover:text-white hover:bg-white/10'
