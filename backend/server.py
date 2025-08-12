@@ -1798,6 +1798,231 @@ async def delete_player(player_id: str, user_info = Depends(require_academy_user
         logger.error(f"Error deleting player: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete player")
 
+# ========== ATTENDANCE AND PERFORMANCE TRACKING ENDPOINTS ==========
+
+# Mark attendance for players (Academy User)
+@api_router.post("/academy/attendance")
+async def mark_attendance(attendance_request: AttendanceMarkingRequest, user_info = Depends(require_academy_user)):
+    """Mark attendance for multiple players with performance ratings"""
+    try:
+        academy_id = user_info["academy_id"]
+        marked_by = user_info["user_id"]
+        
+        results = []
+        for record in attendance_request.attendance_records:
+            # Validate player belongs to academy
+            player = await db.players.find_one({"id": record.player_id, "academy_id": academy_id})
+            if not player:
+                continue  # Skip invalid players
+            
+            # Check if attendance already exists for this date
+            existing_attendance = await db.player_attendance.find_one({
+                "player_id": record.player_id,
+                "academy_id": academy_id,
+                "date": record.date
+            })
+            
+            attendance_data = {
+                "player_id": record.player_id,
+                "academy_id": academy_id,
+                "date": record.date,
+                "present": record.present,
+                "performance_rating": record.performance_rating,
+                "notes": record.notes,
+                "marked_by": marked_by,
+                "created_at": datetime.utcnow(),
+                "id": str(uuid.uuid4())
+            }
+            
+            if existing_attendance:
+                # Update existing attendance
+                await db.player_attendance.update_one(
+                    {"id": existing_attendance["id"]},
+                    {"$set": {
+                        "present": record.present,
+                        "performance_rating": record.performance_rating,
+                        "notes": record.notes,
+                        "marked_by": marked_by,
+                        "updated_at": datetime.utcnow()
+                    }}
+                )
+                results.append({"player_id": record.player_id, "status": "updated"})
+            else:
+                # Create new attendance record
+                await db.player_attendance.insert_one(attendance_data)
+                results.append({"player_id": record.player_id, "status": "created"})
+        
+        return {"message": "Attendance marked successfully", "results": results}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error marking attendance: {e}")
+        raise HTTPException(status_code=500, detail="Failed to mark attendance")
+
+# Get attendance for a specific date (Academy User)
+@api_router.get("/academy/attendance/{date}")
+async def get_attendance_by_date(date: str, user_info = Depends(require_academy_user)):
+    """Get attendance records for a specific date"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Get attendance records for the date
+        attendance_cursor = db.player_attendance.find({
+            "academy_id": academy_id,
+            "date": date
+        })
+        attendance_records = await attendance_cursor.to_list(length=None)
+        
+        # Get player details for each attendance record
+        results = []
+        for record in attendance_records:
+            player = await db.players.find_one({"id": record["player_id"]})
+            if player:
+                results.append({
+                    "attendance_id": record["id"],
+                    "player_id": record["player_id"],
+                    "player_name": f"{player['first_name']} {player['last_name']}",
+                    "present": record["present"],
+                    "performance_rating": record.get("performance_rating"),
+                    "notes": record.get("notes"),
+                    "marked_at": record["created_at"]
+                })
+        
+        return {"date": date, "attendance_records": results}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching attendance: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch attendance")
+
+# Get player performance analytics (Academy User)
+@api_router.get("/academy/players/{player_id}/performance", response_model=PlayerPerformanceAnalytics)
+async def get_player_performance(player_id: str, user_info = Depends(require_academy_user)):
+    """Get comprehensive performance analytics for a specific player"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Validate player belongs to academy
+        player = await db.players.find_one({"id": player_id, "academy_id": academy_id})
+        if not player:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        # Get all attendance records for the player
+        attendance_cursor = db.player_attendance.find({
+            "player_id": player_id,
+            "academy_id": academy_id
+        }).sort("date", -1)
+        attendance_records = await attendance_cursor.to_list(length=None)
+        
+        total_sessions = len(attendance_records)
+        attended_sessions = sum(1 for record in attendance_records if record["present"])
+        attendance_percentage = (attended_sessions / total_sessions * 100) if total_sessions > 0 else 0
+        
+        # Calculate average performance rating
+        performance_ratings = [record.get("performance_rating") for record in attendance_records 
+                             if record.get("performance_rating") is not None and record["present"]]
+        average_performance_rating = sum(performance_ratings) / len(performance_ratings) if performance_ratings else None
+        
+        # Generate performance trend (last 30 days)
+        from datetime import datetime, timedelta
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        recent_records = [record for record in attendance_records 
+                         if datetime.fromisoformat(record["date"]) >= thirty_days_ago]
+        
+        performance_trend = []
+        for record in sorted(recent_records, key=lambda x: x["date"])[-10:]:  # Last 10 sessions
+            if record["present"] and record.get("performance_rating"):
+                performance_trend.append({
+                    "date": record["date"],
+                    "rating": record["performance_rating"]
+                })
+        
+        # Monthly statistics
+        monthly_stats = {}
+        for record in attendance_records:
+            month_key = record["date"][:7]  # YYYY-MM
+            if month_key not in monthly_stats:
+                monthly_stats[month_key] = {
+                    "total_sessions": 0,
+                    "attended_sessions": 0,
+                    "ratings": []
+                }
+            monthly_stats[month_key]["total_sessions"] += 1
+            if record["present"]:
+                monthly_stats[month_key]["attended_sessions"] += 1
+                if record.get("performance_rating"):
+                    monthly_stats[month_key]["ratings"].append(record["performance_rating"])
+        
+        # Calculate monthly averages
+        for month, stats in monthly_stats.items():
+            stats["attendance_percentage"] = (stats["attended_sessions"] / stats["total_sessions"] * 100) if stats["total_sessions"] > 0 else 0
+            stats["average_rating"] = sum(stats["ratings"]) / len(stats["ratings"]) if stats["ratings"] else None
+            del stats["ratings"]  # Remove raw ratings from response
+        
+        return PlayerPerformanceAnalytics(
+            player_id=player_id,
+            player_name=f"{player['first_name']} {player['last_name']}",
+            total_sessions=total_sessions,
+            attended_sessions=attended_sessions,
+            attendance_percentage=round(attendance_percentage, 2),
+            average_performance_rating=round(average_performance_rating, 2) if average_performance_rating else None,
+            performance_trend=performance_trend,
+            monthly_stats=monthly_stats
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player performance: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch player performance")
+
+# Get attendance summary for academy (Academy User)
+@api_router.get("/academy/attendance/summary")
+async def get_attendance_summary(start_date: str = None, end_date: str = None, user_info = Depends(require_academy_user)):
+    """Get attendance summary for academy within date range"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Build date filter
+        date_filter = {"academy_id": academy_id}
+        if start_date and end_date:
+            date_filter["date"] = {"$gte": start_date, "$lte": end_date}
+        elif start_date:
+            date_filter["date"] = {"$gte": start_date}
+        elif end_date:
+            date_filter["date"] = {"$lte": end_date}
+        
+        # Get attendance records
+        attendance_cursor = db.player_attendance.find(date_filter)
+        attendance_records = await attendance_cursor.to_list(length=None)
+        
+        # Calculate summary statistics
+        total_records = len(attendance_records)
+        present_records = sum(1 for record in attendance_records if record["present"])
+        overall_attendance_rate = (present_records / total_records * 100) if total_records > 0 else 0
+        
+        # Get performance ratings
+        performance_ratings = [record.get("performance_rating") for record in attendance_records 
+                             if record.get("performance_rating") is not None and record["present"]]
+        average_performance = sum(performance_ratings) / len(performance_ratings) if performance_ratings else None
+        
+        return {
+            "date_range": {"start": start_date, "end": end_date},
+            "total_records": total_records,
+            "present_records": present_records,
+            "overall_attendance_rate": round(overall_attendance_rate, 2),
+            "average_performance_rating": round(average_performance, 2) if average_performance else None,
+            "total_performance_ratings": len(performance_ratings)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching attendance summary: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch attendance summary")
+
 # ========== COACH MANAGEMENT ENDPOINTS ==========
 
 # Get all coaches for an academy (Academy User)
