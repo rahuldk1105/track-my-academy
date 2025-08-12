@@ -3,6 +3,8 @@ import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
 import PlayerModal from './PlayerModal';
 import CoachModal from './CoachModal';
+import AcademySettingsForm from './AcademySettingsForm';
+import AcademyAnalytics from './AcademyAnalytics';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
