@@ -63,7 +63,7 @@ class AcademyTestManager:
         print("\n=== Getting Academy User Access Token ===")
         try:
             login_data = {
-                "email": "testacademy@roletest.com",
+                "email": "testacademy2@roletest.com",
                 "password": "TestPassword123!"
             }
             
