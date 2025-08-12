@@ -545,7 +545,8 @@ def test_performance_tracking_apis(access_token, players):
         print(f"GET attendance by date - Status: {response.status_code}")
         
         if response.status_code == 200:
-            attendance_records = response.json()
+            attendance_data = response.json()
+            attendance_records = attendance_data.get('attendance_records', [])
             print(f"  Retrieved {len(attendance_records)} attendance records for {today}")
             
             # Verify the records contain performance ratings
