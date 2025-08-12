@@ -644,15 +644,12 @@ const AcademyDashboard = () => {
             </div>
           )}
 
+          {activeTab === 'analytics' && (
+            <AcademyAnalytics />
+          )}
+
           {activeTab === 'settings' && (
-            <div className="p-6">
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">Academy Settings</div>
-                <div className="text-sm text-gray-500">
-                  Academy settings will be available in the next phase.
-                </div>
-              </div>
-            </div>
+            <AcademySettingsForm />
           )}
         </div>
       </div>
