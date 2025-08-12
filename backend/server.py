@@ -433,6 +433,54 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         logger.error(f"Authentication error: {e}")
         return None
 
+async def get_academy_user_info(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get authenticated user info with academy details"""
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    try:
+        # Verify JWT token with Supabase
+        user_response = supabase.auth.get_user(credentials.credentials)
+        if not user_response.user:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user = user_response.user
+        
+        # Look up academy information for this user
+        academy = await db.academies.find_one({"supabase_user_id": user.id})
+        
+        if not academy:
+            # Check if this is a super admin
+            if user.email == "admin@trackmyacademy.com":
+                return {
+                    "user": user,
+                    "role": "super_admin",
+                    "academy_id": None,
+                    "academy_name": None
+                }
+            else:
+                raise HTTPException(status_code=403, detail="No academy associated with this user")
+        
+        return {
+            "user": user,
+            "role": "academy_user",
+            "academy_id": academy["id"],
+            "academy_name": academy["name"],
+            "academy": academy
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Authentication error: {e}")
+        raise HTTPException(status_code=401, detail="Authentication failed")
+
+async def require_academy_user(user_info = Depends(get_academy_user_info)):
+    """Ensure user is an academy user (not super admin)"""
+    if user_info["role"] != "academy_user":
+        raise HTTPException(status_code=403, detail="Academy user access required")
+    return user_info
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
