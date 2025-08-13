@@ -46,6 +46,9 @@ const AcademyDashboard = () => {
         name: userRole.academy_name,
       });
 
+      // Load academy settings to get logo
+      await loadAcademySettings();
+
       // Load stats, players, and coaches
       await Promise.all([
         loadStats(),
@@ -57,6 +60,26 @@ const AcademyDashboard = () => {
       console.error('Error loading academy data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAcademySettings = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/settings`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const settings = await response.json();
+        if (settings.branding && settings.branding.logo_url) {
+          setAcademyLogo(settings.branding.logo_url);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading academy settings:', error);
     }
   };
 
