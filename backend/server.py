@@ -551,14 +551,16 @@ class CoachUpdate(BaseModel):
     bio: Optional[str] = None
     status: Optional[str] = None
 
-# Attendance and Performance Tracking Models
+# Enhanced Attendance and Performance Tracking Models
 class PlayerAttendance(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     player_id: str
     academy_id: str
     date: str  # YYYY-MM-DD format
     present: bool
-    performance_rating: Optional[int] = None  # 1-10 scale
+    sport: str  # Sport type for performance categories
+    # Sport-specific performance ratings (1-10 scale for each category)
+    performance_ratings: Dict[str, Optional[int]] = {}  # e.g., {"Technical Skills": 8, "Physical Fitness": 7, ...}
     notes: Optional[str] = None
     marked_by: str  # User ID who marked attendance
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -567,23 +569,28 @@ class PlayerAttendanceCreate(BaseModel):
     player_id: str
     date: str
     present: bool
-    performance_rating: Optional[int] = None
+    sport: str  # Required for performance categories
+    performance_ratings: Dict[str, Optional[int]] = {}  # Sport-specific ratings
     notes: Optional[str] = None
 
 class PlayerAttendanceUpdate(BaseModel):
     present: Optional[bool] = None
-    performance_rating: Optional[int] = None
+    performance_ratings: Optional[Dict[str, Optional[int]]] = None
     notes: Optional[str] = None
 
 class PlayerPerformanceAnalytics(BaseModel):
     player_id: str
     player_name: str
+    sport: str
     total_sessions: int
     attended_sessions: int
     attendance_percentage: float
-    average_performance_rating: Optional[float] = None
-    performance_trend: List[Dict[str, Any]] = []  # Last 30 days trend
-    monthly_stats: Dict[str, Dict[str, Any]] = {}  # Monthly breakdown
+    # Enhanced analytics with sport-specific categories
+    category_averages: Dict[str, float] = {}  # Average rating per performance category
+    overall_average_rating: Optional[float] = None
+    performance_trend: List[Dict[str, Any]] = []  # Last 30 days trend with categories
+    monthly_stats: Dict[str, Dict[str, Any]] = {}  # Monthly breakdown with categories
+    category_trends: Dict[str, List[Dict[str, Any]]] = {}  # Individual category trends
 
 class AttendanceMarkingRequest(BaseModel):
     date: str
