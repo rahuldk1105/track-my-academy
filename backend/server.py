@@ -710,8 +710,8 @@ async def upload_academy_logo(file: UploadFile = File(...)):
             content = await file.read()
             await f.write(content)
         
-        # Return the URL path
-        logo_url = f"/uploads/logos/{unique_filename}"
+        # Return the URL path with /api prefix
+        logo_url = f"/api/uploads/logos/{unique_filename}"
         return {"logo_url": logo_url, "message": "Logo uploaded successfully"}
         
     except HTTPException:
