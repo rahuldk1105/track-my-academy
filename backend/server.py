@@ -739,8 +739,8 @@ async def upload_player_photo(file: UploadFile = File(...), user_info = Depends(
             content = await file.read()
             await f.write(content)
         
-        # Return the URL path
-        photo_url = f"/uploads/logos/{unique_filename}"
+        # Return the URL path with /api prefix
+        photo_url = f"/api/uploads/logos/{unique_filename}"
         return {"photo_url": photo_url, "message": "Player photo uploaded successfully"}
         
     except HTTPException:
