@@ -367,11 +367,11 @@ class PlayerCreate(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None
-    age: Optional[int] = None
-    sport: Optional[str] = None
-    position: Optional[str] = None
-    jersey_number: Optional[int] = None
-    register_number: Optional[str] = None
+    age: Optional[int] = None  # Will be auto-calculated if date_of_birth provided
+    gender: str  # Required: Male, Female, Other
+    sport: str  # Required: Sport type
+    position: Optional[str] = None  # Optional for individual sports
+    registration_number: Optional[str] = None  # Replaces jersey_number
     height: Optional[str] = None
     weight: Optional[str] = None
     photo_url: Optional[str] = None
@@ -387,11 +387,11 @@ class PlayerUpdate(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None
-    age: Optional[int] = None
+    age: Optional[int] = None  # Will be auto-calculated if date_of_birth provided
+    gender: Optional[str] = None
     sport: Optional[str] = None
     position: Optional[str] = None
-    jersey_number: Optional[int] = None
-    register_number: Optional[str] = None
+    registration_number: Optional[str] = None  # Replaces jersey_number
     height: Optional[str] = None
     weight: Optional[str] = None
     photo_url: Optional[str] = None
