@@ -53,11 +53,11 @@ security = HTTPBearer(auto_error=False)
 # Create the main app without a prefix
 app = FastAPI()
 
-# Mount static files for uploaded logos
-app.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
-
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+# Mount static files for uploaded logos under /api prefix to avoid frontend routing conflicts
+api_router.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
 
 # Subscription Plans Configuration (Backend-defined for security) - INR Pricing
 SUBSCRIPTION_PLANS = {
