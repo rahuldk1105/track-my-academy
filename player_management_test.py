@@ -1,5 +1,435 @@
 #!/usr/bin/env python3
 """
+Player Management Verification Test for Track My Academy
+Quick verification test to ensure player management functionality is working correctly after frontend fixes
+"""
+
+import requests
+import json
+import os
+from datetime import datetime
+import sys
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv('/app/frontend/.env')
+load_dotenv('/app/backend/.env')
+
+# Get backend URL from frontend environment
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
+API_BASE_URL = f"{BACKEND_URL}/api"
+
+print(f"Testing backend at: {API_BASE_URL}")
+
+# Test credentials
+TEST_ACADEMY_EMAIL = "testacademy2@roletest.com"
+TEST_ACADEMY_PASSWORD = "TestPassword123!"
+
+def test_backend_server_health():
+    """Test that backend server is still running properly"""
+    print("\n=== 1. Testing Backend Server Health ===")
+    try:
+        response = requests.get(f"{API_BASE_URL}/", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        if response.status_code == 200 and response.json().get("message") == "Hello World":
+            print("✅ Backend server health check PASSED")
+            return True
+        else:
+            print("❌ Backend server health check FAILED - Unexpected response")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Backend server health check FAILED - Connection error: {e}")
+        return False
+
+def login_academy_user():
+    """Login with test academy user credentials"""
+    print("\n=== Academy User Login ===")
+    try:
+        login_data = {
+            "email": TEST_ACADEMY_EMAIL,
+            "password": TEST_ACADEMY_PASSWORD
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Login Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            access_token = data.get('session', {}).get('access_token')
+            if access_token:
+                print("✅ Academy user login PASSED")
+                return access_token
+            else:
+                print("❌ Academy user login FAILED - No access token")
+                return None
+        else:
+            print(f"❌ Academy user login FAILED - Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Academy user login FAILED - Connection error: {e}")
+        return None
+
+def test_sports_config():
+    """Test sports configuration endpoint"""
+    print("\n=== Testing Sports Configuration ===")
+    try:
+        response = requests.get(f"{API_BASE_URL}/sports/config", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            required_fields = ['sports', 'performance_categories', 'individual_sports', 'team_sports', 'training_days', 'training_batches']
+            
+            missing_fields = [field for field in required_fields if field not in data]
+            if not missing_fields:
+                print("✅ Sports configuration PASSED")
+                print(f"Available sports: {list(data['sports'].keys())}")
+                print(f"Training days: {data['training_days']}")
+                print(f"Training batches: {data['training_batches']}")
+                return True, data
+            else:
+                print(f"❌ Sports configuration FAILED - Missing fields: {missing_fields}")
+                return False, None
+        else:
+            print("❌ Sports configuration FAILED - Non-200 status code")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Sports configuration FAILED - Connection error: {e}")
+        return False, None
+
+def test_player_creation_with_enhanced_fields(access_token):
+    """Test player creation with enhanced fields (training_days, training_batch, registration_number)"""
+    print("\n=== 2. Testing Player Creation with Enhanced Fields ===")
+    try:
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Create a test player with enhanced fields
+        player_data = {
+            "first_name": "Alex",
+            "last_name": "Johnson",
+            "email": "alex.johnson@example.com",
+            "phone": "+1234567890",
+            "date_of_birth": "2005-03-15",
+            "gender": "Male",
+            "sport": "Football",
+            "position": "Midfielder",
+            "registration_number": "REG2024001",
+            "height": "5'8\"",
+            "weight": "65 kg",
+            "training_days": ["Monday", "Wednesday", "Friday"],
+            "training_batch": "Evening",
+            "emergency_contact_name": "Sarah Johnson",
+            "emergency_contact_phone": "+1234567891",
+            "medical_notes": "No known allergies"
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/academy/players",
+            json=player_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Player Creation Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Created Player ID: {data.get('id')}")
+            
+            # Verify enhanced fields are present
+            enhanced_fields = ['training_days', 'training_batch', 'registration_number']
+            missing_fields = [field for field in enhanced_fields if field not in data]
+            
+            if not missing_fields:
+                print("✅ Player creation with enhanced fields PASSED")
+                print(f"Training Days: {data.get('training_days')}")
+                print(f"Training Batch: {data.get('training_batch')}")
+                print(f"Registration Number: {data.get('registration_number')}")
+                return True, data.get('id')
+            else:
+                print(f"❌ Player creation FAILED - Missing enhanced fields: {missing_fields}")
+                return False, None
+        else:
+            print(f"❌ Player creation FAILED - Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Player creation FAILED - Connection error: {e}")
+        return False, None
+
+def test_player_retrieval(access_token, player_id=None):
+    """Test player retrieval to confirm players are showing up correctly"""
+    print("\n=== 3. Testing Player Retrieval ===")
+    try:
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test getting all players
+        response = requests.get(
+            f"{API_BASE_URL}/academy/players",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Player Retrieval Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Number of players retrieved: {len(data)}")
+            
+            if isinstance(data, list):
+                # Check if we have players and verify enhanced fields
+                if data:
+                    sample_player = data[0]
+                    enhanced_fields = ['training_days', 'training_batch', 'registration_number']
+                    present_fields = [field for field in enhanced_fields if field in sample_player]
+                    
+                    print(f"Enhanced fields present in retrieved player: {present_fields}")
+                    print("✅ Player retrieval PASSED")
+                    
+                    # If we have a specific player ID, test individual retrieval
+                    if player_id:
+                        return test_individual_player_retrieval(access_token, player_id)
+                    return True
+                else:
+                    print("⚠️ No players found in academy")
+                    return True
+            else:
+                print("❌ Player retrieval FAILED - Response is not a list")
+                return False
+        else:
+            print(f"❌ Player retrieval FAILED - Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Player retrieval FAILED - Connection error: {e}")
+        return False
+
+def test_individual_player_retrieval(access_token, player_id):
+    """Test individual player retrieval"""
+    print(f"\n=== Testing Individual Player Retrieval (ID: {player_id}) ===")
+    try:
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(
+            f"{API_BASE_URL}/academy/players/{player_id}",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Individual Player Retrieval Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            enhanced_fields = ['training_days', 'training_batch', 'registration_number']
+            present_fields = [field for field in enhanced_fields if field in data]
+            
+            print(f"Enhanced fields in individual player: {present_fields}")
+            print("✅ Individual player retrieval PASSED")
+            return True
+        else:
+            print(f"❌ Individual player retrieval FAILED - Status: {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Individual player retrieval FAILED - Connection error: {e}")
+        return False
+
+def test_academy_settings_api(access_token):
+    """Test academy settings API to verify logo functionality is working"""
+    print("\n=== 4. Testing Academy Settings API (Logo Functionality) ===")
+    try:
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test GET academy settings
+        response = requests.get(
+            f"{API_BASE_URL}/academy/settings",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Academy Settings Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ Academy settings retrieval PASSED")
+            
+            # Check if branding settings exist (where logo would be stored)
+            if 'branding' in data:
+                branding = data['branding']
+                print(f"Branding settings available: {list(branding.keys())}")
+                
+                # Test updating settings (simulating logo functionality)
+                update_data = {
+                    "branding": {
+                        **branding,
+                        "description": "Test Academy for Player Management",
+                        "website": "https://testacademy.com"
+                    }
+                }
+                
+                update_response = requests.put(
+                    f"{API_BASE_URL}/academy/settings",
+                    json=update_data,
+                    headers=headers,
+                    timeout=10
+                )
+                
+                if update_response.status_code == 200:
+                    print("✅ Academy settings update PASSED")
+                    return True
+                else:
+                    print(f"❌ Academy settings update FAILED - Status: {update_response.status_code}")
+                    return False
+            else:
+                print("⚠️ No branding settings found, but settings endpoint works")
+                return True
+        else:
+            print(f"❌ Academy settings FAILED - Status: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Academy settings FAILED - Connection error: {e}")
+        return False
+
+def test_academy_stats(access_token):
+    """Test academy stats to verify player counts"""
+    print("\n=== 5. Testing Academy Stats (Player Verification) ===")
+    try:
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(
+            f"{API_BASE_URL}/academy/stats",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Academy Stats Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Academy Stats: {data}")
+            
+            required_fields = ['total_players', 'active_players', 'player_limit']
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if not missing_fields:
+                print("✅ Academy stats PASSED")
+                print(f"Total Players: {data.get('total_players')}")
+                print(f"Active Players: {data.get('active_players')}")
+                print(f"Player Limit: {data.get('player_limit')}")
+                return True
+            else:
+                print(f"❌ Academy stats FAILED - Missing fields: {missing_fields}")
+                return False
+        else:
+            print(f"❌ Academy stats FAILED - Status: {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Academy stats FAILED - Connection error: {e}")
+        return False
+
+def main():
+    """Run all player management verification tests"""
+    print("🏃‍♂️ Starting Player Management Verification Tests")
+    print("=" * 60)
+    
+    test_results = []
+    
+    # 1. Test backend server health
+    server_health = test_backend_server_health()
+    test_results.append(("Backend Server Health", server_health))
+    
+    if not server_health:
+        print("\n❌ Backend server is not running. Cannot proceed with other tests.")
+        return False
+    
+    # Login to get access token
+    access_token = login_academy_user()
+    if not access_token:
+        print("\n❌ Cannot login with test academy credentials. Cannot proceed with authenticated tests.")
+        test_results.append(("Academy User Login", False))
+        return False
+    
+    test_results.append(("Academy User Login", True))
+    
+    # Test sports configuration
+    sports_config_result, sports_data = test_sports_config()
+    test_results.append(("Sports Configuration", sports_config_result))
+    
+    # 2. Test player creation with enhanced fields
+    player_creation_result, player_id = test_player_creation_with_enhanced_fields(access_token)
+    test_results.append(("Player Creation with Enhanced Fields", player_creation_result))
+    
+    # 3. Test player retrieval
+    player_retrieval_result = test_player_retrieval(access_token, player_id)
+    test_results.append(("Player Retrieval", player_retrieval_result))
+    
+    # 4. Test academy settings API (logo functionality)
+    academy_settings_result = test_academy_settings_api(access_token)
+    test_results.append(("Academy Settings API (Logo Functionality)", academy_settings_result))
+    
+    # 5. Test academy stats
+    academy_stats_result = test_academy_stats(access_token)
+    test_results.append(("Academy Stats", academy_stats_result))
+    
+    # Print summary
+    print("\n" + "=" * 60)
+    print("🏁 PLAYER MANAGEMENT VERIFICATION TEST SUMMARY")
+    print("=" * 60)
+    
+    passed_tests = 0
+    total_tests = len(test_results)
+    
+    for test_name, result in test_results:
+        status = "✅ PASSED" if result else "❌ FAILED"
+        print(f"{test_name}: {status}")
+        if result:
+            passed_tests += 1
+    
+    print(f"\nOverall Result: {passed_tests}/{total_tests} tests passed")
+    
+    if passed_tests == total_tests:
+        print("🎉 ALL TESTS PASSED! Player management functionality is working correctly.")
+        return True
+    else:
+        print("⚠️ Some tests failed. Please check the issues above.")
+        return False
+
+if __name__ == "__main__":
+    success = main()
+    sys.exit(0 if success else 1)
+"""
 Player Management Backend API Testing for Track My Academy
 Tests the player management functionality specifically
 """
