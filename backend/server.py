@@ -2097,12 +2097,43 @@ async def get_player_performance(player_id: str, user_info = Depends(require_aca
         attended_sessions = sum(1 for record in attendance_records if record["present"])
         attendance_percentage = (attended_sessions / total_sessions * 100) if total_sessions > 0 else 0
         
-        # Calculate average performance rating
-        performance_ratings = [record.get("performance_rating") for record in attendance_records 
-                             if record.get("performance_rating") is not None and record["present"]]
-        average_performance_rating = sum(performance_ratings) / len(performance_ratings) if performance_ratings else None
+        # Get player's sport and performance categories
+        player_sport = player.get("sport", "Other")
+        performance_categories = get_sport_performance_categories(player_sport)
         
-        # Generate performance trend (last 30 days)
+        # Calculate category averages
+        category_averages = {}
+        category_trends = {}
+        overall_ratings = []
+        
+        for category in performance_categories:
+            category_ratings = []
+            category_trend = []
+            
+            for record in attendance_records:
+                if record["present"] and record.get("performance_ratings", {}).get(category):
+                    rating = record["performance_ratings"][category]
+                    category_ratings.append(rating)
+                    overall_ratings.append(rating)
+                    
+                    # Add to trend data
+                    category_trend.append({
+                        "date": record["date"],
+                        "rating": rating
+                    })
+            
+            # Calculate average for this category
+            if category_ratings:
+                category_averages[category] = round(sum(category_ratings) / len(category_ratings), 2)
+                category_trends[category] = sorted(category_trend, key=lambda x: x["date"])[-10:]  # Last 10 sessions
+            else:
+                category_averages[category] = None
+                category_trends[category] = []
+        
+        # Calculate overall average
+        overall_average_rating = round(sum(overall_ratings) / len(overall_ratings), 2) if overall_ratings else None
+        
+        # Generate overall performance trend (last 30 days)
         from datetime import datetime, timedelta
         thirty_days_ago = datetime.utcnow() - timedelta(days=30)
         recent_records = [record for record in attendance_records 
@@ -2110,13 +2141,17 @@ async def get_player_performance(player_id: str, user_info = Depends(require_aca
         
         performance_trend = []
         for record in sorted(recent_records, key=lambda x: x["date"])[-10:]:  # Last 10 sessions
-            if record["present"] and record.get("performance_rating"):
-                performance_trend.append({
-                    "date": record["date"],
-                    "rating": record["performance_rating"]
-                })
+            if record["present"] and record.get("performance_ratings"):
+                session_ratings = [rating for rating in record["performance_ratings"].values() if rating]
+                if session_ratings:
+                    avg_rating = sum(session_ratings) / len(session_ratings)
+                    performance_trend.append({
+                        "date": record["date"],
+                        "rating": round(avg_rating, 2),
+                        "categories": record["performance_ratings"]
+                    })
         
-        # Monthly statistics
+        # Monthly statistics with category breakdown
         monthly_stats = {}
         for record in attendance_records:
             month_key = record["date"][:7]  # YYYY-MM
@@ -2124,29 +2159,46 @@ async def get_player_performance(player_id: str, user_info = Depends(require_aca
                 monthly_stats[month_key] = {
                     "total_sessions": 0,
                     "attended_sessions": 0,
-                    "ratings": []
+                    "category_ratings": {cat: [] for cat in performance_categories}
                 }
             monthly_stats[month_key]["total_sessions"] += 1
             if record["present"]:
                 monthly_stats[month_key]["attended_sessions"] += 1
-                if record.get("performance_rating"):
-                    monthly_stats[month_key]["ratings"].append(record["performance_rating"])
+                if record.get("performance_ratings"):
+                    for category in performance_categories:
+                        if category in record["performance_ratings"] and record["performance_ratings"][category]:
+                            monthly_stats[month_key]["category_ratings"][category].append(record["performance_ratings"][category])
         
         # Calculate monthly averages
         for month, stats in monthly_stats.items():
             stats["attendance_percentage"] = (stats["attended_sessions"] / stats["total_sessions"] * 100) if stats["total_sessions"] > 0 else 0
-            stats["average_rating"] = sum(stats["ratings"]) / len(stats["ratings"]) if stats["ratings"] else None
-            del stats["ratings"]  # Remove raw ratings from response
+            stats["category_averages"] = {}
+            overall_month_ratings = []
+            
+            for category in performance_categories:
+                ratings = stats["category_ratings"][category]
+                if ratings:
+                    avg = sum(ratings) / len(ratings)
+                    stats["category_averages"][category] = round(avg, 2)
+                    overall_month_ratings.extend(ratings)
+                else:
+                    stats["category_averages"][category] = None
+            
+            stats["overall_average"] = round(sum(overall_month_ratings) / len(overall_month_ratings), 2) if overall_month_ratings else None
+            del stats["category_ratings"]  # Remove raw ratings from response
         
         return PlayerPerformanceAnalytics(
             player_id=player_id,
             player_name=f"{player['first_name']} {player['last_name']}",
+            sport=player_sport,
             total_sessions=total_sessions,
             attended_sessions=attended_sessions,
             attendance_percentage=round(attendance_percentage, 2),
-            average_performance_rating=round(average_performance_rating, 2) if average_performance_rating else None,
+            category_averages=category_averages,
+            overall_average_rating=overall_average_rating,
             performance_trend=performance_trend,
-            monthly_stats=monthly_stats
+            monthly_stats=monthly_stats,
+            category_trends=category_trends
         )
         
     except HTTPException:
