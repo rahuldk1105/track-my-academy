@@ -331,9 +331,107 @@ SPORT_POSITIONS = {
     "Other": ["Player"]
 }
 
+# Sport-specific Performance Categories (5 categories per sport)
+SPORT_PERFORMANCE_CATEGORIES = {
+    "Football": [
+        "Technical Skills",
+        "Physical Fitness", 
+        "Tactical Awareness",
+        "Mental Strength",
+        "Teamwork"
+    ],
+    "Cricket": [
+        "Technical Skills",
+        "Physical Fitness",
+        "Mental Strength", 
+        "Teamwork",
+        "Match Awareness"
+    ],
+    "Basketball": [
+        "Shooting & Scoring",
+        "Defense & Rebounding",
+        "Ball Handling",
+        "Court Vision",
+        "Physical Fitness"
+    ],
+    "Tennis": [
+        "Technical Skills",
+        "Physical Fitness",
+        "Mental Strength",
+        "Match Strategy",
+        "Consistency"
+    ],
+    "Swimming": [
+        "Technique",
+        "Speed & Endurance",
+        "Mental Focus",
+        "Training Discipline",
+        "Race Strategy"
+    ],
+    "Badminton": [
+        "Technical Skills",
+        "Physical Fitness",
+        "Mental Focus",
+        "Court Coverage",
+        "Game Strategy"
+    ],
+    "Athletics": [
+        "Technical Form",
+        "Physical Fitness",
+        "Mental Strength",
+        "Training Discipline",
+        "Competition Performance"
+    ],
+    "Hockey": [
+        "Technical Skills",
+        "Physical Fitness",
+        "Tactical Awareness",
+        "Mental Strength",
+        "Teamwork"
+    ],
+    "Volleyball": [
+        "Technical Skills",
+        "Physical Fitness",
+        "Tactical Awareness",
+        "Mental Strength",
+        "Teamwork"
+    ],
+    "Other": [
+        "Technical Skills",
+        "Physical Fitness",
+        "Mental Strength",
+        "Performance Consistency",
+        "Training Attitude"
+    ]
+}
+
+# Individual vs Team Sports Classification
+INDIVIDUAL_SPORTS = ["Tennis", "Swimming", "Badminton", "Athletics"]
+TEAM_SPORTS = ["Football", "Cricket", "Basketball", "Hockey", "Volleyball"]
+
 # Training Days and Batches
 TRAINING_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 TRAINING_BATCHES = ["Morning", "Evening", "Both"]
+
+# Helper Functions
+def calculate_age_from_dob(date_of_birth: str) -> Optional[int]:
+    """Calculate age from date of birth string (YYYY-MM-DD format)"""
+    try:
+        from datetime import date
+        birth_date = datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+        today = date.today()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        return age
+    except (ValueError, TypeError):
+        return None
+
+def is_individual_sport(sport: str) -> bool:
+    """Check if a sport is individual or team-based"""
+    return sport in INDIVIDUAL_SPORTS
+
+def get_sport_performance_categories(sport: str) -> List[str]:
+    """Get performance categories for a specific sport"""
+    return SPORT_PERFORMANCE_CATEGORIES.get(sport, SPORT_PERFORMANCE_CATEGORIES["Other"])
 
 # Enhanced Player and Coach Management Models
 class Player(BaseModel):
