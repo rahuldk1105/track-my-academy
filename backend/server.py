@@ -746,9 +746,21 @@ async def upload_player_photo(file: UploadFile = File(...), user_info = Depends(
 # Sport and Position Configuration Endpoints
 @api_router.get("/sports/positions", response_model=SportPositionsResponse)
 async def get_sport_positions():
-    """Get available sports, positions, training days, and batches"""
+    """Get available sports, positions, training days, and batches (Legacy endpoint)"""
     return SportPositionsResponse(
         sports=SPORT_POSITIONS,
+        training_days=TRAINING_DAYS,
+        training_batches=TRAINING_BATCHES
+    )
+
+@api_router.get("/sports/config", response_model=SportConfigResponse)
+async def get_sport_config():
+    """Get enhanced sports configuration including performance categories and sport types"""
+    return SportConfigResponse(
+        sports=SPORT_POSITIONS,
+        performance_categories=SPORT_PERFORMANCE_CATEGORIES,
+        individual_sports=INDIVIDUAL_SPORTS,
+        team_sports=TEAM_SPORTS,
         training_days=TRAINING_DAYS,
         training_batches=TRAINING_BATCHES
     )
