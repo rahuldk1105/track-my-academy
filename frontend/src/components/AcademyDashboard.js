@@ -21,6 +21,7 @@ const AcademyDashboard = () => {
   const [showCoachModal, setShowCoachModal] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [editingCoach, setEditingCoach] = useState(null);
+  const [academyLogo, setAcademyLogo] = useState(null);
 
   // API base URL
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
