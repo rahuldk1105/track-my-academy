@@ -56,8 +56,8 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Mount static files for uploaded logos under /api prefix to avoid frontend routing conflicts
-api_router.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
+# Mount static files for uploaded logos on main app but with /api prefix
+app.mount("/api/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
 
 # Subscription Plans Configuration (Backend-defined for security) - INR Pricing
 SUBSCRIPTION_PLANS = {
