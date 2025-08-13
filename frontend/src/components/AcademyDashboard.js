@@ -526,7 +526,7 @@ const AcademyDashboard = () => {
                           <td className="py-3 px-4 text-gray-300">{player.position || 'Not specified'}</td>
                           <td className="py-3 px-4">
                             <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-sm">
-                              #{player.jersey_number || 'N/A'}
+                              {player.registration_number || 'Not Assigned'}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-gray-300">{player.age || 'N/A'}</td>
