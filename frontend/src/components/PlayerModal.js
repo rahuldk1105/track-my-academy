@@ -76,6 +76,8 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
           registration_number: player.registration_number || '',
           height: player.height || '',
           weight: player.weight || '',
+          training_days: player.training_days || [],
+          training_batch: player.training_batch || '',
           emergency_contact_name: player.emergency_contact_name || '',  
           emergency_contact_phone: player.emergency_contact_phone || '',
           medical_notes: player.medical_notes || '',
