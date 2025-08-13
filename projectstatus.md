@@ -98,7 +98,7 @@ Public Endpoints:
 
 ### Frontend (React)
 ```
-Dashboard Component:
+Super Admin Dashboard:
 ├── System Overview (Dynamic)
 │   ├── Real-time Statistics Cards
 │   ├── Recent Activities Feed  
@@ -107,6 +107,21 @@ Dashboard Component:
 ├── User Management (Academy-based)
 ├── Academy Management (Full CRUD)
 └── Demo Requests Management
+
+Academy Dashboard (Academy-Specific):
+├── Academy Branding Header (Custom Logo)
+├── Overview Tab
+│   ├── Academy Statistics (Players, Coaches, Limits)
+│   └── Quick Actions (Add Player/Coach)
+├── Player Management Tab
+│   ├── Player CRUD Operations
+│   ├── Registration Number Management
+│   └── Sport-Specific Data
+├── Coach Management Tab
+├── Attendance Tracking Tab
+├── Performance Analytics Tab
+├── Academy Analytics Tab
+└── Settings Tab (Branding, Configuration)
 ```
 
 ### Database Collections
