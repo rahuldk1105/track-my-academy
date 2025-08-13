@@ -589,9 +589,18 @@ class AttendanceMarkingRequest(BaseModel):
     date: str
     attendance_records: List[PlayerAttendanceCreate]
 
-# Sport Positions API Response Model
+# Sport Positions API Response Model (Legacy - for backward compatibility)
 class SportPositionsResponse(BaseModel):
     sports: Dict[str, List[str]]
+    training_days: List[str]
+    training_batches: List[str]
+
+# Enhanced Sport Configuration API Response Model
+class SportConfigResponse(BaseModel):
+    sports: Dict[str, List[str]]  # sport -> positions
+    performance_categories: Dict[str, List[str]]  # sport -> categories
+    individual_sports: List[str]
+    team_sports: List[str]
     training_days: List[str]
     training_batches: List[str]
 
