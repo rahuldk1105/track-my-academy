@@ -1799,35 +1799,47 @@ async def create_player(player_data: PlayerCreate, user_info = Depends(require_a
                 detail=f"Academy has reached maximum player limit of {academy.get('player_limit', 50)}"
             )
         
-        # Check for duplicate jersey number within academy (if provided)
-        if player_data.jersey_number is not None:
-            existing_jersey = await db.players.find_one({
+        # Check for duplicate registration number within academy (if provided)
+        if player_data.registration_number:
+            existing_registration = await db.players.find_one({
                 "academy_id": academy_id,
-                "jersey_number": player_data.jersey_number,
+                "registration_number": player_data.registration_number,
                 "status": "active"
             })
-            if existing_jersey:
+            if existing_registration:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Jersey number {player_data.jersey_number} is already taken"
+                    detail=f"Registration number {player_data.registration_number} is already taken"
                 )
         
-        # Check for duplicate register number within academy (if provided)
-        if player_data.register_number:
-            existing_register = await db.players.find_one({
-                "academy_id": academy_id,
-                "register_number": player_data.register_number
-            })
-            if existing_register:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Register number {player_data.register_number} is already taken"
-                )
+        # Prepare player data with enhancements
+        player_dict = player_data.dict()
+        
+        # Auto-calculate age from date of birth if provided
+        if player_data.date_of_birth and not player_data.age:
+            calculated_age = calculate_age_from_dob(player_data.date_of_birth)
+            if calculated_age:
+                player_dict["age"] = calculated_age
+        
+        # Validate sport-specific requirements
+        if player_data.sport:
+            # For individual sports, position is optional
+            if is_individual_sport(player_data.sport) and not player_data.position:
+                player_dict["position"] = None
+            
+            # Validate position against sport if provided
+            if player_data.position and player_data.sport in SPORT_POSITIONS:
+                valid_positions = SPORT_POSITIONS[player_data.sport]
+                if player_data.position not in valid_positions:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Invalid position '{player_data.position}' for sport '{player_data.sport}'"
+                    )
         
         # Create new player
         player = Player(
             academy_id=academy_id,
-            **player_data.dict()
+            **player_dict
         )
         
         # Save to database
