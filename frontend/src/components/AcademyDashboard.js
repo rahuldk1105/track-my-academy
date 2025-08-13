@@ -349,9 +349,12 @@ const AcademyDashboard = () => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <img 
-                src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
-                alt="Track My Academy" 
-                className="h-10 w-auto mr-4"
+                src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                alt={`${academyData?.name || 'Academy'} Logo`} 
+                className="h-10 w-10 rounded-lg object-cover mr-4 border border-white/10"
+                onError={(e) => {
+                  e.target.src = "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png";
+                }}
               />
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
