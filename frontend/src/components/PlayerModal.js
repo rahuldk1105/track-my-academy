@@ -8,8 +8,10 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
     phone: '',
     date_of_birth: '',
     age: '',
+    gender: '',
+    sport: '',
     position: '',
-    jersey_number: '',
+    registration_number: '',
     height: '',
     weight: '',
     emergency_contact_name: '',
@@ -19,22 +21,41 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
   });
 
   const [loading, setLoading] = useState(false);
+  const [sportConfig, setSportConfig] = useState({
+    sports: {},
+    performance_categories: {},
+    individual_sports: [],
+    team_sports: []
+  });
 
-  // Position options for sports (general options that work for most sports)
-  const positionOptions = [
-    'Forward',
-    'Midfielder',
-    'Defender',
-    'Goalkeeper',
-    'Striker',
-    'Winger',
-    'Center Back',
-    'Full Back',
-    'Attacking Midfielder',
-    'Defensive Midfielder',
-    'Center Forward',
-    'Other'
-  ];
+  // Gender options
+  const genderOptions = ['Male', 'Female', 'Other'];
+
+  // Sports options (will be loaded from API)
+  const [sportsOptions, setSportsOptions] = useState([
+    'Football', 'Cricket', 'Basketball', 'Tennis', 'Swimming', 
+    'Badminton', 'Athletics', 'Hockey', 'Volleyball', 'Other'
+  ]);
+
+  // Load sport configuration on component mount
+  useEffect(() => {
+    const loadSportConfig = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/sports/config`);
+        if (response.ok) {
+          const config = await response.json();
+          setSportConfig(config);
+          setSportsOptions(Object.keys(config.sports));
+        }
+      } catch (error) {
+        console.error('Error loading sport configuration:', error);
+      }
+    };
+
+    if (isOpen) {
+      loadSportConfig();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -47,8 +68,10 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
           phone: player.phone || '',
           date_of_birth: player.date_of_birth || '',
           age: player.age || '',
+          gender: player.gender || '',
+          sport: player.sport || '',
           position: player.position || '',
-          jersey_number: player.jersey_number || '',
+          registration_number: player.registration_number || '',
           height: player.height || '',
           weight: player.weight || '',
           emergency_contact_name: player.emergency_contact_name || '',  
@@ -65,8 +88,10 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
           phone: '',
           date_of_birth: '',
           age: '',
+          gender: '',
+          sport: '',
           position: '',
-          jersey_number: '',
+          registration_number: '',
           height: '',
           weight: '',
           emergency_contact_name: '',
@@ -78,12 +103,38 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
     }
   }, [isOpen, isEditing, player]);
 
+  // Auto-calculate age when date of birth changes
+  useEffect(() => {
+    if (formData.date_of_birth) {
+      const birthDate = new Date(formData.date_of_birth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      if (age >= 0 && age <= 100) {
+        setFormData(prev => ({ ...prev, age: age }));
+      }
+    }
+  }, [formData.date_of_birth]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+
+    // Reset position when sport changes
+    if (name === 'sport') {
+      setFormData(prev => ({
+        ...prev,
+        position: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -91,11 +142,10 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
     setLoading(true);
 
     try {
-      // Convert age and jersey_number to numbers if provided
+      // Convert age to number if provided
       const submitData = {
         ...formData,
         age: formData.age ? parseInt(formData.age) : null,
-        jersey_number: formData.jersey_number ? parseInt(formData.jersey_number) : null,
       };
 
       if (isEditing && player) {
@@ -108,6 +158,19 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
     } finally {
       setLoading(false);
     }
+  };
+
+  // Get position options for selected sport
+  const getPositionOptions = () => {
+    if (!formData.sport || !sportConfig.sports[formData.sport]) {
+      return [];
+    }
+    return sportConfig.sports[formData.sport];
+  };
+
+  // Check if selected sport is individual
+  const isIndividualSport = () => {
+    return sportConfig.individual_sports.includes(formData.sport);
   };
 
   if (!isOpen) return null;
@@ -208,7 +271,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Age
+                  Age {formData.date_of_birth && <span className="text-sm text-blue-400">(Auto-calculated)</span>}
                 </label>
                 <input
                   type="number"
@@ -217,8 +280,31 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   onChange={handleChange}
                   min="5"
                   max="50"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  readOnly={!!formData.date_of_birth}
+                  className={`w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formData.date_of_birth ? 'bg-gray-700 cursor-not-allowed' : ''
+                  }`}
                 />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Gender *
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Gender</option>
+                  {genderOptions.map(gender => (
+                    <option key={gender} value={gender}>
+                      {gender}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -230,34 +316,63 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Position
+                  Sport *
                 </label>
                 <select
-                  name="position"
-                  value={formData.position}
+                  name="sport"
+                  value={formData.sport}
                   onChange={handleChange}
+                  required
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Select Position</option>
-                  {positionOptions.map(position => (
-                    <option key={position} value={position}>
-                      {position}
+                  <option value="">Select Sport</option>
+                  {sportsOptions.map(sport => (
+                    <option key={sport} value={sport}>
+                      {sport}
                     </option>
                   ))}
                 </select>
               </div>
 
+              {formData.sport && !isIndividualSport() && (
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">
+                    Position
+                  </label>
+                  <select
+                    name="position"
+                    value={formData.position}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Position</option>
+                    {getPositionOptions().map(position => (
+                      <option key={position} value={position}>
+                        {position}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {formData.sport && isIndividualSport() && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                  <p className="text-sm text-blue-300">
+                    📌 <strong>{formData.sport}</strong> is an individual sport. Position selection is not required.
+                  </p>
+                </div>
+              )}
+
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Jersey Number
+                  Registration Number
                 </label>
                 <input
-                  type="number"
-                  name="jersey_number"
-                  value={formData.jersey_number}
+                  type="text"
+                  name="registration_number"
+                  value={formData.registration_number}
                   onChange={handleChange}
-                  min="1"
-                  max="99"
+                  placeholder="e.g., REG001, 2024-TN-001"
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
