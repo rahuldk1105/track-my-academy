@@ -5,7 +5,40 @@ Track My Academy is a comprehensive SaaS platform for sports academy management.
 
 ## Recent Changes Completed
 
-### 1. Dynamic System Overview Implementation
+### 1. ✅ CRITICAL BUG FIX - Player Display Issue Resolution
+**Status: ✅ COMPLETED**
+- **Issue**: Players were being created successfully but not displaying in the academy dashboard players tab
+- **Root Cause**: Academy users existed in Supabase authentication but had no corresponding academy records in MongoDB, causing 403 "No academy associated with this user" errors on GET /api/academy/players
+- **Fix Applied**: 
+  - Created missing academy records in MongoDB and properly linked to Supabase users
+  - Fixed missing Supabase dependencies (supabase-auth, deprecation, websockets, supabase-functions)
+  - Verified proper academy_id linkage across all player management operations
+- **Testing Results**: Successfully created and retrieved 5 test players with correct data isolation
+- **Impact**: Academy dashboard now displays all players correctly in the players tab
+
+### 2. ✅ Academy-Specific Branding Implementation  
+**Status: ✅ COMPLETED**
+- **Feature**: Academy logos now display prominently in each academy's dashboard header
+- **Implementation**: Enhanced AcademyDashboard header layout with:
+  - Prominent academy logo display (larger size, professional styling)
+  - Academy name and "Academy Portal" branding
+  - Fallback to default logo if academy logo not available
+  - Improved visual hierarchy and user experience
+- **Scope**: Academy-specific branding in academy dashboard (super admin dashboard retains "Track My Academy" branding)
+- **UI Improvements**: Professional card-style logo container with better spacing and typography
+
+### 3. ✅ Enhanced Player Management System
+**Status: ✅ COMPLETED**
+- **Backend APIs**: All CRUD operations fully functional and tested
+  - POST /api/academy/players - Create players with validation
+  - GET /api/academy/players - Retrieve academy-specific players  
+  - PUT /api/academy/players/{id} - Update player information
+  - DELETE /api/academy/players/{id} - Remove players
+- **Data Isolation**: Proper academy_id linkage ensures data security
+- **Validation**: Registration number uniqueness, field validation, age auto-calculation
+- **Stats Integration**: Real-time player counts in overview dashboard
+
+### 4. Dynamic System Overview Implementation
 **Status: ✅ COMPLETED**
 - **Backend**: Added `/api/admin/system-overview` endpoint with comprehensive real-time data
 - **Models**: Created SystemStats, RecentActivity, RecentAcademy, and SystemOverview models
