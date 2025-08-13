@@ -1885,22 +1885,44 @@ async def update_player(player_id: str, player_data: PlayerUpdate, user_info = D
         if not existing_player:
             raise HTTPException(status_code=404, detail="Player not found")
         
-        # Check for duplicate jersey number (if updating jersey number)
-        if player_data.jersey_number is not None:
-            existing_jersey = await db.players.find_one({
+        # Check for duplicate registration number (if updating registration number)
+        if player_data.registration_number is not None:
+            existing_registration = await db.players.find_one({
                 "academy_id": academy_id,
-                "jersey_number": player_data.jersey_number,
+                "registration_number": player_data.registration_number,
                 "status": "active",
                 "id": {"$ne": player_id}  # Exclude current player
             })
-            if existing_jersey:
+            if existing_registration:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Jersey number {player_data.jersey_number} is already taken"
+                    detail=f"Registration number {player_data.registration_number} is already taken"
                 )
         
-        # Update player data
+        # Prepare update data with enhancements
         update_data = {k: v for k, v in player_data.dict().items() if v is not None}
+        
+        # Auto-calculate age from date of birth if provided
+        if player_data.date_of_birth and not player_data.age:
+            calculated_age = calculate_age_from_dob(player_data.date_of_birth)
+            if calculated_age:
+                update_data["age"] = calculated_age
+        
+        # Validate sport-specific requirements if sport is being updated
+        if player_data.sport:
+            # For individual sports, position can be None
+            if is_individual_sport(player_data.sport) and not update_data.get("position"):
+                update_data["position"] = None
+            
+            # Validate position against sport if provided
+            if update_data.get("position") and player_data.sport in SPORT_POSITIONS:
+                valid_positions = SPORT_POSITIONS[player_data.sport]
+                if update_data["position"] not in valid_positions:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Invalid position '{update_data['position']}' for sport '{player_data.sport}'"
+                    )
+        
         update_data["updated_at"] = datetime.utcnow()
         
         await db.players.update_one(
