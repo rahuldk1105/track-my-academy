@@ -348,17 +348,28 @@ const AcademyDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <img 
-                src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
-                alt={`${academyData?.name || 'Academy'} Logo`} 
-                className="h-10 w-10 rounded-lg object-cover mr-4 border border-white/10"
-                onError={(e) => {
-                  e.target.src = "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png";
-                }}
-              />
+              {/* Academy Logo - Prominently displayed */}
+              <div className="flex items-center bg-white/10 rounded-xl px-4 py-2 mr-6">
+                <img 
+                  src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                  alt={`${academyData?.name || 'Academy'} Logo`} 
+                  className="h-12 w-12 rounded-lg object-cover mr-3 border border-white/20 shadow-lg"
+                  onError={(e) => {
+                    e.target.src = "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png";
+                  }}
+                />
+                <div>
+                  <div className="text-white font-semibold text-lg">
+                    {academyData?.name || 'Academy'}
+                  </div>
+                  <div className="text-sky-400 text-sm font-medium">
+                    Academy Portal
+                  </div>
+                </div>
+              </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
-                  {academyData?.name || 'Academy'} Dashboard
+                  Dashboard
                 </h1>
                 <p className="text-gray-400 text-sm">Welcome back, {user?.email}</p>
               </div>
