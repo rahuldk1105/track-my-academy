@@ -75,11 +75,25 @@ Track My Academy is a comprehensive SaaS platform for sports academy management.
 
 ### Backend (FastAPI + MongoDB)
 ```
-/api/admin/system-overview     - Dynamic system statistics and activities
-/api/admin/academies          - Academy CRUD operations  
-/api/admin/demo-requests      - Demo request management
-/api/demo-requests            - Public demo request submission
+Authentication & User Management:
 /api/auth/*                   - Supabase authentication integration
+/api/auth/user               - User role detection (super_admin/academy_user)
+
+Super Admin Endpoints:
+/api/admin/system-overview    - Dynamic system statistics and activities
+/api/admin/academies         - Academy CRUD operations  
+/api/admin/demo-requests     - Demo request management
+/api/admin/create-academy    - Admin-controlled academy creation
+
+Academy-Specific Endpoints:
+/api/academy/players         - Player management (CRUD)
+/api/academy/coaches         - Coach management (CRUD)
+/api/academy/stats           - Academy statistics and metrics
+/api/academy/settings        - Academy configuration and branding
+
+Public Endpoints:
+/api/demo-requests           - Public demo request submission
+/api/sports/config           - Sports configuration data
 ```
 
 ### Frontend (React)
