@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Player Management Verification Test for Track My Academy
-Quick verification test to ensure player management functionality is working correctly after frontend fixes
+Player Management Testing for Track My Academy
+Tests the player management functionality for academy dashboard
 """
 
 import requests
@@ -19,7 +19,7 @@ load_dotenv('/app/backend/.env')
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
-print(f"Testing backend at: {API_BASE_URL}")
+print(f"Testing player management at: {API_BASE_URL}")
 
 # Test credentials
 TEST_ACADEMY_EMAIL = "testacademy2@roletest.com"
