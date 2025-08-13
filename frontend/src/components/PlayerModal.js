@@ -98,6 +98,8 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
           registration_number: '',
           height: '',
           weight: '',
+          training_days: [],
+          training_batch: '',
           emergency_contact_name: '',
           emergency_contact_phone: '',
           medical_notes: '',
