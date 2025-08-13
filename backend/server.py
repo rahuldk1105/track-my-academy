@@ -1994,12 +1994,16 @@ async def mark_attendance(attendance_request: AttendanceMarkingRequest, user_inf
                 "date": record.date
             })
             
+            # Get player's sport for performance categories
+            player_sport = player.get("sport", "Other")
+            
             attendance_data = {
                 "player_id": record.player_id,
                 "academy_id": academy_id,
                 "date": record.date,
                 "present": record.present,
-                "performance_rating": record.performance_rating,
+                "sport": record.sport or player_sport,  # Use provided sport or player's sport
+                "performance_ratings": record.performance_ratings or {},
                 "notes": record.notes,
                 "marked_by": marked_by,
                 "created_at": datetime.utcnow(),
@@ -2012,7 +2016,8 @@ async def mark_attendance(attendance_request: AttendanceMarkingRequest, user_inf
                     {"id": existing_attendance["id"]},
                     {"$set": {
                         "present": record.present,
-                        "performance_rating": record.performance_rating,
+                        "sport": record.sport or player_sport,
+                        "performance_ratings": record.performance_ratings or {},
                         "notes": record.notes,
                         "marked_by": marked_by,
                         "updated_at": datetime.utcnow()
