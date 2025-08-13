@@ -817,7 +817,7 @@ async def admin_create_academy(
                 content = await logo.read()
                 await f.write(content)
             
-            logo_url = f"/uploads/logos/{unique_filename}"
+            logo_url = f"/api/uploads/logos/{unique_filename}"
         
         # Prepare user metadata
         user_metadata = {
