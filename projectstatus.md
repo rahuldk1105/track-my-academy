@@ -127,10 +127,13 @@ Academy Dashboard (Academy-Specific):
 ### Database Collections
 ```
 MongoDB:
-├── academies - Academy information and management
+├── academies - Academy information, branding, and account limits
+├── players - Academy-specific player profiles and management
+├── coaches - Academy-specific coach profiles and management  
 ├── demo_requests - Demo request submissions and tracking  
+├── academy_settings - Academy branding and configuration
 ├── status_checks - System health monitoring
-└── (Supabase for authentication)
+└── (Supabase for authentication and user management)
 ```
 
 ## Key Features Status
