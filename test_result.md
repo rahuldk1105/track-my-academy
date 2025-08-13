@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement Priority 1: Player Creation and Performance Tracking - Enhanced player management with photo upload, sport-based positions, register numbers, training schedules, attendance tracking, and daily performance ratings"
+user_problem_statement: "Enhanced Player Analytics Implementation: Add sport-specific performance tracking with 5 categories per sport during attendance marking. Update player creation to include gender selection, auto-calculate age from date of birth, replace jersey numbers with registration numbers for ALL sports (individual and team). Hide jersey number fields for individual sports."
 
 backend:
   - task: "Backend Server Health Check"
