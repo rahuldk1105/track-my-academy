@@ -3014,6 +3014,363 @@ async def get_coach_analytics(user_info = Depends(require_academy_user)):
         logger.error(f"Error fetching coach analytics: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch coach analytics")
 
+# ========== PLAYER AUTHENTICATION ENDPOINTS ==========
+
+# Player Login
+@api_router.post("/player/auth/login", response_model=PlayerAuthResponse)
+async def player_login(request: PlayerSignInRequest):
+    """Player login endpoint"""
+    try:
+        response = supabase.auth.sign_in_with_password({
+            "email": request.email,
+            "password": request.password
+        })
+        
+        if response.user:
+            # Verify this is a player account
+            player = await db.players.find_one({"supabase_user_id": response.user.id})
+            if not player:
+                raise HTTPException(status_code=403, detail="Account is not associated with a player profile")
+            
+            return PlayerAuthResponse(
+                player=response.user.model_dump() if hasattr(response.user, 'model_dump') else dict(response.user),
+                session=response.session.model_dump() if hasattr(response.session, 'model_dump') else dict(response.session),
+                message="Player login successful"
+            )
+        else:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Player login error: {e}")
+        raise HTTPException(status_code=400, detail="Login failed")
+
+# Get Player Profile
+@api_router.get("/player/profile")
+async def get_player_profile(user_info = Depends(require_player_user)):
+    """Get player profile information"""
+    try:
+        player = user_info["player"]
+        
+        # Get academy information
+        academy = await db.academies.find_one({"id": player["academy_id"]})
+        
+        return {
+            "player": player,
+            "academy": {
+                "id": academy["id"],
+                "name": academy["name"],
+                "logo_url": academy.get("logo_url"),
+                "location": academy.get("location"),
+                "sports_type": academy.get("sports_type")
+            } if academy else None
+        }
+    except Exception as e:
+        logger.error(f"Error fetching player profile: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch player profile")
+
+# Update Player Password
+@api_router.put("/player/change-password")
+async def change_player_password(request: PlayerPasswordChangeRequest, user_info = Depends(require_player_user)):
+    """Change player password"""
+    try:
+        # Verify current password by attempting to sign in
+        try:
+            supabase.auth.sign_in_with_password({
+                "email": user_info["user"].email,
+                "password": request.current_password
+            })
+        except:
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        
+        # Update password in Supabase
+        supabase.auth.update_user({
+            "password": request.new_password
+        })
+        
+        # Mark password as changed in database
+        await db.players.update_one(
+            {"id": user_info["player_id"]},
+            {"$set": {"password_changed": True, "updated_at": datetime.utcnow()}}
+        )
+        
+        return {"message": "Password changed successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error changing player password: {e}")
+        raise HTTPException(status_code=500, detail="Failed to change password")
+
+# ========== PLAYER DASHBOARD ENDPOINTS ==========
+
+# Get Player Attendance History
+@api_router.get("/player/attendance")
+async def get_player_attendance_history(user_info = Depends(require_player_user)):
+    """Get player's attendance history"""
+    try:
+        player_id = user_info["player_id"]
+        
+        # Get attendance records for this player
+        attendance_records = await db.player_attendance.find(
+            {"player_id": player_id}
+        ).sort("date", -1).limit(100).to_list(100)
+        
+        # Calculate attendance statistics
+        total_sessions = len(attendance_records)
+        attended_sessions = len([r for r in attendance_records if r.get("present", False)])
+        attendance_percentage = (attended_sessions / total_sessions * 100) if total_sessions > 0 else 0
+        
+        return {
+            "attendance_records": attendance_records,
+            "statistics": {
+                "total_sessions": total_sessions,
+                "attended_sessions": attended_sessions,
+                "missed_sessions": total_sessions - attended_sessions,
+                "attendance_percentage": round(attendance_percentage, 2)
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching player attendance: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch attendance history")
+
+# Get Player Performance Stats
+@api_router.get("/player/performance")
+async def get_player_performance_stats(user_info = Depends(require_player_user)):
+    """Get player's performance statistics"""
+    try:
+        player_id = user_info["player_id"]
+        player = user_info["player"]
+        
+        # Get performance data from attendance records
+        attendance_records = await db.player_attendance.find(
+            {"player_id": player_id, "present": True}
+        ).sort("date", -1).to_list(100)
+        
+        # Calculate performance averages
+        category_averages = {}
+        performance_trend = []
+        
+        if attendance_records:
+            # Get performance categories for this player's sport
+            sport_categories = get_sport_performance_categories(player.get("sport", "Other"))
+            
+            # Calculate averages for each category
+            for category in sport_categories:
+                ratings = []
+                for record in attendance_records:
+                    rating = record.get("performance_ratings", {}).get(category)
+                    if rating is not None:
+                        ratings.append(rating)
+                
+                if ratings:
+                    category_averages[category] = round(sum(ratings) / len(ratings), 2)
+                else:
+                    category_averages[category] = 0
+            
+            # Build performance trend (last 30 days)
+            recent_records = attendance_records[:30]
+            for record in recent_records:
+                performance_trend.append({
+                    "date": record.get("date"),
+                    "overall_rating": sum(record.get("performance_ratings", {}).values()) / len(record.get("performance_ratings", {})) if record.get("performance_ratings") else 0,
+                    "ratings": record.get("performance_ratings", {})
+                })
+        
+        overall_average = sum(category_averages.values()) / len(category_averages) if category_averages else 0
+        
+        return {
+            "player_id": player_id,
+            "player_name": f"{player.get('first_name', '')} {player.get('last_name', '')}",
+            "sport": player.get("sport"),
+            "position": player.get("position"),
+            "total_sessions": len(attendance_records),
+            "category_averages": category_averages,
+            "overall_average_rating": round(overall_average, 2),
+            "performance_trend": performance_trend[:10]  # Last 10 sessions
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching player performance: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch performance statistics")
+
+# Get Player Announcements
+@api_router.get("/player/announcements")
+async def get_player_announcements(user_info = Depends(require_player_user)):
+    """Get announcements for the player"""
+    try:
+        player_id = user_info["player_id"]
+        academy_id = user_info["academy_id"]
+        
+        # Get announcements targeted to this player or all players
+        announcements = await db.announcements.find({
+            "academy_id": academy_id,
+            "is_active": True,
+            "$or": [
+                {"target_audience": "all"},
+                {"target_audience": "players"},
+                {"target_audience": "specific_player", "target_player_id": player_id}
+            ]
+        }).sort("created_at", -1).to_list(50)
+        
+        return {"announcements": announcements}
+        
+    except Exception as e:
+        logger.error(f"Error fetching player announcements: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch announcements")
+
+# ========== THEME PREFERENCE ENDPOINTS ==========
+
+# Get Theme Preference
+@api_router.get("/theme")
+async def get_theme_preference():
+    """Get global theme preference"""
+    try:
+        theme_pref = await db.theme_preferences.find_one({})
+        if not theme_pref:
+            # Create default theme preference
+            default_theme = ThemePreference()
+            await db.theme_preferences.insert_one(default_theme.dict())
+            return {"theme": "light"}
+        
+        return {"theme": theme_pref.get("theme", "light")}
+        
+    except Exception as e:
+        logger.error(f"Error fetching theme preference: {e}")
+        return {"theme": "light"}  # Default fallback
+
+# Update Theme Preference
+@api_router.put("/theme")
+async def update_theme_preference(theme: str):
+    """Update global theme preference"""
+    try:
+        if theme not in ["light", "dark"]:
+            raise HTTPException(status_code=400, detail="Theme must be 'light' or 'dark'")
+        
+        # Update or create theme preference
+        await db.theme_preferences.update_one(
+            {},
+            {"$set": {"theme": theme, "updated_at": datetime.utcnow()}},
+            upsert=True
+        )
+        
+        return {"message": "Theme updated successfully", "theme": theme}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating theme preference: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update theme preference")
+
+# ========== ANNOUNCEMENT MANAGEMENT ENDPOINTS ==========
+
+# Get Academy Announcements (Academy User)
+@api_router.get("/academy/announcements")
+async def get_academy_announcements(user_info = Depends(require_academy_user)):
+    """Get all announcements for the academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        announcements = await db.announcements.find(
+            {"academy_id": academy_id}
+        ).sort("created_at", -1).to_list(100)
+        
+        return {"announcements": announcements}
+        
+    except Exception as e:
+        logger.error(f"Error fetching academy announcements: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch announcements")
+
+# Create Academy Announcement (Academy User)
+@api_router.post("/academy/announcements", response_model=Announcement)
+async def create_academy_announcement(announcement_data: AnnouncementCreate, user_info = Depends(require_academy_user)):
+    """Create a new announcement for the academy"""
+    try:
+        academy_id = user_info["academy_id"]
+        user_id = user_info["user"].id
+        
+        announcement = Announcement(
+            academy_id=academy_id,
+            created_by=user_id,
+            **announcement_data.dict()
+        )
+        
+        await db.announcements.insert_one(announcement.dict())
+        
+        return announcement
+        
+    except Exception as e:
+        logger.error(f"Error creating announcement: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create announcement")
+
+# Update Academy Announcement (Academy User)
+@api_router.put("/academy/announcements/{announcement_id}", response_model=Announcement)
+async def update_academy_announcement(announcement_id: str, announcement_data: AnnouncementUpdate, user_info = Depends(require_academy_user)):
+    """Update an academy announcement"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if announcement exists
+        existing_announcement = await db.announcements.find_one({
+            "id": announcement_id,
+            "academy_id": academy_id
+        })
+        if not existing_announcement:
+            raise HTTPException(status_code=404, detail="Announcement not found")
+        
+        # Update announcement
+        update_data = announcement_data.dict(exclude_unset=True)
+        if update_data:
+            update_data["updated_at"] = datetime.utcnow()
+            await db.announcements.update_one(
+                {"id": announcement_id, "academy_id": academy_id},
+                {"$set": update_data}
+            )
+        
+        # Get updated announcement
+        updated_announcement = await db.announcements.find_one({
+            "id": announcement_id,
+            "academy_id": academy_id
+        })
+        return Announcement(**updated_announcement)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating announcement: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update announcement")
+
+# Delete Academy Announcement (Academy User)
+@api_router.delete("/academy/announcements/{announcement_id}")
+async def delete_academy_announcement(announcement_id: str, user_info = Depends(require_academy_user)):
+    """Delete an academy announcement"""
+    try:
+        academy_id = user_info["academy_id"]
+        
+        # Check if announcement exists
+        existing_announcement = await db.announcements.find_one({
+            "id": announcement_id,
+            "academy_id": academy_id
+        })
+        if not existing_announcement:
+            raise HTTPException(status_code=404, detail="Announcement not found")
+        
+        # Delete announcement
+        await db.announcements.delete_one({
+            "id": announcement_id,
+            "academy_id": academy_id
+        })
+        
+        return {"message": "Announcement deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting announcement: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete announcement")
+
 # Include the router in the main app
 app.include_router(api_router)
 
