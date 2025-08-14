@@ -329,13 +329,13 @@ const AcademyDashboard = () => {
   // Show access denied if user doesn't have academy role
   if (!userRole || userRole.role !== 'academy_user' || !userRole.academy_id) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
+      <div className={`min-h-screen ${isLight ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-gray-900 to-black'} flex items-center justify-center`}>
         <div className="text-center">
-          <div className="text-red-400 text-xl mb-4">Access Denied</div>
-          <div className="text-gray-400 mb-6">You don't have permission to access the academy dashboard.</div>
+          <div className={`${isLight ? 'text-red-600' : 'text-red-400'} text-xl mb-4`}>Access Denied</div>
+          <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>You don't have permission to access the academy dashboard.</div>
           <button
             onClick={handleSignOut}
-            className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg transition-all duration-300"
+            className={`${isLight ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'} border px-4 py-2 rounded-lg transition-all duration-300`}
           >
             Sign Out
           </button>
