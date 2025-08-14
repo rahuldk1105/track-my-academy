@@ -465,22 +465,22 @@ const AcademyDashboard = () => {
         <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-xl border overflow-hidden`}>
           {activeTab === 'overview' && (
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Academy Overview</h2>
+              <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-800' : 'text-white'} mb-4`}>Academy Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-lg p-4 border`}>
                   <h3 className="text-lg font-semibold text-blue-400 mb-2">Total Players</h3>
-                  <p className="text-2xl font-bold text-white">{stats.total_players || 0}</p>
-                  <p className="text-sm text-gray-400">Limit: {stats.player_limit || 50}</p>
+                  <p className={`text-2xl font-bold ${isLight ? 'text-gray-800' : 'text-white'}`}>{stats.total_players || 0}</p>
+                  <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.player_limit || 50}</p>
                 </div>
-                <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-lg p-4 border`}>
                   <h3 className="text-lg font-semibold text-green-400 mb-2">Active Coaches</h3>
-                  <p className="text-2xl font-bold text-white">{stats.active_coaches || 0}</p>
-                  <p className="text-sm text-gray-400">Limit: {stats.coach_limit || 10}</p>
+                  <p className={`text-2xl font-bold ${isLight ? 'text-gray-800' : 'text-white'}`}>{stats.active_coaches || 0}</p>
+                  <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.coach_limit || 10}</p>
                 </div>
-                <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+                <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-lg p-4 border`}>
                   <h3 className="text-lg font-semibold text-purple-400 mb-2">Active Players</h3>
-                  <p className="text-2xl font-bold text-white">{stats.active_players || 0}</p>
-                  <p className="text-sm text-gray-400">Currently Active</p>
+                  <p className={`text-2xl font-bold ${isLight ? 'text-gray-800' : 'text-white'}`}>{stats.active_players || 0}</p>
+                  <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Currently Active</p>
                 </div>
               </div>
 
