@@ -754,6 +754,57 @@ backend:
         - working: false
           agent: "main"
           comment: "Enhanced Player model with new fields: sport, register_number, photo_url, training_days, training_batch. Added sport-based position mapping (SPORT_POSITIONS). Updated PlayerCreate and PlayerUpdate models. Added register number duplication validation in create_player endpoint."
+        - working: false
+          agent: "main"
+          comment: "Enhanced Player model with authentication fields: has_login, default_password, password_changed, supabase_user_id. Updated player creation to auto-generate login credentials when email is provided. Added helper functions for password generation and Supabase account creation."
+
+  - task: "Player Authentication System"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented complete player authentication system: POST /api/player/auth/login (player login), GET /api/player/profile (get player profile), PUT /api/player/change-password (change password). Added player authentication helper functions and role-based access control."
+
+  - task: "Player Dashboard APIs"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented player dashboard APIs: GET /api/player/attendance (attendance history with statistics), GET /api/player/performance (performance stats with category averages and trends), GET /api/player/announcements (player-specific announcements). Integrated with existing attendance and performance tracking systems."
+
+  - task: "Theme Preference System"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented global theme preference system: GET /api/theme (get current theme), PUT /api/theme (update theme preference). Added ThemePreference model with light/dark mode support. Theme persists in database with automatic fallback to light mode."
+
+  - task: "Announcement Management System"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented comprehensive announcement system: GET /api/academy/announcements (list academy announcements), POST /api/academy/announcements (create announcements), PUT /api/academy/announcements/{id} (update announcements), DELETE /api/academy/announcements/{id} (delete announcements). Added Announcement models with priority levels, target audiences, and player-specific targeting."
 
   - task: "Player Photo Upload API"
     implemented: true
