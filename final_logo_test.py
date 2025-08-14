@@ -9,7 +9,7 @@ import json
 import os
 
 # Configuration
-BACKEND_URL = "https://dashboard-upgrade-3.preview.emergentagent.com"
+BACKEND_URL = "https://dark-mode-toggle-1.preview.emergentagent.com"
 API_BASE_URL = f"{BACKEND_URL}/api"
 
 print("🎯 FINAL ACADEMY LOGO SYSTEM TEST")
