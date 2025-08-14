@@ -478,7 +478,7 @@ class Player(BaseModel):
     gender: str  # Required: Male, Female, Other
     sport: str  # Required: Sport type - determines available positions and performance categories
     position: Optional[str] = None  # Position based on sport (not needed for individual sports)
-    registration_number: Optional[str] = None  # Academy-specific registration number (replaces jersey_number for ALL sports)
+    registration_number: str = None  # Academy-specific registration number (replaces jersey_number for ALL sports)
     height: Optional[str] = None  # e.g., "5'10"
     weight: Optional[str] = None  # e.g., "70 kg"
     photo_url: Optional[str] = None  # Player photo URL
