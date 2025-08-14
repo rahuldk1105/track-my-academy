@@ -456,6 +456,11 @@ class Player(BaseModel):
     emergency_contact_phone: Optional[str] = None
     medical_notes: Optional[str] = None
     status: str = "active"  # active, inactive, suspended
+    # Player Authentication Fields
+    has_login: bool = False  # Whether player has login credentials
+    default_password: Optional[str] = None  # Auto-generated default password
+    password_changed: bool = False  # Whether player has changed default password
+    supabase_user_id: Optional[str] = None  # Links to Supabase auth user
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
