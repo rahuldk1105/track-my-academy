@@ -576,6 +576,24 @@ const AcademyDashboard = () => {
                           </td>
                           <td className={`py-3 px-4 ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>{player.age || 'N/A'}</td>
                           <td className="py-3 px-4">
+                            {player.has_login ? (
+                              <div>
+                                <span className={`${isLight ? 'bg-green-50 text-green-600' : 'bg-green-500/20 text-green-400'} px-2 py-1 rounded-full text-xs`}>
+                                  ✓ Login Enabled
+                                </span>
+                                {player.default_password && !player.password_changed && (
+                                  <div className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'} mt-1`}>
+                                    Default Password: <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">{player.default_password}</span>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className={`${isLight ? 'bg-gray-100 text-gray-600' : 'bg-gray-500/20 text-gray-400'} px-2 py-1 rounded-full text-xs`}>
+                                No Login Access
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-sm ${
                               player.status === 'active' 
                                 ? isLight ? 'bg-green-50 text-green-600' : 'bg-green-500/20 text-green-400'
