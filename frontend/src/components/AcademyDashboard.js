@@ -485,14 +485,14 @@ const AcademyDashboard = () => {
               </div>
 
               <div className="mt-6">
-                <h3 className="text-lg font-medium text-gray-300 mb-3">Quick Actions</h3>
+                <h3 className={`text-lg font-medium ${isLight ? 'text-gray-700' : 'text-gray-300'} mb-3`}>Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <button 
                     onClick={() => {
                       setEditingPlayer(null);
                       setShowPlayerModal(true);
                     }}
-                    className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                    className={`${isLight ? 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100' : 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30'} border px-4 py-3 rounded-lg transition-all duration-300 text-left`}
                   >
                     + Add New Player
                   </button>
@@ -501,13 +501,13 @@ const AcademyDashboard = () => {
                       setEditingCoach(null);
                       setShowCoachModal(true);
                     }}
-                    className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                    className={`${isLight ? 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100' : 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30'} border px-4 py-3 rounded-lg transition-all duration-300 text-left`}
                   >
                     + Add New Coach
                   </button>
                   <button 
                     onClick={() => setActiveTab('players')}
-                    className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-3 rounded-lg transition-all duration-300 text-left"
+                    className={`${isLight ? 'bg-sky-50 text-sky-600 border-sky-200 hover:bg-sky-100' : 'bg-sky-500/20 text-sky-400 border-sky-500/30 hover:bg-sky-500/30'} border px-4 py-3 rounded-lg transition-all duration-300 text-left`}
                   >
                     View All Players
                   </button>
