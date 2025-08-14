@@ -41,7 +41,7 @@ const AttendanceTracker = () => {
           player_id: player.id,
           player_name: `${player.first_name} ${player.last_name}`,
           position: player.position,
-          jersey_number: player.registration_number,
+          registration_number: player.registration_number,
           present: false,
           performance_rating: null,
           notes: ''
@@ -288,7 +288,7 @@ const AttendanceTracker = () => {
                   <td className="py-3 px-4 text-gray-300">{record.position || 'Not specified'}</td>
                   <td className="py-3 px-4">
                     <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-sm">
-                      #{record.jersey_number || 'N/A'}
+                      #{record.registration_number || 'N/A'}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-center">
