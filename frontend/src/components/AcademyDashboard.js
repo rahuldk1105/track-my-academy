@@ -590,13 +590,13 @@ const AcademyDashboard = () => {
                                   setEditingPlayer(player);
                                   setShowPlayerModal(true);
                                 }}
-                                className="text-blue-400 hover:text-blue-300 text-sm"
+                                className={`${isLight ? 'text-blue-600 hover:text-blue-700' : 'text-blue-400 hover:text-blue-300'} text-sm`}
                               >
                                 Edit
                               </button>
                               <button
                                 onClick={() => handleDeletePlayer(player.id)}
-                                className="text-red-400 hover:text-red-300 text-sm"
+                                className={`${isLight ? 'text-red-600 hover:text-red-700' : 'text-red-400 hover:text-red-300'} text-sm`}
                               >
                                 Delete
                               </button>
