@@ -475,8 +475,8 @@ class Player(BaseModel):
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None  # Store as string for simplicity
     age: Optional[int] = None  # Auto-calculated from date_of_birth
-    gender: str  # Required: Male, Female, Other
-    sport: str  # Required: Sport type - determines available positions and performance categories
+    gender: Optional[str] = None     
+    sport: Optional[str] = None  
     position: Optional[str] = None  # Position based on sport (not needed for individual sports)
     registration_number: str = None  
     height: Optional[str] = None  # e.g., "5'10"
