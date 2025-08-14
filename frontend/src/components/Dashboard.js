@@ -327,7 +327,7 @@ const Dashboard = () => {
       className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
         active
           ? 'bg-sky-500 text-white shadow-lg'
-          : 'text-gray-400 hover:text-white hover:bg-white/10'
+          : `${isLight ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' : 'text-gray-400 hover:text-white hover:bg-white/10'}`
       }`}
     >
       {label}
