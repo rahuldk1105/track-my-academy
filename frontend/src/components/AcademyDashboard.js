@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 import PlayerModal from './PlayerModal';
 import CoachModal from './CoachModal';
 import AcademySettingsForm from './AcademySettingsForm';
 import AcademyAnalytics from './AcademyAnalytics';
 import AttendanceTracker from './AttendanceTracker';
 import PerformanceAnalytics from './PerformanceAnalytics';
+import ThemeToggle from './ThemeToggle';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
