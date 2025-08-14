@@ -1968,9 +1968,36 @@ async def create_player(player_data: PlayerCreate, user_info = Depends(require_a
                         detail=f"Invalid position '{player_data.position}' for sport '{player_data.sport}'"
                     )
         
-        # Create new player
+        # Auto-generate login credentials if email is provided
+        supabase_user_id = None
+        default_password = None
+        has_login = False
+        
+        if player_data.email:
+            # Generate default password
+            default_password = generate_default_password()
+            
+            # Create Supabase account for player
+            supabase_user_id = await create_player_supabase_account(
+                player_data.email, 
+                default_password, 
+                {
+                    "first_name": player_data.first_name,
+                    "last_name": player_data.last_name,
+                    "academy_id": academy_id
+                }
+            )
+            
+            if supabase_user_id:
+                has_login = True
+        
+        # Create new player with authentication fields
         player = Player(
             academy_id=academy_id,
+            has_login=has_login,
+            default_password=default_password,
+            password_changed=False,
+            supabase_user_id=supabase_user_id,
             **player_dict
         )
         
