@@ -12,6 +12,7 @@ import ThemeToggle from './ThemeToggle';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
+  const { theme, isLight } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [academyData, setAcademyData] = useState(null);
