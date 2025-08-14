@@ -758,6 +758,45 @@ async def require_academy_user(user_info = Depends(get_academy_user_info)):
         raise HTTPException(status_code=403, detail="Academy user access required")
     return user_info
 
+async def get_player_user_info(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get authenticated player user info"""
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    try:
+        # Verify JWT token with Supabase
+        user_response = supabase.auth.get_user(credentials.credentials)
+        if not user_response.user:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user = user_response.user
+        
+        # Look up player information for this user
+        player = await db.players.find_one({"supabase_user_id": user.id})
+        
+        if not player:
+            raise HTTPException(status_code=403, detail="No player profile associated with this user")
+        
+        return {
+            "user": user,
+            "role": "player",
+            "player_id": player["id"],
+            "academy_id": player["academy_id"],
+            "player": player
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Player authentication error: {e}")
+        raise HTTPException(status_code=401, detail="Authentication failed")
+
+async def require_player_user(user_info = Depends(get_player_user_info)):
+    """Ensure user is a player"""
+    if user_info["role"] != "player":
+        raise HTTPException(status_code=403, detail="Player access required")
+    return user_info
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
