@@ -361,9 +361,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+    <div className={`min-h-screen ${isLight ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-gray-900 to-black'}`}>
       {/* Header */}
-      <header className="bg-white/5 backdrop-blur-md border-b border-white/10">
+      <header className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md border-b`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
@@ -373,18 +373,21 @@ const Dashboard = () => {
                 className="h-10 w-auto mr-4"
               />
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent">
+                <h1 className={`text-2xl font-bold ${isLight ? 'bg-gradient-to-r from-sky-600 to-gray-800 bg-clip-text text-transparent' : 'bg-gradient-to-r from-sky-400 to-white bg-clip-text text-transparent'}`}>
                   SuperAdmin Dashboard
                 </h1>
-                <p className="text-gray-400 text-sm">Welcome back, {user?.email}</p>
+                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Welcome back, {user?.email}</p>
               </div>
             </div>
-            <button
-              onClick={handleSignOut}
-              className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg transition-all duration-300"
-            >
-              Sign Out
-            </button>
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
+              <button
+                onClick={handleSignOut}
+                className={`${isLight ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'} border px-4 py-2 rounded-lg transition-all duration-300`}
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>
