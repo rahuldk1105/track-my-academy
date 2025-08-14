@@ -10,6 +10,7 @@ import ThemeToggle from './ThemeToggle';
 
 const Dashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
+  const { theme, isLight } = useTheme();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAcademies: 0,
