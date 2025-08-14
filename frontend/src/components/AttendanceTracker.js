@@ -41,7 +41,7 @@ const AttendanceTracker = () => {
           player_id: player.id,
           player_name: `${player.first_name} ${player.last_name}`,
           position: player.position,
-          jersey_number: player.jersey_number,
+          jersey_number: player.registration_number,
           present: false,
           performance_rating: null,
           notes: ''
