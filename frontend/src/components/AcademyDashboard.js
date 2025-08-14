@@ -533,8 +533,8 @@ const AcademyDashboard = () => {
 
               {players.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="text-gray-400 mb-4">No players found</div>
-                  <div className="text-sm text-gray-500 mb-4">
+                  <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-4`}>No players found</div>
+                  <div className={`text-sm ${isLight ? 'text-gray-500' : 'text-gray-500'} mb-4`}>
                     Start by adding your first player to the academy.
                   </div>
                   <button
@@ -542,7 +542,7 @@ const AcademyDashboard = () => {
                       setEditingPlayer(null);
                       setShowPlayerModal(true);
                     }}
-                    className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 px-6 py-3 rounded-lg transition-all duration-300"
+                    className={`${isLight ? 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100' : 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30'} border px-6 py-3 rounded-lg transition-all duration-300`}
                   >
                     Add Your First Player
                   </button>
@@ -551,8 +551,8 @@ const AcademyDashboard = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-white/10">
-                        <th className="text-left text-gray-300 font-medium py-3 px-4">Name</th>
+                      <tr className={`border-b ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Name</th>
                         <th className="text-left text-gray-300 font-medium py-3 px-4">Position</th>
                         <th className="text-left text-gray-300 font-medium py-3 px-4">Reg #</th>
                         <th className="text-left text-gray-300 font-medium py-3 px-4">Age</th>
