@@ -3056,15 +3056,47 @@ async def get_player_profile(user_info = Depends(require_player_user)):
         # Get academy information
         academy = await db.academies.find_one({"id": player["academy_id"]})
         
-        return {
-            "player": player,
-            "academy": {
-                "id": academy["id"],
-                "name": academy["name"],
+        # Create clean player data without MongoDB ObjectId
+        player_data = {
+            "id": player.get("id"),
+            "first_name": player.get("first_name"),
+            "last_name": player.get("last_name"),
+            "email": player.get("email"),
+            "phone": player.get("phone"),
+            "date_of_birth": player.get("date_of_birth"),
+            "age": player.get("age"),
+            "gender": player.get("gender"),
+            "sport": player.get("sport"),
+            "position": player.get("position"),
+            "registration_number": player.get("registration_number"),
+            "height": player.get("height"),
+            "weight": player.get("weight"),
+            "photo_url": player.get("photo_url"),
+            "training_days": player.get("training_days", []),
+            "training_batch": player.get("training_batch"),
+            "emergency_contact_name": player.get("emergency_contact_name"),
+            "emergency_contact_phone": player.get("emergency_contact_phone"),
+            "medical_notes": player.get("medical_notes"),
+            "status": player.get("status"),
+            "academy_id": player.get("academy_id"),
+            "created_at": player.get("created_at").isoformat() if player.get("created_at") else None,
+            "updated_at": player.get("updated_at").isoformat() if player.get("updated_at") else None
+        }
+        
+        # Create clean academy data
+        academy_data = None
+        if academy:
+            academy_data = {
+                "id": academy.get("id"),
+                "name": academy.get("name"),
                 "logo_url": academy.get("logo_url"),
                 "location": academy.get("location"),
                 "sports_type": academy.get("sports_type")
-            } if academy else None
+            }
+        
+        return {
+            "player": player_data,
+            "academy": academy_data
         }
     except Exception as e:
         logger.error(f"Error fetching player profile: {e}")
