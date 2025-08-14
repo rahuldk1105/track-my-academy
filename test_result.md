@@ -516,9 +516,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Academy Dashboard Player Management Interface"
-    - "Academy Dashboard Coach Management Interface"
-    - "Academy Dashboard Overview and Stats Display"
+    - "Enhanced Player Creation with Automatic Login Credential Generation"
+    - "Player Authentication System"
+    - "Player Dashboard APIs"
+    - "Theme Preference System"
+    - "Announcement Management System"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
