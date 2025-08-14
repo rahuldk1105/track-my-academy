@@ -1120,10 +1120,10 @@ async def get_user(current_user = Depends(get_current_user)):
         
         if is_super_admin:
             role_info['permissions'] = ['manage_all_academies', 'view_all_data', 'create_academies', 'manage_billing']
-        else:
-            # Find academy for this user
-academy = await db.academies.find_one({"supabase_user_id": user_id})
-if academy:
+else:
+    # Find academy for this user
+    academy = await db.academies.find_one({"supabase_user_id": user_id})
+    if academy:
     role_info['academy_id'] = academy['id']
     role_info['academy_name'] = academy['name']
     role_info['permissions'] = ['manage_own_academy', 'create_coaches', 'view_own_data']
