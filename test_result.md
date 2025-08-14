@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Enhanced Player Analytics Implementation: Add sport-specific performance tracking with 5 categories per sport during attendance marking. Update player creation to include gender selection, auto-calculate age from date of birth, replace jersey numbers with registration numbers for ALL sports (individual and team). Hide jersey number fields for individual sports."
+user_problem_statement: "SaaS Software Enhancement: Add basic player dashboards for all player profiles created under each admin, automatically create player login details when each admin adds a player, add a toggle to switch between dark and light mode for all dashboards (admin and super admin), and verify project status before and after editing work."
 
 backend:
   - task: "Backend Server Health Check"
