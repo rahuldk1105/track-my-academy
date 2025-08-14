@@ -8,7 +8,7 @@ import requests
 import os
 
 # Test URLs
-BACKEND_URL = "https://analytics-dashboard-7.preview.emergentagent.com"
+BACKEND_URL = "https://player-profiles-3.preview.emergentagent.com"
 test_logo = "74a7e52e-87e5-43d2-a6f7-b77ad366458e.png"
 
 print("🔍 STATIC FILE SERVING DIAGNOSIS")
