@@ -1120,30 +1120,31 @@ async def get_user(current_user = Depends(get_current_user)):
         
         if is_super_admin:
             role_info['permissions'] = ['manage_all_academies', 'view_all_data', 'create_academies', 'manage_billing']
-else:
-    # Find academy for this user
-    academy = await db.academies.find_one({"supabase_user_id": user_id})
-    if academy:
-    role_info['academy_id'] = academy['id']
-    role_info['academy_name'] = academy['name']
-    role_info['permissions'] = ['manage_own_academy', 'create_coaches', 'view_own_data']
+        else:
+            # Find academy for this user
+            academy = await db.academies.find_one({"supabase_user_id": user_id})
+            if academy:
+                role_info['academy_id'] = academy['id']
+                role_info['academy_name'] = academy['name']
+                role_info['permissions'] = ['manage_own_academy', 'create_coaches', 'view_own_data']
 
-# Add role info to user data
-user_dict['role_info'] = role_info
+        # Add role info to user data
+        user_dict['role_info'] = role_info
 
-# Extract role directly for top-level field
-role = role_info.get("role") if role_info else None
+        # Extract role directly for top-level field
+        role = role_info.get("role") if role_info else None
 
-return UserResponse(
-    user=user_dict,
-    role=role,
-    message="User retrieved successfully"
-)
+        return UserResponse(
+            user=user_dict,
+            role=role,
+            message="User retrieved successfully"
+        )
     else:
         return UserResponse(
             user=None,
             message="No authenticated user"
         )
+
 
 @api_router.post("/auth/refresh", response_model=AuthResponse)
 async def refresh_token():
