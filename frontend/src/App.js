@@ -7,6 +7,7 @@ import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import Dashboard from "./components/Dashboard";
 import AcademyDashboard from "./components/AcademyDashboard";
+import PlayerDashboard from "./components/PlayerDashboard";
 import SubscriptionPayment from "./components/SubscriptionPayment";
 import ProtectedRoute from "./components/ProtectedRoute";
 
