@@ -433,6 +433,38 @@ def get_sport_performance_categories(sport: str) -> List[str]:
     """Get performance categories for a specific sport"""
     return SPORT_PERFORMANCE_CATEGORIES.get(sport, SPORT_PERFORMANCE_CATEGORIES["Other"])
 
+def generate_default_password() -> str:
+    """Generate a default password for new players"""
+    import random
+    import string
+    # Generate an 8-character password with letters and numbers
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(8))
+
+async def create_player_supabase_account(email: str, password: str, player_data: dict) -> Optional[str]:
+    """Create a Supabase account for a player"""
+    try:
+        # Create player account using admin privileges
+        user_metadata = {
+            'player_name': f"{player_data.get('first_name', '')} {player_data.get('last_name', '')}",
+            'academy_id': player_data.get('academy_id'),
+            'role': 'player'
+        }
+        
+        response = supabase_admin.auth.admin.create_user({
+            "email": email,
+            "password": password,
+            "email_confirm": True,  # Skip email confirmation for admin-created accounts
+            "user_metadata": user_metadata
+        })
+        
+        if response.user:
+            return response.user.id
+        return None
+    except Exception as e:
+        logger.error(f"Failed to create Supabase account for player: {e}")
+        return None
+
 # Enhanced Player and Coach Management Models
 class Player(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
