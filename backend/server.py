@@ -1132,7 +1132,7 @@ async def get_user(current_user = Depends(get_current_user)):
         user_dict['role_info'] = role_info
 
         # Extract role directly for top-level field
-        role = role_info.get("role") if role_info else None
+        role = role_info.get("role")
 
         return UserResponse(
             user=user_dict,
@@ -1144,7 +1144,6 @@ async def get_user(current_user = Depends(get_current_user)):
             user=None,
             message="No authenticated user"
         )
-
 
 @api_router.post("/auth/refresh", response_model=AuthResponse)
 async def refresh_token():
