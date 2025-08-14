@@ -462,7 +462,7 @@ const AcademyDashboard = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+        <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-xl border overflow-hidden`}>
           {activeTab === 'overview' && (
             <div className="p-6">
               <h2 className="text-xl font-semibold text-white mb-4">Academy Overview</h2>
