@@ -3254,7 +3254,7 @@ async def get_player_announcements(user_info = Depends(require_player_user)):
         academy_id = user_info["academy_id"]
         
         # Get announcements targeted to this player or all players
-        announcements = await db.announcements.find({
+        announcements_raw = await db.announcements.find({
             "academy_id": academy_id,
             "is_active": True,
             "$or": [
@@ -3263,6 +3263,24 @@ async def get_player_announcements(user_info = Depends(require_player_user)):
                 {"target_audience": "specific_player", "target_player_id": player_id}
             ]
         }).sort("created_at", -1).to_list(50)
+        
+        # Clean announcements for JSON serialization
+        announcements = []
+        for announcement in announcements_raw:
+            clean_announcement = {
+                "id": announcement.get("id"),
+                "academy_id": announcement.get("academy_id"),
+                "title": announcement.get("title"),
+                "content": announcement.get("content"),
+                "priority": announcement.get("priority"),
+                "target_audience": announcement.get("target_audience"),
+                "target_player_id": announcement.get("target_player_id"),
+                "is_active": announcement.get("is_active"),
+                "created_by": announcement.get("created_by"),
+                "created_at": announcement.get("created_at").isoformat() if announcement.get("created_at") else None,
+                "updated_at": announcement.get("updated_at").isoformat() if announcement.get("updated_at") else None
+            }
+            announcements.append(clean_announcement)
         
         return {"announcements": announcements}
         
