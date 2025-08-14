@@ -3145,9 +3145,26 @@ async def get_player_attendance_history(user_info = Depends(require_player_user)
         player_id = user_info["player_id"]
         
         # Get attendance records for this player
-        attendance_records = await db.player_attendance.find(
+        attendance_records_raw = await db.player_attendance.find(
             {"player_id": player_id}
         ).sort("date", -1).limit(100).to_list(100)
+        
+        # Clean attendance records for JSON serialization
+        attendance_records = []
+        for record in attendance_records_raw:
+            clean_record = {
+                "id": record.get("id"),
+                "player_id": record.get("player_id"),
+                "academy_id": record.get("academy_id"),
+                "date": record.get("date"),
+                "present": record.get("present"),
+                "sport": record.get("sport"),
+                "performance_ratings": record.get("performance_ratings", {}),
+                "notes": record.get("notes"),
+                "marked_by": record.get("marked_by"),
+                "created_at": record.get("created_at").isoformat() if record.get("created_at") else None
+            }
+            attendance_records.append(clean_record)
         
         # Calculate attendance statistics
         total_sessions = len(attendance_records)
