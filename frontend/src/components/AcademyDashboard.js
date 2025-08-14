@@ -556,6 +556,7 @@ const AcademyDashboard = () => {
                         <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Position</th>
                         <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Reg #</th>
                         <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Age</th>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Login Access</th>
                         <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Status</th>
                         <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Actions</th>
                       </tr>
