@@ -5,6 +5,7 @@ import { AuthProvider } from "./AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
+import PlayerLoginPage from "./components/PlayerLoginPage";
 import Dashboard from "./components/Dashboard";
 import AcademyDashboard from "./components/AcademyDashboard";
 import PlayerDashboard from "./components/PlayerDashboard";
