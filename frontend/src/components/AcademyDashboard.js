@@ -553,11 +553,11 @@ const AcademyDashboard = () => {
                     <thead>
                       <tr className={`border-b ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
                         <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Name</th>
-                        <th className="text-left text-gray-300 font-medium py-3 px-4">Position</th>
-                        <th className="text-left text-gray-300 font-medium py-3 px-4">Reg #</th>
-                        <th className="text-left text-gray-300 font-medium py-3 px-4">Age</th>
-                        <th className="text-left text-gray-300 font-medium py-3 px-4">Status</th>
-                        <th className="text-left text-gray-300 font-medium py-3 px-4">Actions</th>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Position</th>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Reg #</th>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Age</th>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Status</th>
+                        <th className={`text-left ${isLight ? 'text-gray-700' : 'text-gray-300'} font-medium py-3 px-4`}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
