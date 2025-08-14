@@ -562,23 +562,23 @@ const AcademyDashboard = () => {
                     </thead>
                     <tbody>
                       {players.map((player) => (
-                        <tr key={player.id} className="border-b border-white/5 hover:bg-white/5">
+                        <tr key={player.id} className={`border-b ${isLight ? 'border-gray-200 hover:bg-gray-50' : 'border-white/5 hover:bg-white/5'}`}>
                           <td className="py-3 px-4">
-                            <div className="text-white font-medium">{player.first_name} {player.last_name}</div>
-                            <div className="text-gray-400 text-sm">{player.email}</div>
+                            <div className={`${isLight ? 'text-gray-800' : 'text-white'} font-medium`}>{player.first_name} {player.last_name}</div>
+                            <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>{player.email}</div>
                           </td>
-                          <td className="py-3 px-4 text-gray-300">{player.position || 'Not specified'}</td>
+                          <td className={`py-3 px-4 ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>{player.position || 'Not specified'}</td>
                           <td className="py-3 px-4">
-                            <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-sm">
+                            <span className={`${isLight ? 'bg-blue-50 text-blue-600' : 'bg-blue-500/20 text-blue-400'} px-2 py-1 rounded-full text-sm`}>
                               {player.registration_number || 'Not Assigned'}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-gray-300">{player.age || 'N/A'}</td>
+                          <td className={`py-3 px-4 ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>{player.age || 'N/A'}</td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-sm ${
                               player.status === 'active' 
-                                ? 'bg-green-500/20 text-green-400'
-                                : 'bg-gray-500/20 text-gray-400'
+                                ? isLight ? 'bg-green-50 text-green-600' : 'bg-green-500/20 text-green-400'
+                                : isLight ? 'bg-gray-100 text-gray-600' : 'bg-gray-500/20 text-gray-400'
                             }`}>
                               {player.status}
                             </span>
