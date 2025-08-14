@@ -148,6 +148,7 @@ class AuthResponse(BaseModel):
 
 class UserResponse(BaseModel):
     user: Optional[dict] = None
+    role: Optional[str] = None    # <-- add this line
     message: str
 
 class SupabaseHealthResponse(BaseModel):
@@ -1133,11 +1134,11 @@ user_dict['role_info'] = role_info
 # Extract role directly for top-level field
 role = role_info.get("role") if role_info else None
 
-return {
-    "user": user_dict,
-    "role": role,
-    "message": "User retrieved successfully"
-}
+return UserResponse(
+    user=user_dict,
+    role=role,
+    message="User retrieved successfully"
+)
     else:
         return UserResponse(
             user=None,
