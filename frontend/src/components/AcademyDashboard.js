@@ -395,19 +395,19 @@ const AcademyDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Academy Info Card */}
-        <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-2">Academy Information</h2>
+        <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-xl p-6 border mb-8`}>
+          <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-800' : 'text-white'} mb-2`}>Academy Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-gray-400 text-sm">Academy Name</p>
-              <p className="text-white font-medium">{academyData?.name || 'Loading...'}</p>
+              <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Academy Name</p>
+              <p className={`${isLight ? 'text-gray-800' : 'text-white'} font-medium`}>{academyData?.name || 'Loading...'}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Academy ID</p>
-              <p className="text-white font-mono text-sm">{userRole.academy_id}</p>
+              <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Academy ID</p>
+              <p className={`${isLight ? 'text-gray-800' : 'text-white'} font-mono text-sm`}>{userRole.academy_id}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-sm">User Role</p>
+              <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>User Role</p>
               <p className="text-sky-400 font-medium">Academy Owner</p>
             </div>
           </div>
