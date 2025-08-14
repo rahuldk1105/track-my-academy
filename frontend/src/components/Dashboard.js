@@ -395,7 +395,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Success Message */}
         {successMessage && (
-          <div className="bg-green-500/20 border border-green-500/30 text-green-400 px-4 py-2 rounded-lg mb-6">
+          <div className={`${isLight ? 'bg-green-50 border-green-200 text-green-800' : 'bg-green-500/20 border-green-500/30 text-green-400'} border px-4 py-2 rounded-lg mb-6`}>
             {successMessage}
           </div>
         )}
