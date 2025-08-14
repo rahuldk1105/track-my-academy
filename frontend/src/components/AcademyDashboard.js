@@ -320,7 +320,7 @@ const AcademyDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
+      <div className={`min-h-screen ${isLight ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-gray-900 to-black'} flex items-center justify-center`}>
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-sky-500"></div>
       </div>
     );
