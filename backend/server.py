@@ -616,6 +616,55 @@ class SportConfigResponse(BaseModel):
     training_days: List[str]
     training_batches: List[str]
 
+# Theme Preference Models
+class ThemePreference(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    theme: str = "light"  # light, dark
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+# Announcement Models
+class Announcement(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    academy_id: str
+    title: str
+    content: str
+    priority: str = "medium"  # low, medium, high, urgent
+    target_audience: str = "all"  # all, players, coaches, specific_player
+    target_player_id: Optional[str] = None  # For player-specific announcements
+    is_active: bool = True
+    created_by: str  # User ID who created the announcement
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class AnnouncementCreate(BaseModel):
+    title: str
+    content: str
+    priority: str = "medium"
+    target_audience: str = "all"
+    target_player_id: Optional[str] = None
+
+class AnnouncementUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    priority: Optional[str] = None
+    target_audience: Optional[str] = None
+    target_player_id: Optional[str] = None
+    is_active: Optional[bool] = None
+
+# Player Authentication Models
+class PlayerSignInRequest(BaseModel):
+    email: str
+    password: str
+
+class PlayerAuthResponse(BaseModel):
+    player: dict
+    session: dict
+    message: str
+
+class PlayerPasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
 # Authentication helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
