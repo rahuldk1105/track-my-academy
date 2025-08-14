@@ -308,10 +308,10 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, icon, color }) => (
-    <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
+    <div className={`${isLight ? 'bg-white/80 border-gray-200' : 'bg-white/5 border-white/10'} backdrop-blur-md rounded-xl p-6 border`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-400 text-sm">{title}</p>
+          <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>{title}</p>
           <p className={`text-2xl font-bold ${color}`}>{value}</p>
         </div>
         <div className={`p-3 rounded-full ${color.replace('text', 'bg').replace('-400', '-400/20')}`}>
