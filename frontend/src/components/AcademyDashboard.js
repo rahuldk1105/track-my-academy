@@ -614,13 +614,13 @@ const AcademyDashboard = () => {
           {activeTab === 'coaches' && (
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-white">Coach Management</h2>
+                <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-800' : 'text-white'}`}>Coach Management</h2>
                 <button
                   onClick={() => {
                     setEditingCoach(null);
                     setShowCoachModal(true);
                   }}
-                  className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-2 rounded-lg transition-all duration-300"
+                  className={`${isLight ? 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100' : 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30'} border px-4 py-2 rounded-lg transition-all duration-300`}
                 >
                   + Add Coach
                 </button>
