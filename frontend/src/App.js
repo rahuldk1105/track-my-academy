@@ -29,6 +29,14 @@ function App() {
               } 
             />
             <Route 
+              path="/player" 
+              element={
+                <ProtectedRoute>
+                  <PlayerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/academy" 
               element={
                 <ProtectedRoute>
