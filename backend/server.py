@@ -14,8 +14,10 @@ from datetime import datetime, timedelta
 from supabase import create_client, Client
 import shutil
 import aiofiles
-# Removed Stripe imports for manual billing
 
+# ---- Add your class AFTER imports ----
+class RefreshRequest(BaseModel):
+    refresh_token: str
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
