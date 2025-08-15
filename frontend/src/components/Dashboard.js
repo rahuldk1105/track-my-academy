@@ -465,7 +465,7 @@ const Dashboard = () => {
                     <div>
                       <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recently Added Academies</h3>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
-                        {systemOverview.recent_academies.length &gt; 0 ? systemOverview.recent_academies.map((academy) => (
+                        {systemOverview.recent_academies.length > 0 ? systemOverview.recent_academies.map((academy) => (
                           <div key={academy.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-3`}>
                             <div className="flex justify-between items-start">
                               <div>
