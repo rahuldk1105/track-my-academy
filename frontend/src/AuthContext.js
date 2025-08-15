@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     if (!refreshToken) return null
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/refresh`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refreshToken })
@@ -72,11 +72,9 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  // --- NEW: helper for components to always get valid token ---
+  // --- helper for components to always get valid token ---
   const getValidToken = async () => {
-    // If session still valid, return token
     if (session?.access_token) return session.access_token
-    // Otherwise refresh
     return await refreshAccessToken()
   }
 
@@ -162,7 +160,7 @@ export const AuthProvider = ({ children }) => {
     signUp,
     signOut,
     refreshUserRole: () => fetchUserRole(session),
-    getValidToken, // expose helper
+    getValidToken,
   }
 
   return (
