@@ -57,7 +57,7 @@ export default function LoginPage() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <img src="frontend/src/assets/TMA.png" alt="TMA Logo" className="h-12 mb-2" />
+            <img src="/assets/TMA.png" alt="TMA Logo" className="h-12 mb-2" />
             <h2 className="text-xl font-semibold text-gray-800">Welcome Back</h2>
             <p className="text-gray-500 text-sm">Sign in to your account</p>
           </motion.div>
