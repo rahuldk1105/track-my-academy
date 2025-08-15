@@ -588,6 +588,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Login Page Performance and Authentication Flow"
     - "Enhanced Player Creation with Automatic Login Credential Generation"
     - "Player Authentication System"
     - "Player Dashboard APIs"
