@@ -26,7 +26,15 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = AsyncIOMotorClient(
+    mongo_url,
+    maxPoolSize=int(os.getenv("MONGO_MAX_POOL", "10")),
+    minPoolSize=0,
+    serverSelectionTimeoutMS=5000,
+    connectTimeoutMS=5000,
+    retryWrites=True,
+    tls=True,  # Atlas
+)
 db = client[os.environ['DB_NAME']]
 
 # Supabase connection
