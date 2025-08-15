@@ -3470,12 +3470,14 @@ app.add_middleware(
     allow_origins=[
         "https://track-my-academy.vercel.app",
         "https://dev.trackmyacademy.com",
-        "https://track-my-academy-rahuldk1105s-projects.vercel.app",
         "http://localhost:5173",
         "http://localhost:3000",
     ],
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
+    allow_origin_regex=r"https://.*\.vercel\.app$",
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Content-Length", "X-Requested-With"],
+    max_age=600,
 )
 
 
