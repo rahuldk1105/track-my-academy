@@ -584,7 +584,7 @@ const Dashboard = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Academy Management</h2>
                 <div className="flex gap-3">
-                  {selectedAcademies.length &gt; 0 &amp;&amp; (
+                  {selectedAcademies.length > 0 && (
                     <button 
                       onClick={handleBulkApprove}
                       className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-lg transition-colors`}
