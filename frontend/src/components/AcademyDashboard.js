@@ -369,16 +369,7 @@ const AcademyDashboard = () => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
-          <TabButton id="overview" label="Overview" active={activeTab === 'overview'} onClick={setActiveTab} />
-          <TabButton id="players" label="Players" active={activeTab === 'players'} onClick={setActiveTab} />
-          <TabButton id="coaches" label="Coaches" active={activeTab === 'coaches'} onClick={setActiveTab} />
-          <TabButton id="attendance" label="Attendance" active={activeTab === 'attendance'} onClick={setActiveTab} />
-          <TabButton id="performance" label="Performance" active={activeTab === 'performance'} onClick={setActiveTab} />
-          <TabButton id="analytics" label="Analytics" active={activeTab === 'analytics'} onClick={setActiveTab} />
-          <TabButton id="settings" label="Settings" active={activeTab === 'settings'} onClick={setActiveTab} />
-        </div>
+        {/* Vertical navigation is handled by SideNav on the left */}
 
         {/* Content */}
         <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl overflow-hidden`}>
