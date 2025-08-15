@@ -232,13 +232,13 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, icon, color }) => (
-    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl p-6`}>
+    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-6`}>
       <div className="flex items-center justify-between">
         <div>
           <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>{title}</p>
           <p className={`text-3xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{value}</p>
         </div>
-        <div className={`p-3 rounded-full ${color.replace('text', 'bg').replace('-600', '-100')}`}>
+        <div className={`p-3 rounded-none ${color.replace('text', 'bg').replace('-600', '-100')}`}>
           <div className={`${color}`}>{icon}</div>
         </div>
       </div>
@@ -248,7 +248,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-950'} flex items-center justify-center`}>
-        <div className={`animate-spin rounded-full h-12 w-12 border-2 ${isLight ? 'border-gray-300 border-t-sky-600' : 'border-gray-700 border-t-sky-400'}`}></div>
+        <div className={`animate-spin rounded-none h-12 w-12 border-2 ${isLight ? 'border-gray-300 border-t-sky-600' : 'border-gray-700 border-t-sky-400'}`}></div>
       </div>
     );
   }
@@ -256,12 +256,12 @@ const Dashboard = () => {
   if (userRole && userRole.role !== 'super_admin') {
     return (
       <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-950'} flex items-center justify-center`}>
-        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl p-8 text-center`}>
+        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-8 text-center`}>
           <div className={`${isLight ? 'text-red-600' : 'text-red-400'} text-xl mb-2`}>Access Denied</div>
           <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>You don't have permission to access the super admin dashboard.</div>
           <button
             onClick={handleSignOut}
-            className={`${isLight ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100' : 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20'} px-4 py-2 rounded-lg transition-all duration-200`}
+            className={`${isLight ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100' : 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20'} px-4 py-2 rounded-none transition-all duration-200`}
           >
             Sign Out
           </button>
@@ -293,7 +293,7 @@ const Dashboard = () => {
               <ThemeToggle />
               <button
                 onClick={handleSignOut}
-                className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-lg transition-all duration-200`}
+                className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-none transition-all duration-200`}
               >
                 Sign Out
               </button>
@@ -305,7 +305,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Success Message */}
         {successMessage && (
-          <div className={`${isLight ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-green-500/10 border border-green-500/30 text-green-400'} px-4 py-3 rounded-lg mb-6`}>
+          <div className={`${isLight ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-green-500/10 border border-green-500/30 text-green-400'} px-4 py-3 rounded-none mb-6`}>
             {successMessage}
           </div>
         )}
@@ -370,7 +370,7 @@ const Dashboard = () => {
             </div>
 
             {/* Content */}
-            <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl overflow-hidden`}>
+            <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
               {activeTab === 'overview' && (
                 <div className="p-6">
                   <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>System Overview</h2>
@@ -382,22 +382,22 @@ const Dashboard = () => {
                     <div className="space-y-6">
                       {/* Real-time Statistics */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                           <h3 className="text-sm font-medium text-sky-600 mb-1">Total Academies</h3>
                           <p className={`${isLight ? 'text-gray-900' : 'text-white'} text-2xl font-semibold`}>{systemOverview.stats.total_academies}</p>
                           <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Active: {systemOverview.stats.active_academies}</p>
                         </div>
-                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                           <h3 className="text-sm font-medium text-green-600 mb-1">Pending Academies</h3>
                           <p className={`${isLight ? 'text-gray-900' : 'text-white'} text-2xl font-semibold`}>{systemOverview.stats.pending_academies}</p>
                           <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Awaiting approval</p>
                         </div>
-                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                           <h3 className="text-sm font-medium text-purple-600 mb-1">Demo Requests</h3>
                           <p className={`${isLight ? 'text-gray-900' : 'text-white'} text-2xl font-semibold`}>{systemOverview.stats.total_demo_requests}</p>
                           <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Pending: {systemOverview.stats.pending_demo_requests}</p>
                         </div>
-                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                           <h3 className="text-sm font-medium text-orange-600 mb-1">Server Status</h3>
                           <p className="text-green-600 text-2xl font-semibold capitalize">{systemOverview.server_status}</p>
                           <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>System operational</p>
@@ -410,9 +410,9 @@ const Dashboard = () => {
                           <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recent Activity</h3>
                           <div className="space-y-3 max-h-80 overflow-y-auto">
                             {systemOverview.recent_activities.length > 0 ? systemOverview.recent_activities.map((activity) => (
-                              <div key={activity.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-3`}>
+                              <div key={activity.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-3`}>
                                 <div className="flex items-start">
-                                  <div className={`w-2 h-2 rounded-full mr-3 mt-2 ${
+                                  <div className={`w-2 h-2 rounded-none mr-3 mt-2 ${
                                     activity.status === 'success' ? 'bg-green-500' : activity.status === 'pending' ? 'bg-orange-500' : 'bg-blue-500'
                                   }`}></div>
                                   <div className="flex-1">
@@ -434,14 +434,14 @@ const Dashboard = () => {
                           <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recently Added Academies</h3>
                           <div className="space-y-3 max-h-80 overflow-y-auto">
                             {systemOverview.recent_academies.length > 0 ? systemOverview.recent_academies.map((academy) => (
-                              <div key={academy.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-3`}>
+                              <div key={academy.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-3`}>
                                 <div className="flex justify-between items-start">
                                   <div>
                                     <h4 className={`${isLight ? 'text-gray-900' : 'text-white'} font-medium`}>{academy.name}</h4>
                                     <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Owner: {academy.owner_name}</p>
                                     <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>{academy.location} • {academy.sports_type}</p>
                                   </div>
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                                  <span className={`px-2 py-1 rounded-none text-xs font-medium border ${
                                     academy.status === 'approved' 
                                       ? 'bg-green-50 text-green-700 border-green-200' 
                                       : 'bg-orange-50 text-orange-700 border-orange-200'
@@ -465,7 +465,7 @@ const Dashboard = () => {
                       <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Failed to load system overview. Please try again.</div>
                       <button 
                         onClick={loadSystemOverview}
-                        className={`mt-4 ${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-lg transition-colors`}
+                        className={`mt-4 ${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-none transition-colors`}
                       >
                         Retry
                       </button>
@@ -506,21 +506,21 @@ const Dashboard = () => {
                           type="checkbox"
                           checked={selectedAcademies.length === academies.length && academies.length > 0}
                           onChange={handleSelectAll}
-                          className={`${isLight ? 'rounded border-gray-300 text-sky-600 focus:ring-sky-500' : 'rounded bg-gray-800 border-gray-600 text-sky-500 focus:ring-sky-500'}`}
+                          className={`${isLight ? 'rounded-none border-gray-300 text-sky-600 focus:ring-sky-500' : 'rounded-none bg-gray-800 border-gray-600 text-sky-500 focus:ring-sky-500'}`}
                         />
                         Select All
                       </label>
                       {selectedAcademies.length > 0 && (
                         <button 
                           onClick={handleBulkApprove}
-                          className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-lg transition-colors`}
+                          className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-none transition-colors`}
                         >
                           Approve Selected ({selectedAcademies.length})
                         </button>
                       )}
                       <button 
                         onClick={() => setShowCreateModal(true)}
-                        className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-lg transition-colors`}
+                        className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-none transition-colors`}
                       >
                         Add New Academy
                       </button>
