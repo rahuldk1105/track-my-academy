@@ -1,6 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+
+const slides = [
+  {
+    img: 'https://illustrations.popsy.co/white/dashboard.svg',
+    bg: 'bg-sky-50',
+    title: 'Track My Academy',
+    text: 'Simplify your academy management with a clean, intuitive dashboard.'
+  },
+  {
+    img: 'https://illustrations.popsy.co/white/work-from-home.svg',
+    bg: 'bg-indigo-50',
+    title: 'Work Smarter',
+    text: 'Access your data from anywhere with cloud-based access.'
+  },
+  {
+    img: 'https://illustrations.popsy.co/white/analytics.svg',
+    bg: 'bg-emerald-50',
+    title: 'Better Insights',
+    text: 'Stay on top of performance with real-time analytics.'
+  }
+];
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -8,8 +29,17 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [capsLockOn, setCapsLockOn] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
   const { signIn } = useAuth();
+
+  // Rotate slides every 4s
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +52,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isLoading) return; // prevent double submit
+    if (isLoading) return;
     setIsLoading(true);
     setError('');
 
@@ -31,9 +61,7 @@ const LoginPage = () => {
       if (error) {
         setError(error.message || 'Invalid email or password.');
       } else {
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 300);
+        setTimeout(() => navigate('/dashboard'), 300);
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
@@ -44,17 +72,20 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-sky-50 border-r border-gray-200">
-        <img 
-          src="https://illustrations.popsy.co/white/dashboard.svg" 
-          alt="Dashboard illustration" 
-          className="max-w-sm"
-        />
-        <h2 className="mt-6 text-2xl font-bold text-gray-700">Track My Academy</h2>
-        <p className="text-gray-500 text-sm mt-2 max-w-xs text-center">
-          Simplify your academy management with a clean, intuitive dashboard.
-        </p>
+      {/* Left Panel (rotating) */}
+      <div className={`hidden lg:flex flex-col justify-center items-center w-1/2 relative overflow-hidden transition-colors duration-500 ${slides[currentSlide].bg}`}>
+        {slides.map((slide, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 flex flex-col justify-center items-center text-center px-8 transition-opacity duration-700 ${
+              idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            <img src={slide.img} alt="Illustration" className="max-w-sm mb-6 transition-transform duration-700" />
+            <h2 className="text-2xl font-bold text-gray-700">{slide.title}</h2>
+            <p className="text-gray-500 text-sm mt-2 max-w-xs">{slide.text}</p>
+          </div>
+        ))}
       </div>
 
       {/* Right Panel - Login Form */}
