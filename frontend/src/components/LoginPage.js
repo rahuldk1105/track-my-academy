@@ -1,207 +1,163 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
-const slides = [
-  {
-    img: 'https://illustrations.popsy.co/white/dashboard.svg',
-    bg: 'bg-sky-50',
-    title: 'Track My Academy',
-    text: 'Simplify your academy management with a clean, intuitive dashboard.'
-  },
-  {
-    img: 'https://illustrations.popsy.co/white/work-from-home.svg',
-    bg: 'bg-indigo-50',
-    title: 'Work Smarter',
-    text: 'Access your data from anywhere with cloud-based access.'
-  },
-  {
-    img: 'https://illustrations.popsy.co/white/analytics.svg',
-    bg: 'bg-emerald-50',
-    title: 'Better Insights',
-    text: 'Stay on top of performance with real-time analytics.'
-  }
-];
-
-const LoginPage = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [capsLockOn, setCapsLockOn] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const navigate = useNavigate();
-  const { signIn } = useAuth();
 
-  // Rotate slides every 4s
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const validateEmail = (value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(value);
   };
 
-  const handleCapsLock = (e) => {
-    setCapsLockOn(e.getModifierState && e.getModifierState('CapsLock'));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isLoading) return;
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const { data, error } = await signIn(formData.email, formData.password);
-      if (error) {
-        setError(error.message || 'Invalid email or password.');
-      } else {
-        setTimeout(() => navigate('/dashboard'), 300);
-      }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value === "") {
+      setIsEmailValid(true);
+    } else {
+      setIsEmailValid(validateEmail(value));
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Logging in:", { email, password });
+    // TODO: Hook this to backend API
+  };
+
   return (
-    <div className="min-h-screen flex">
-      {/* Left Panel (rotating) */}
-      <div className={`hidden lg:flex flex-col justify-center items-center w-1/2 relative overflow-hidden transition-colors duration-500 ${slides[currentSlide].bg}`}>
-        {slides.map((slide, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 flex flex-col justify-center items-center text-center px-8 transition-opacity duration-700 ${
-              idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <img src={slide.img} alt="Illustration" className="max-w-sm mb-6 transition-transform duration-700" />
-            <h2 className="text-2xl font-bold text-gray-700">{slide.title}</h2>
-            <p className="text-gray-500 text-sm mt-2 max-w-xs">{slide.text}</p>
-          </div>
-        ))}
+    <div className="min-h-screen flex flex-col justify-between bg-gray-50 relative overflow-hidden">
+      {/* SVG background */}
+      <div className="absolute inset-0 -z-10">
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
       </div>
 
-      {/* Right Panel - Login Form */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 px-6 sm:px-12">
-        <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-md p-8 mx-auto">
-          
-          {/* Logo */}
-          <div className="text-center mb-6">
-            <img 
-              src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
-              alt="Track My Academy" 
-              className="h-12 w-auto mx-auto mb-3"
-            />
-            <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
-            <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
-          </div>
+      {/* Login Card with Motion */}
+      <div className="flex flex-col items-center justify-center flex-grow px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md bg-white shadow-xl rounded-lg border border-gray-200 p-8"
+        >
+          <motion.div 
+            className="flex flex-col items-center mb-6"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <img src="/logo.svg" alt="TMA Logo" className="h-12 mb-2" />
+            <h2 className="text-xl font-semibold text-gray-800">Welcome Back</h2>
+            <p className="text-gray-500 text-sm">Sign in to your account</p>
+          </motion.div>
 
-          {/* Error message */}
-          {error && (
-            <div className="bg-red-50 border border-red-300 rounded-md p-3 text-red-600 text-sm mb-4">
-              {error}
-            </div>
-          )}
-
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
               </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
-                placeholder="academy@example.com"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none transition-all ${
+                    email === ""
+                      ? "border-gray-300 focus:border-blue-500"
+                      : isEmailValid
+                      ? "border-green-500"
+                      : "border-red-500"
+                  }`}
+                  placeholder="you@example.com"
+                />
+                <Mail className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+              </div>
+              {!isEmailValid && (
+                <p className="text-red-500 text-xs mt-1">
+                  Enter a valid email address
+                </p>
+              )}
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  onKeyUp={handleCapsLock}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition pr-10"
-                  placeholder="Enter your password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-all"
+                  placeholder="••••••••"
                 />
+                <Lock className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(prev => !prev)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
-                  tabIndex={-1}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.25 0-9.75-4.5-9.75-9.75 0-1.029.157-2.016.45-2.942M9.88 9.88a3 3 0 104.24 4.24M3 3l18 18" />
-                    </svg>
+                    <EyeOff className="w-5 h-5" />
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <Eye className="w-5 h-5" />
                   )}
                 </button>
               </div>
-              {capsLockOn && (
-                <p className="text-xs text-yellow-600 mt-1">Warning: Caps Lock is on</p>
-              )}
             </div>
 
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center text-sm text-gray-700">
-                <input type="checkbox" className="rounded border-gray-300 text-sky-500 focus:ring-sky-500" />
-                <span className="ml-2">Remember me</span>
+            {/* Remember + Forgot password */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center space-x-2 text-gray-600">
+                <input type="checkbox" className="rounded border-gray-300" />
+                <span>Remember me</span>
               </label>
-              <Link to="/forgot-password" className="text-sm text-sky-600 hover:text-sky-700 font-medium">
+              <a href="/forgot-password" className="text-blue-600 hover:underline">
                 Forgot password?
-              </Link>
+              </a>
             </div>
 
-            {/* Submit button */}
-            <button
+            {/* Submit with Motion */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={isLoading}
-              className={`w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-md shadow-sm transition-all ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className="w-full bg-blue-600 text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-2 shadow-md hover:bg-blue-700 transition-colors"
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </button>
+              <span>Sign In</span>
+              <ShieldCheck className="w-5 h-5" />
+            </motion.button>
           </form>
 
-          {/* Back to Home */}
-          <div className="mt-6 text-center">
-            <Link to="/" className="text-sm text-gray-500 hover:text-gray-700 transition">
+          {/* Back link */}
+          <div className="text-center mt-4">
+            <a href="/" className="text-sm text-gray-500 hover:underline">
               ← Back to Home
-            </Link>
+            </a>
           </div>
-        </div>
+        </motion.div>
       </div>
+
+      {/* Footer */}
+      <footer className="text-center py-3 text-gray-500 text-xs">
+        © 2025 Track My Academy. All rights reserved. •{" "}
+        <a href="/contact" className="hover:underline text-blue-600">
+          Contact Support
+        </a>
+      </footer>
     </div>
   );
-};
-
-export default LoginPage;
+}
