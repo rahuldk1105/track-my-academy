@@ -208,7 +208,7 @@ const AcademyDashboard = () => {
         alert('Coach updated successfully!');
       } else {
         const error = await response.json();
-        alert(`Error updating coach: ${error.detail || 'Unknown error'}`);
+        alert(`Failed to update coach: ${error.detail || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error updating coach:', error);
@@ -258,7 +258,7 @@ const AcademyDashboard = () => {
             : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border-white/10'
       }`}
     >
-      label
+      {label}
     </button>
   );
 
@@ -310,34 +310,19 @@ const AcademyDashboard = () => {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-5">
               <div className="flex items-center">
-                {/* Academy Logo */}
-                <div className={`flex items-center ${isLight ? 'bg-gray-100' : 'bg-gray-800'} rounded-none px-4 py-2 mr-6 border ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
-                  <img 
-                    src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
-                    alt={`${academyData?.name || 'Academy'} Logo`} 
-                    className={`h-12 w-12 rounded-none object-cover mr-3 ${isLight ? 'border-gray-200' : 'border-white/10'} border`}
-                    onError={(e) => { e.target.src = "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"; }}
-                  />
-                  <div>
-                    <div className={`${isLight ? 'text-gray-900' : 'text-white'} font-semibold text-lg`}>
-                      {academyData?.name || 'Academy'}
-                    </div>
-                    <div className={`${isLight ? 'text-gray-600' : 'text-sky-300'} text-sm font-medium`}>
-                      Academy Portal
-                    </div>
-                  </div>
-                </div>
+                <img 
+                  src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
+                  alt="Track My Academy" 
+                  className="h-10 w-auto mr-4"
+                />
                 <div>
                   <h1 className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                    Dashboard
+                    Super Admin Dashboard
                   </h1>
                   <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Welcome back, {user?.email}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <div className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                  Logged in as Academy Owner
-                </div>
                 <ThemeToggle />
                 <button
                   onClick={handleSignOut}
@@ -349,111 +334,204 @@ const AcademyDashboard = () => {
             </div>
           </div>
         </header>
-
+        
         <div className="p-4 sm:p-6 lg:p-8">
-          {/* Academy Info */}
-          <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-6 mb-6`}>
-            <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-2`}>Academy Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Academy Name</p>
-                <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-medium`}>{academyData?.name || 'Loading...'}</p>
-              </div>
-              <div>
-                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Academy ID</p>
-                <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-mono text-sm`}>{userRole.academy_id}</p>
-              </div>
-              <div>
-                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>User Role</p>
-                <p className="text-sky-600 dark:text-sky-400 font-medium">Academy Owner</p>
-              </div>
+          {successMessage && (
+            <div className={`${isLight ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-green-500/10 border border-green-500/30 text-green-400'} px-4 py-3 rounded-none mb-6`}>
+              {successMessage}
             </div>
-          </div>
+          )}
 
-          {/* Unified Content Container */}
           <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
             {activeTab === 'overview' && (
-              <div className="p-6 space-y-6">
-                <div>
-                  <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Academy Overview</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
-                      <h3 className="text-sm font-medium text-blue-600 mb-1">Total Players</h3>
-                      <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.total_players || 0}</p>
-                      <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.player_limit || 50}</p>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Total Users</p>
+                        <p className={`text-3xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.totalUsers}</p>
+                      </div>
+                      <div className={`p-3 rounded-none bg-blue-100`}>
+                        <div className={`text-blue-600`}><svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg></div>
+                      </div>
                     </div>
-                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
-                      <h3 className="text-sm font-medium text-emerald-600 mb-1">Active Coaches</h3>
-                      <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_coaches || 0}</p>
-                      <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.coach_limit || 10}</p>
+                  </div>
+                  <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Total Academies</p>
+                        <p className={`text-3xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.totalAcademies}</p>
+                      </div>
+                      <div className={`p-3 rounded-none bg-green-100`}>
+                        <div className={`text-green-600`}><svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a2 2 0 011.732-1.732l.268.268a2 2 0 002.828 0l.268-.268A2 2 0 0112 8a2 2 0 11-4 4 2 2 0 01-2-2z" clipRule="evenodd" /></svg></div>
+                      </div>
                     </div>
-                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
-                      <h3 className="text-sm font-medium text-purple-600 mb-1">Active Players</h3>
-                      <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_players || 0}</p>
-                      <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Currently Active</p>
+                  </div>
+                  <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Pending Approvals</p>
+                        <p className={`text-3xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.pendingAcademies}</p>
+                      </div>
+                      <div className={`p-3 rounded-none bg-orange-100`}>
+                        <div className={`text-orange-600`}><svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" /></svg></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Active Users</p>
+                        <p className={`text-3xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.activeUsers}</p>
+                      </div>
+                      <div className={`p-3 rounded-none bg-sky-100`}>
+                        <div className={`text-sky-600`}><svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" /><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" /></svg></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-6 pt-0">
-                  <h3 className={`text-lg font-medium ${isLight ? 'text-gray-900' : 'text-white'} mb-3`}>Quick Actions</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>System Overview</h2>
+                {overviewLoading ? (
+                  <div className="flex items-center justify-center h-48">
+                    <div className={`${isLight ? 'text-gray-600' : 'text-gray-300'}`}>Loading system overview...</div>
+                  </div>
+                ) : systemOverview ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
+                      <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recent Activity</h3>
+                      <div className="space-y-3 max-h-80 overflow-y-auto">
+                        {systemOverview.recent_activities.length > 0 ? systemOverview.recent_activities.map((activity) => (
+                          <div key={activity.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-700 border border-white/10'} rounded-none p-3`}>
+                            <div className="flex items-start">
+                              <div className={`w-2 h-2 rounded-none mr-3 mt-2 ${
+                                activity.status === 'success' ? 'bg-green-500' : activity.status === 'pending' ? 'bg-orange-500' : 'bg-blue-500'
+                              }`}></div>
+                              <div className="flex-1">
+                                <p className={`${isLight ? 'text-gray-800' : 'text-gray-200'}`}>{activity.description}</p>
+                                <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-xs mt-1`}>
+                                  {new Date(activity.timestamp).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )) : (
+                          <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-center py-4`}>No recent activities</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
+                      <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recently Added Academies</h3>
+                      <div className="space-y-3 max-h-80 overflow-y-auto">
+                        {systemOverview.recent_academies.length > 0 ? systemOverview.recent_academies.map((academy) => (
+                          <div key={academy.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-700 border border-white/10'} rounded-none p-3`}>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className={`${isLight ? 'text-gray-900' : 'text-white'} font-medium`}>{academy.name}</h4>
+                                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Owner: {academy.owner_name}</p>
+                                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>{academy.location} • {academy.sports_type}</p>
+                              </div>
+                              <span className={`px-2 py-1 rounded-none text-xs font-medium border ${
+                                academy.status === 'approved' 
+                                  ? 'bg-green-50 text-green-700 border-green-200' 
+                                  : 'bg-orange-50 text-orange-700 border-orange-200'
+                              }`}>{academy.status}</span>
+                            </div>
+                            <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-xs mt-2`}>
+                              Added: {new Date(academy.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        )) : (
+                          <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-center py-4`}>No academies yet</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Failed to load system overview. Please try again.</div>
                     <button 
-                      onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
-                      className={`${isLight ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' : 'bg-blue-600/20 text-blue-300 border border-blue-600/30 hover:bg-blue-600/30'} px-4 py-3 rounded-none text-left transition-all duration-200`}
+                      onClick={loadSystemOverview}
+                      className={`mt-4 ${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-none transition-colors`}
                     >
-                      + Add New Player
-                    </button>
-                    <button 
-                      onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
-                      className={`${isLight ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-emerald-600/20 text-emerald-300 border border-emerald-600/30 hover:bg-emerald-600/30'} px-4 py-3 rounded-none text-left transition-all duration-200`}
-                    >
-                      + Add New Coach
-                    </button>
-                    <button 
-                      onClick={() => setActiveTab('players')}
-                      className={`${isLight ? 'bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100' : 'bg-sky-600/20 text-sky-300 border border-sky-600/30 hover:bg-sky-600/30'} px-4 py-3 rounded-none text-left transition-all duration-200`}
-                    >
-                      View All Players
+                      Retry
                     </button>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
-            {activeTab === 'players' && (
+            {activeTab === 'users' && (
               <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Players</h2>
-                  <button
-                    onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
-                    className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-none transition-colors`}
-                  >
-                    + Add Player
-                  </button>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>User Management</h2>
+                    <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm mt-1`}>Academy owners and administrators</p>
+                  </div>
                 </div>
-
-                {players.length === 0 ? (
+                {users.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-2`}>No players found</div>
-                    <div className={`${isLight ? 'text-gray-500' : 'text-gray-500'} text-sm mb-4`}>
-                      Start by adding your first player to the academy.
-                    </div>
-                    <button
-                      onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
-                      className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-6 py-3 rounded-none transition-colors`}
-                    >
-                      Add Your First Player
-                    </button>
+                    <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-2`}>No users found</div>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {players.map((player) => (
-                      <PlayerCard
-                        key={player.id}
-                        player={player}
-                        onEdit={(pl) => { setEditingPlayer(pl); setShowPlayerModal(true); }}
-                        onDelete={handleDeletePlayer}
+                    {users.map((u) => (
+                      <UserCard key={u.id} user={u} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'academies' && (
+              <div className="p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                  <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Academy Management</h2>
+                  <div className="flex gap-3 items-center">
+                    <label className={`flex items-center gap-2 text-sm ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                      <input
+                        type="checkbox"
+                        checked={selectedAcademies.length === academies.length && academies.length > 0}
+                        onChange={handleSelectAll}
+                        className={`${isLight ? 'rounded-none border-gray-300 text-sky-600 focus:ring-sky-500' : 'rounded-none bg-gray-800 border-gray-600 text-sky-500 focus:ring-sky-500'}`}
+                      />
+                      Select All
+                    </label>
+                    {selectedAcademies.length > 0 && (
+                      <button 
+                        onClick={handleBulkApprove}
+                        className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-none transition-colors`}
+                      >
+                        Approve Selected ({selectedAcademies.length})
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => setShowCreateModal(true)}
+                      className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-none transition-colors`}
+                    >
+                      Add New Academy
+                    </button>
+                  </div>
+                </div>
+
+                {academies.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-2`}>No academies found</div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {academies.map((academy) => (
+                      <AcademyCard
+                        key={academy.id}
+                        academy={academy}
+                        selected={selectedAcademies.includes(academy.id)}
+                        onSelect={() => handleSelectAcademy(academy.id)}
+                        onApprove={() => handleApproveAcademy(academy.id, academy.name)}
+                        onReject={() => handleRejectAcademy(academy.id, academy.name)}
+                        onEdit={() => handleEditAcademy(academy)}
+                        onDelete={() => handleDeleteAcademy(academy.id, academy.name)}
                       />
                     ))}
                   </div>
@@ -461,60 +539,16 @@ const AcademyDashboard = () => {
               </div>
             )}
 
-            {activeTab === 'coaches' && (
+            {activeTab === 'demo-requests' && (
               <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Coaches</h2>
-                  <button
-                    onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
-                    className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-none transition-colors`}
-                  >
-                    + Add Coach
-                  </button>
-                </div>
-
-                {coaches.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-2`}>No coaches found</div>
-                    <div className="text-sm text-gray-500 mb-4">
-                      Start by adding your first coach to the academy.
-                    </div>
-                    <button
-                      onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
-                      className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-6 py-3 rounded-none transition-colors`}
-                    >
-                      Add Your First Coach
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {coaches.map((coach) => (
-                      <CoachCard
-                        key={coach.id}
-                        coach={coach}
-                        onEdit={(c) => { setEditingCoach(c); setShowCoachModal(true); }}
-                        onDelete={(id) => handleDeleteCoach(id)}
-                      />
-                    ))}
-                  </div>
-                )}
+                <DemoRequestsTable />
               </div>
             )}
 
-            {activeTab === 'attendance' && (
-              <AttendanceTracker />
-            )}
-
-            {activeTab === 'performance' && (
-              <PerformanceAnalytics />
-            )}
-
-            {activeTab === 'analytics' && (
-              <AcademyAnalytics />
-            )}
-
-            {activeTab === 'settings' && (
-              <AcademySettingsForm />
+            {activeTab === 'billing' && (
+              <div className="p-6">
+                <BillingDashboard />
+              </div>
             )}
           </div>
         </div>
