@@ -715,7 +715,7 @@ const Dashboard = () => {
             </div>
           )}
 
-          {activeTab === 'demo-requests' &amp;&amp; (
+          {activeTab === 'demo-requests' && (
             <div className="p-6">
               <DemoRequestsTable />
             </div>
