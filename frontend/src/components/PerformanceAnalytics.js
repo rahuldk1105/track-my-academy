@@ -121,7 +121,7 @@ const PerformanceAnalytics = () => {
               type="date"
               value={dateRange.startDate}
               onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-              className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -130,7 +130,7 @@ const PerformanceAnalytics = () => {
               type="date"
               value={dateRange.endDate}
               onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-              className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -139,23 +139,23 @@ const PerformanceAnalytics = () => {
       {/* Overall Academy Summary */}
       {attendanceSummary && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <h3 className="text-sm font-medium text-gray-300">Total Sessions</h3>
             <p className="text-2xl font-bold text-white">{attendanceSummary.total_records}</p>
           </div>
-          <div className="bg-green-500/10 backdrop-blur-md rounded-lg p-4 border border-green-500/20">
+          <div className="bg-green-500/10 backdrop-blur-md rounded-none p-4 border border-green-500/20">
             <h3 className="text-sm font-medium text-green-300">Attendance Rate</h3>
             <p className={`text-2xl font-bold ${getAttendanceColor(attendanceSummary.overall_attendance_rate)}`}>
               {attendanceSummary.overall_attendance_rate}%
             </p>
           </div>
-          <div className="bg-blue-500/10 backdrop-blur-md rounded-lg p-4 border border-blue-500/20">
+          <div className="bg-blue-500/10 backdrop-blur-md rounded-none p-4 border border-blue-500/20">
             <h3 className="text-sm font-medium text-blue-300">Avg Performance</h3>
             <p className={`text-2xl font-bold ${getPerformanceColor(attendanceSummary.average_performance_rating || 0)}`}>
               {attendanceSummary.average_performance_rating ? attendanceSummary.average_performance_rating.toFixed(1) : 'N/A'}/10
             </p>
           </div>
-          <div className="bg-purple-500/10 backdrop-blur-md rounded-lg p-4 border border-purple-500/20">
+          <div className="bg-purple-500/10 backdrop-blur-md rounded-none p-4 border border-purple-500/20">
             <h3 className="text-sm font-medium text-purple-300">Present Records</h3>
             <p className="text-2xl font-bold text-purple-400">{attendanceSummary.present_records}</p>
           </div>
@@ -163,13 +163,13 @@ const PerformanceAnalytics = () => {
       )}
 
       {/* Player Selection */}
-      <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10 mb-6">
+      <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10 mb-6">
         <div className="flex items-center space-x-4">
           <label className="text-gray-300 font-medium">Select Player:</label>
           <select
             value={selectedPlayer}
             onChange={(e) => setSelectedPlayer(e.target.value)}
-            className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Choose a player...</option>
             {players.map(player => (
@@ -186,13 +186,13 @@ const PerformanceAnalytics = () => {
         <div className="space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-none h-8 w-8 border-b-2 border-blue-500"></div>
               <span className="ml-2 text-gray-400">Loading performance data...</span>
             </div>
           ) : playerPerformance ? (
             <>
               {/* Player Performance Summary */}
-              <div className="bg-white/5 backdrop-blur-md rounded-lg p-6 border border-white/10">
+              <div className="bg-white/5 backdrop-blur-md rounded-none p-6 border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-4">
                   {playerPerformance.player_name} - Performance Summary
                 </h3>
@@ -223,19 +223,19 @@ const PerformanceAnalytics = () => {
 
               {/* Performance Trend */}
               {playerPerformance.performance_trend && playerPerformance.performance_trend.length > 0 && (
-                <div className="bg-white/5 backdrop-blur-md rounded-lg p-6 border border-white/10">
+                <div className="bg-white/5 backdrop-blur-md rounded-none p-6 border border-white/10">
                   <h3 className="text-lg font-semibold text-white mb-4">Recent Performance Trend</h3>
                   <div className="space-y-2">
                     {playerPerformance.performance_trend.slice(-10).map((trend, index) => (
-                      <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-800/50 rounded">
+                      <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-800/50 rounded-none">
                         <span className="text-gray-300">{trend.date}</span>
                         <div className="flex items-center space-x-2">
                           <span className={`font-bold ${getPerformanceColor(trend.rating)}`}>
                             {trend.rating}/10
                           </span>
-                          <div className="w-24 bg-gray-700 rounded-full h-2">
+                          <div className="w-24 bg-gray-700 rounded-none h-2">
                             <div 
-                              className={`h-2 rounded-full ${
+                              className={`h-2 rounded-none ${
                                 trend.rating >= 8 ? 'bg-green-500' :
                                 trend.rating >= 6 ? 'bg-yellow-500' :
                                 trend.rating >= 4 ? 'bg-orange-500' : 'bg-red-500'
@@ -252,7 +252,7 @@ const PerformanceAnalytics = () => {
 
               {/* Monthly Statistics */}
               {playerPerformance.monthly_stats && Object.keys(playerPerformance.monthly_stats).length > 0 && (
-                <div className="bg-white/5 backdrop-blur-md rounded-lg p-6 border border-white/10">
+                <div className="bg-white/5 backdrop-blur-md rounded-none p-6 border border-white/10">
                   <h3 className="text-lg font-semibold text-white mb-4">Monthly Breakdown</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full">
