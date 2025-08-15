@@ -22,6 +22,10 @@ class RefreshRequest(BaseModel):
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+@app.get("/")
+async def root():
+    return {"status": "ok"}
+
 # Create uploads directory
 UPLOAD_DIR = ROOT_DIR / "uploads" / "logos"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
