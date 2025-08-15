@@ -602,7 +602,7 @@ const AcademyDashboard = () => {
             <AttendanceTracker />
           )}
 
-          {activeTab === 'performance' &amp;&amp; (
+          {activeTab === 'performance' && (
             <PerformanceAnalytics />
           )}
 
