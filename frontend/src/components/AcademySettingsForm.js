@@ -218,7 +218,7 @@ const AcademySettingsForm = () => {
   const SectionButton = ({ id, label, active, onClick }) => (
     <button
       onClick={() => onClick(id)}
-      className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+      className={`px-4 py-2 rounded-none font-medium transition-all duration-300 ${
         active
           ? 'bg-sky-500 text-white shadow-lg'
           : 'text-gray-400 hover:text-white hover:bg-white/10'
@@ -231,7 +231,7 @@ const AcademySettingsForm = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
+        <div className="animate-spin rounded-none h-12 w-12 border-b-2 border-sky-500"></div>
       </div>
     );
   }
@@ -243,14 +243,14 @@ const AcademySettingsForm = () => {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-6 py-2 rounded-lg transition-all duration-300 disabled:opacity-50"
+          className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-6 py-2 rounded-none transition-all duration-300 disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save Settings'}
         </button>
       </div>
 
       {message.text && (
-        <div className={`mb-4 p-3 rounded-lg ${
+        <div className={`mb-4 p-3 rounded-none ${
           message.type === 'success' 
             ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
             : 'bg-red-500/20 text-red-400 border border-red-500/30'
@@ -293,14 +293,14 @@ const AcademySettingsForm = () => {
           <h3 className="text-lg font-medium text-gray-300 mb-4">Branding & Identity</h3>
           
           {/* Logo Upload */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-2">Academy Logo</label>
             <div className="flex items-center space-x-4">
               {logoPreview && (
                 <img 
                   src={logoPreview} 
                   alt="Logo preview" 
-                  className="w-16 h-16 object-cover rounded-lg border border-white/10"
+                  className="w-16 h-16 object-cover rounded-none border border-white/10"
                 />
               )}
               <div>
@@ -308,7 +308,7 @@ const AcademySettingsForm = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleLogoChange}
-                  className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-sky-500/20 file:text-sky-400 hover:file:bg-sky-500/30"
+                  className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-semibold file:bg-sky-500/20 file:text-sky-400 hover:file:bg-sky-500/30"
                 />
                 <p className="mt-1 text-sm text-gray-500">PNG, JPG up to 5MB</p>
               </div>
@@ -316,50 +316,50 @@ const AcademySettingsForm = () => {
           </div>
 
           {/* Description */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-2">Academy Description</label>
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe your academy's mission and values"
               rows="3"
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
 
           {/* Website */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-2">Website URL</label>
             <input
               type="url"
               value={formData.website}
               onChange={(e) => handleInputChange('website', e.target.value)}
               placeholder="https://youracademy.com"
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
 
           {/* Theme Color */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-2">Theme Color</label>
             <div className="flex items-center space-x-3">
               <input
                 type="color"
                 value={formData.theme_color}
                 onChange={(e) => handleInputChange('theme_color', e.target.value)}
-                className="w-12 h-12 rounded-lg border border-white/10 bg-transparent cursor-pointer"
+                className="w-12 h-12 rounded-none border border-white/10 bg-transparent cursor-pointer"
               />
               <input
                 type="text"
                 value={formData.theme_color}
                 onChange={(e) => handleInputChange('theme_color', e.target.value)}
-                className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                className="px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
 
           {/* Social Media */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-3">Social Media Links</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.keys(formData.social_media).map((platform) => (
@@ -370,7 +370,7 @@ const AcademySettingsForm = () => {
                     value={formData.social_media[platform]}
                     onChange={(e) => handleInputChange(`social_media.${platform}`, e.target.value)}
                     placeholder={`https://${platform}.com/youracademy`}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   />
                 </div>
               ))}
@@ -385,7 +385,7 @@ const AcademySettingsForm = () => {
           <h3 className="text-lg font-medium text-gray-300 mb-4">Operational Settings</h3>
           
           {/* Season Dates */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-3">Season Period</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -394,7 +394,7 @@ const AcademySettingsForm = () => {
                   type="date"
                   value={formData.season_start_date}
                   onChange={(e) => handleInputChange('season_start_date', e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -403,14 +403,14 @@ const AcademySettingsForm = () => {
                   type="date"
                   value={formData.season_end_date}
                   onChange={(e) => handleInputChange('season_end_date', e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
             </div>
           </div>
 
           {/* Training Schedule */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-3">Training Schedule</label>
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-2">Training Days</label>
@@ -421,7 +421,7 @@ const AcademySettingsForm = () => {
                       type="checkbox"
                       checked={formData.training_days.includes(day)}
                       onChange={() => handleArrayToggle('training_days', day)}
-                      className="rounded bg-white/5 border-white/10 text-sky-500 focus:ring-sky-500 focus:ring-offset-0"
+                      className="rounded-none bg-white/5 border-white/10 text-sky-500 focus:ring-sky-500 focus:ring-offset-0"
                     />
                     <span className="text-gray-300 text-sm">{day.slice(0, 3)}</span>
                   </label>
@@ -435,13 +435,13 @@ const AcademySettingsForm = () => {
                 value={formData.training_time}
                 onChange={(e) => handleInputChange('training_time', e.target.value)}
                 placeholder="e.g., 6:00 PM - 8:00 PM"
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
 
           {/* Facility Information */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <label className="block text-sm font-medium text-gray-300 mb-3">Facility Information</label>
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-1">Facility Address</label>
@@ -450,7 +450,7 @@ const AcademySettingsForm = () => {
                 onChange={(e) => handleInputChange('facility_address', e.target.value)}
                 placeholder="123 Sports Complex Drive, Athletic City, AC 12345"
                 rows="2"
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-none text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -462,7 +462,7 @@ const AcademySettingsForm = () => {
                       type="checkbox"
                       checked={formData.facility_amenities.includes(amenity)}
                       onChange={() => handleArrayToggle('facility_amenities', amenity)}
-                      className="rounded bg-white/5 border-white/10 text-sky-500 focus:ring-sky-500 focus:ring-offset-0"
+                      className="rounded-none bg-white/5 border-white/10 text-sky-500 focus:ring-sky-500 focus:ring-offset-0"
                     />
                     <span className="text-gray-300 text-sm">{amenity}</span>
                   </label>
@@ -478,7 +478,7 @@ const AcademySettingsForm = () => {
         <div className="space-y-6">
           <h3 className="text-lg font-medium text-gray-300 mb-4">Notification Preferences</h3>
           
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -492,7 +492,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('email_notifications', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
 
@@ -508,7 +508,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('sms_notifications', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
 
@@ -524,7 +524,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('parent_notifications', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
 
@@ -540,7 +540,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('coach_notifications', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
             </div>
@@ -553,7 +553,7 @@ const AcademySettingsForm = () => {
         <div className="space-y-6">
           <h3 className="text-lg font-medium text-gray-300 mb-4">Privacy & Security</h3>
           
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -567,7 +567,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('public_profile', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
 
@@ -583,7 +583,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('show_player_stats', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
 
@@ -599,7 +599,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('show_coach_info', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
 
@@ -615,7 +615,7 @@ const AcademySettingsForm = () => {
                     onChange={(e) => handleInputChange('data_sharing_consent', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-800 rounded-none peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                 </label>
               </div>
             </div>
