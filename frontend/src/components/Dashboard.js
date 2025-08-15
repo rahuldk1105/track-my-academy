@@ -271,57 +271,58 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-950'}`}>
-      {/* Header */}
-      <header className={`${isLight ? 'bg-white/90 border-b border-gray-200 backdrop-blur' : 'bg-gray-900/60 border-b border-white/10 backdrop-blur'} sticky top-0 z-10`}>
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-5">
-            <div className="flex items-center">
-              <img 
-                src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
-                alt="Track My Academy" 
-                className="h-10 w-auto mr-4"
-              />
-              <div>
-                <h1 className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                  Super Admin Dashboard
-                </h1>
-                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Welcome back, {user?.email}</p>
+    <div className={`min-h-screen flex ${isLight ? 'bg-gray-50' : 'bg-gray-950'}`}>
+      {/* SideNav */}
+      <SideNav
+        activeId={activeTab}
+        onChange={setActiveTab}
+        items={[
+          { id: 'overview', label: 'Overview', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 01.832.445l6 8A1 1 0 0116 12H4a1 1 0 01-.832-1.555l6-8A1 1 0 0110 2z"/></svg>) },
+          { id: 'users', label: 'Users', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 8a3 3 0 100-6 3 3 0 000 6zM5 13a5 5 0 0110 0v1H5v-1z"/></svg>) },
+          { id: 'academies', label: 'Academies', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4h12v10H4zM3 16h14v2H3z"/></svg>) },
+          { id: 'demo-requests', label: 'Demo Requests', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5h16v10H2z"/></svg>) },
+          { id: 'billing', label: 'Billing', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4h14v12H3z M7 8h6v2H7z"/></svg>) },
+        ]}
+      />
+
+      <div className="flex-1">
+        {/* Header */}
+        <header className={`${isLight ? 'bg-white/90 border-b border-gray-200 backdrop-blur' : 'bg-gray-900/60 border-b border-white/10 backdrop-blur'} sticky top-0 z-10`}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-5">
+              <div className="flex items-center">
+                <img 
+                  src="https://i.ibb.co/1tLZ0Dp1/TMA-LOGO-without-bg.png" 
+                  alt="Track My Academy" 
+                  className="h-10 w-auto mr-4"
+                />
+                <div>
+                  <h1 className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                    Super Admin Dashboard
+                  </h1>
+                  <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>Welcome back, {user?.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <ThemeToggle />
+                <button
+                  onClick={handleSignOut}
+                  className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-none transition-all duration-200`}
+                >
+                  Sign Out
+                </button>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <ThemeToggle />
-              <button
-                onClick={handleSignOut}
-                className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-none transition-all duration-200`}
-              >
-                Sign Out
-              </button>
+          </div>
+        </header>
+
+        <div className="px-4 sm:px-6 lg:px-8 py-8">
+          {/* Success Message */}
+          {successMessage && (
+            <div className={`${isLight ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-green-500/10 border border-green-500/30 text-green-400'} px-4 py-3 rounded-none mb-6`}>
+              {successMessage}
             </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Success Message */}
-        {successMessage && (
-          <div className={`${isLight ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-green-500/10 border border-green-500/30 text-green-400'} px-4 py-3 rounded-none mb-6`}>
-            {successMessage}
-          </div>
-        )}
-
-        <div className="flex gap-6">
-          <SideNav
-            activeId={activeTab}
-            onChange={setActiveTab}
-            items={[
-              { id: 'overview', label: 'Overview', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 01.832.445l6 8A1 1 0 0116 12H4a1 1 0 01-.832-1.555l6-8A1 1 0 0110 2z"/></svg>) },
-              { id: 'users', label: 'Users', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 8a3 3 0 100-6 3 3 0 000 6zM5 13a5 5 0 0110 0v1H5v-1z"/></svg>) },
-              { id: 'academies', label: 'Academies', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4h12v10H4zM3 16h14v2H3z"/></svg>) },
-              { id: 'demo-requests', label: 'Demo Requests', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5h16v10H2z"/></svg>) },
-              { id: 'billing', label: 'Billing', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4h14v12H3z M7 8h6v2H7z"/></svg>) },
-            ]}
-          />
+          )}
 
           <div className="flex-1 space-y-6">
             {/* Stats Overview */}
