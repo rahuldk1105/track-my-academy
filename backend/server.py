@@ -1154,19 +1154,22 @@ async def get_user(current_user = Depends(get_current_user)):
         )
 
 @api_router.post("/auth/refresh", response_model=AuthResponse)
-async def refresh_token():
+async def refresh_token(input: RefreshRequest):
     try:
-        response = supabase.auth.refresh_session()
-        if response.session:
-            return AuthResponse(
-                user=response.user.model_dump() if response.user and hasattr(response.user, 'model_dump') else dict(response.user) if response.user else {},
-                session=response.session.model_dump() if hasattr(response.session, 'model_dump') else dict(response.session),
-                message="Token refreshed successfully"
-            )
-        else:
-            raise HTTPException(status_code=401, detail="Failed to refresh token")
+        refreshed = supabase.auth.refresh_session(input.refresh_token)
+        if refreshed.session:
+            return {
+                "user": dict(refreshed.user) if hasattr(refreshed.user, "__iter__") else refreshed.user,
+                "session": {
+                    "access_token": refreshed.session.access_token,
+                    "refresh_token": refreshed.session.refresh_token,
+                    "expires_at": refreshed.session.expires_at,
+                },
+                "message": "Token refreshed successfully",
+            }
+        raise HTTPException(status_code=401, detail="Failed to refresh token")
     except Exception as e:
-        logger.error(f"Token refresh error: {e}")
+        logger.error(f"Refresh error: {e}")
         raise HTTPException(status_code=401, detail="Failed to refresh token")
 
 @api_router.post("/status", response_model=StatusCheck)
