@@ -9,6 +9,7 @@ const AttendanceTracker = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -25,6 +26,7 @@ const AttendanceTracker = () => {
   const loadPlayers = async () => {
     try {
       setLoading(true);
+      setError('');
       const response = await fetch(`${API_BASE_URL}/api/academy/players`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -32,24 +34,26 @@ const AttendanceTracker = () => {
         }
       });
 
-      if (response.ok) {
-        const playersData = await response.json();
-        setPlayers(playersData);
-        
-        const initialRecords = playersData.map(player => ({
-          player_id: player.id,
-          player_name: `${player.first_name} ${player.last_name}`,
-          position: player.position,
-          registration_number: player.registration_number,
-          present: false,
-          performance_rating: null,
-          notes: ''
-        }));
-        setAttendanceRecords(initialRecords);
+      if (!response.ok) {
+        throw new Error(`API returned status ${response.status}`);
       }
+
+      const playersData = await response.json();
+      setPlayers(playersData);
+      
+      const initialRecords = playersData.map(player => ({
+        player_id: player.id,
+        player_name: `${player.first_name} ${player.last_name}`,
+        position: player.position,
+        registration_number: player.registration_number,
+        present: false,
+        performance_rating: null,
+        notes: ''
+      }));
+      setAttendanceRecords(initialRecords);
     } catch (error) {
       console.error('Error loading players:', error);
-      setMessage('Error loading players');
+      setError('Error loading players. Please check your network connection and server status.');
     } finally {
       setLoading(false);
     }
@@ -64,35 +68,38 @@ const AttendanceTracker = () => {
         }
       });
 
-      if (response.ok) {
-        const attendanceData = await response.json();
-        
-        setAttendanceRecords(prevRecords => 
-          prevRecords.map(record => {
-            const existingRecord = attendanceData.attendance_records.find(
-              existing => existing.player_id === record.player_id
-            );
-            
-            if (existingRecord) {
-              return {
-                ...record,
-                present: existingRecord.present,
-                performance_rating: existingRecord.performance_rating,
-                notes: existingRecord.notes || ''
-              };
-            }
-            
+      if (!response.ok) {
+        throw new Error(`API returned status ${response.status}`);
+      }
+
+      const attendanceData = await response.json();
+      
+      setAttendanceRecords(prevRecords => 
+        prevRecords.map(record => {
+          const existingRecord = attendanceData.attendance_records.find(
+            existing => existing.player_id === record.player_id
+          );
+          
+          if (existingRecord) {
             return {
               ...record,
-              present: false,
-              performance_rating: null,
-              notes: ''
+              present: existingRecord.present,
+              performance_rating: existingRecord.performance_rating,
+              notes: existingRecord.notes || ''
             };
-          })
-        );
-      }
+          }
+          
+          return {
+            ...record,
+            present: false,
+            performance_rating: null,
+            notes: ''
+          };
+        })
+      );
     } catch (error) {
       console.error('Error loading attendance:', error);
+      // No need to show an error message for an empty date's records, but this handles real errors
     }
   };
 
@@ -130,6 +137,7 @@ const AttendanceTracker = () => {
     try {
       setSaving(true);
       setMessage('');
+      setError('');
 
       const attendanceData = {
         date: selectedDate,
@@ -151,17 +159,17 @@ const AttendanceTracker = () => {
         body: JSON.stringify(attendanceData)
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        setMessage(`✅ Attendance saved successfully! ${result.results?.length || 0} records processed.`);
-        setTimeout(() => setMessage(''), 3000);
-      } else {
-        const error = await response.json();
-        setMessage(`❌ Error saving attendance: ${error.detail || 'Unknown error'}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `API returned status ${response.status}`);
       }
+
+      const result = await response.json();
+      setMessage(`✅ Attendance saved successfully! ${result.results?.length || 0} records processed.`);
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error saving attendance:', error);
-      setMessage('❌ Network error. Failed to save attendance.');
+      setError(`❌ Error saving attendance: ${error.message}`);
     } finally {
       setSaving(false);
     }
@@ -256,6 +264,12 @@ const AttendanceTracker = () => {
             : 'bg-red-500/10 border border-red-500/20 text-red-400'
         }`}>
           {message}
+        </div>
+      )}
+      
+      {error && (
+        <div className="mb-4 p-3 rounded-none bg-red-500/10 border border-red-500/20 text-red-400">
+          {error}
         </div>
       )}
 
