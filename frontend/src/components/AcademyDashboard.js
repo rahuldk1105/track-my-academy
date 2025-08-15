@@ -598,7 +598,7 @@ const AcademyDashboard = () => {
             </div>
           )}
 
-          {activeTab === 'attendance' &amp;&amp; (
+          {activeTab === 'attendance' && (
             <AttendanceTracker />
           )}
 
