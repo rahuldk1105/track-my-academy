@@ -1114,4 +1114,53 @@ frontend:
           comment: "ACADEMY LOGO UPLOAD AND ACCOUNT LIMITS IMPLEMENTED: 1) Enhanced backend Academy model with logo_url, player_limit (default 50), coach_limit (default 10) fields. 2) Added file upload endpoint POST /api/upload/logo for logo uploads. 3) Updated POST /api/admin/create-academy to accept FormData with logo file upload. 4) Added static file serving for uploaded logos at /uploads/logos/. 5) Updated CreateAcademyModal with logo upload functionality, file preview, and player/coach limit inputs. 6) Enhanced academy table to display logos and account limits. Backend supports image validation, unique filename generation, and proper file storage. Frontend shows logo preview during upload and displays logos in academy table. Needs testing to verify file upload, logo display, and limit management works correctly."
         - working: true
           agent: "testing"
+
+  - task: "Dashboard Navigation Redesign (Vertical Side Panel)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/SideNav.js, /app/frontend/src/components/Dashboard.js, /app/frontend/src/components/AcademyDashboard.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Introduced SideNav component and refactored both dashboards to use vertical side navigation. Preserved all functionality and routes. Matches professional references with clean states for light/dark."
+
+  - task: "Players & Coaches – Card Grid Redesign (Admin)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/PlayerCard.js, /app/frontend/src/components/CoachCard.js, /app/frontend/src/components/AcademyDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Replaced tables/lists with responsive card grids. PlayerCard displays avatar/initials, position, reg#, status, login access (with default password hint). CoachCard shows specialization, experience, status. All CRUD buttons wired to same handlers."
+
+  - task: "Users & Academies – Card Grid Redesign (Super Admin)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/UserCard.js, /app/frontend/src/components/AcademyCard.js, /app/frontend/src/components/Dashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Users tab now shows UserCard grid. Academies tab shows AcademyCard with logo, details, limits, status. Preserved Approve/Reject/Edit/Delete handlers."
+
+  - task: "Academies Bulk Approve via Card Checkboxes"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/AcademyCard.js, /app/frontend/src/components/Dashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Kept bulk approve workflow with per-card checkbox + Select All control above grid. Mirrors earlier table-based behavior."
+
           comment: "ACADEMY LOGO UPLOAD AND ACCOUNT LIMITS TESTING COMPLETED SUCCESSFULLY! All enhanced features are working perfectly: 1) ✅ Logo Upload Endpoint: POST /api/upload/logo validates image files, generates unique UUIDs for filenames, stores files in /uploads/logos/ directory, returns proper logo_url paths, serves uploaded files via static file serving. 2) ✅ File Upload Security: Properly validates image file types, rejects non-image files with 400 status and clear error message 'File must be an image', handles upload failures gracefully. 3) ✅ Enhanced Academy Creation: FormData support working correctly, accepts logo file uploads during academy creation, stores logo_url in database, player_limit and coach_limit fields properly stored with custom values (tested with 75 players, 15 coaches). 4) ✅ Database Integration: All new fields (logo_url, player_limit, coach_limit) properly stored in MongoDB, GET /api/admin/academies returns all enhanced fields, PUT operations support updating account limits. 5) ✅ Static File Serving: Uploaded logos accessible via /uploads/logos/ URLs, proper content-type headers, files persist correctly. The complete logo upload and account limits system is production-ready and fully functional."
