@@ -335,6 +335,21 @@ const AcademyDashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-6">
+          <SideNav
+            activeId={activeTab}
+            onChange={setActiveTab}
+            items={[
+              { id: 'overview', label: 'Overview', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 01.832.445l6 8A1 1 0 0116 12H4a1 1 0 01-.832-1.555l6-8A1 1 0 0110 2z"/></svg>) },
+              { id: 'players', label: 'Players', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 8a3 3 0 100-6 3 3 0 000 6zM5 13a5 5 0 0110 0v1H5v-1z"/></svg>) },
+              { id: 'coaches', label: 'Coaches', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13 7H7v6h6V7z"/></svg>) },
+              { id: 'attendance', label: 'Attendance', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v2h10V3a1 1 0 00-1-1H6zM5 7h10v9a2 2 0 01-2 2H7a2 2 0 01-2-2V7z"/></svg>) },
+              { id: 'performance', label: 'Performance', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 3h2v14H3V3zm6 4h2v10H9V7zm6-3h2v13h-2V4z"/></svg>) },
+              { id: 'analytics', label: 'Analytics', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 13h3V7H4v6zm5 4h3V3H9v14zm5-8h3v8h-3V9z"/></svg>) },
+              { id: 'settings', label: 'Settings', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M11.983 1.83a1 1 0 00-1.966 0l-.2 1.197a7.969 7.969 0 00-1.63.943L5.13 3.386a1 1 0 00-1.06 1.06l.584 3.056a7.97 7.97 0 00-.943 1.63L2.414 9.85a1 1 0 000 1.966l1.197.2c.257.588.58 1.145.943 1.63l-.584 3.056a1 1 0 001.06 1.06l3.056-.584c.485.363 1.042.686 1.63.943l.2 1.197a1 1 0 001.966 0l.2-1.197a7.97 7.97 0 001.63-.943l3.056.584a1 1 0 001.06-1.06l-.584-3.056c.363-.485.686-1.042.943-1.63l1.197-.2a1 1 0 000-1.966l-1.197-.2a7.969 7.969 0 00-.943-1.63l.584-3.056a1 1 0 00-1.06-1.06l-3.056.584a7.97 7.97 0 00-1.63-.943l-.2-1.197zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/></svg>) },
+            ]}
+          />
+          <div className="flex-1 space-y-6">
         {/* Academy Info Card */}
         <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl p-6 mb-8`}>
           <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-2`}>Academy Information</h2>
