@@ -602,6 +602,8 @@ agent_communication:
     - agent: "testing"
       message: "Comprehensive testing of Track My Academy landing page completed successfully. All major features tested including navigation, mobile responsiveness, interactive elements, animations, and visual elements. No critical issues found. The landing page is fully functional and ready for production. Screenshots taken of all major sections for documentation."
     - agent: "main"
+      message: "Login page wired to Supabase auth via AuthContext.signIn with loader, validation and error handling. Adjusted AuthContext refresh endpoint to /api/auth/refresh per backend route prefix. Added test plan focus for login flow and performance."
+    - agent: "main"
       message: "Implemented auth modal functionality for Join Beta Program button. Created AuthModal component that shows choice between Sign In and Join Beta. Updated branding from SportsTech to Track My Academy throughout the application. Hero section CTA button now triggers modal instead of no action."
     - agent: "testing"
       message: "Backend API testing completed successfully. All backend endpoints tested and working correctly: GET /api/ (health check), POST /api/status (create status check), GET /api/status (retrieve status checks). MongoDB integration confirmed working with proper data persistence. CORS configuration properly set for frontend integration. Backend infrastructure is solid and ready to support frontend functionality. Created backend_test.py for comprehensive API testing."
