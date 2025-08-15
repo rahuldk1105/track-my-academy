@@ -32,6 +32,8 @@ const AcademyDashboard = () => {
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [editingCoach, setEditingCoach] = useState(null);
   const [academyLogo, setAcademyLogo] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -505,7 +507,7 @@ const AcademyDashboard = () => {
       <CreateAcademyModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSuccess={handleAcademyCreated}
+        onSuccess={() => {}}
       />
 
       {/* Edit Academy Modal */}
@@ -513,10 +515,9 @@ const AcademyDashboard = () => {
         isOpen={showEditModal}
         onClose={() => {
           setShowEditModal(false);
-          setSelectedAcademy(null);
         }}
-        onSuccess={handleAcademyUpdated}
-        academy={selectedAcademy}
+        onSuccess={() => {}}
+        academy={null}
       />
     </div>
   );
