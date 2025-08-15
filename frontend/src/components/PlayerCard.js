@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 const Avatar = ({ name }) => {
   const initials = (name || '').split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase();
   return (
-    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-indigo-500 text-white flex items-center justify-center font-semibold">
+    <div className="w-10 h-10 rounded-sm bg-gradient-to-br from-sky-500 to-indigo-500 text-white flex items-center justify-center font-semibold">
       {initials || 'PL'}
     </div>
   );
@@ -19,7 +19,7 @@ const Badge = ({ children, tone = 'gray', outline = false }) => {
     purple: 'bg-purple-50 text-purple-700 border-purple-200'
   };
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${tones[tone]}`}>{children}</span>
+    <span className={`px-2 py-0.5 rounded-sm text-xs font-medium border ${tones[tone]}`}>{children}</span>
   );
 };
 
@@ -28,7 +28,8 @@ const PlayerCard = ({ player, onEdit, onDelete }) => {
   const fullName = `${player.first_name || ''} ${player.last_name || ''}`.trim();
 
   return (
-    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm hover:shadow-md' : 'bg-gray-900 border border-white/10 hover:bg-gray-800'} rounded-xl transition-all duration-200 p-4 flex flex-col`}>\n      <div className="flex items-start gap-3">
+    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm hover:shadow-md' : 'bg-gray-900 border border-white/10 hover:bg-gray-800'} rounded-none transition-all duration-200 p-4 flex flex-col`}>
+      <div className="flex items-start gap-3">
         <Avatar name={fullName || player.email} />
         <div className="flex-1 min-w-0">
           <div className={`font-medium truncate ${isLight ? 'text-gray-900' : 'text-white'}`}>{fullName || player.email}</div>
@@ -61,7 +62,7 @@ const PlayerCard = ({ player, onEdit, onDelete }) => {
             <Badge tone="emerald">✓ Login Enabled</Badge>
             {player.default_password && !player.password_changed && (
               <span className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-xs`}>
-                Default Password: <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">{player.default_password}</span>
+                Default Password: <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded-sm">{player.default_password}</span>
               </span>
             )}
           </>
