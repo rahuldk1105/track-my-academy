@@ -607,7 +607,7 @@ const Dashboard = () => {
                       <th className={`${isLight ? 'text-gray-700' : 'text-gray-200'} text-left py-3 px-4`}>
                         <input
                           type="checkbox"
-                          checked={selectedAcademies.length === academies.length &amp;&amp; academies.length &gt; 0}
+                          checked={selectedAcademies.length === academies.length && academies.length > 0}
                           onChange={handleSelectAll}
                           className={`${isLight ? 'rounded border-gray-300 text-sky-600 focus:ring-sky-500' : 'rounded bg-gray-800 border-gray-600 text-sky-500 focus:ring-sky-500'}`}
                         />
