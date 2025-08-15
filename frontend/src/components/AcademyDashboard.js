@@ -610,7 +610,7 @@ const AcademyDashboard = () => {
             <AcademyAnalytics />
           )}
 
-          {activeTab === 'settings' &amp;&amp; (
+          {activeTab === 'settings' && (
             <AcademySettingsForm />
           )}
         </div>
