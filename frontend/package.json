@@ -9,6 +9,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "lucide-react": "^0.271.0",
+    "framer-motion": "^10.12.16",
     "react-hook-form": "^7.62.0",
     "react-router-dom": "^7.5.1",
     "react-scripts": "5.0.1"
