@@ -441,7 +441,7 @@ const Dashboard = () => {
                     <div>
                       <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recent Activity</h3>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
-                        {systemOverview.recent_activities.length &gt; 0 ? systemOverview.recent_activities.map((activity) => (
+                        {systemOverview.recent_activities.length > 0 ? systemOverview.recent_activities.map((activity) => (
                           <div key={activity.id} className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-3`}>
                             <div className="flex items-start">
                               <div className={`w-2 h-2 rounded-full mr-3 mt-2 ${
