@@ -325,7 +325,7 @@ const Dashboard = () => {
 
           {/* Unified Content Container */}
           <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
-            {/* Stats Overview */}
+            {/* Tab content will be rendered inside this container */}
             {activeTab === 'overview' && (
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -447,7 +447,7 @@ const Dashboard = () => {
                 )}
               </div>
             )}
-            
+
             {activeTab === 'users' && (
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
