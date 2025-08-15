@@ -26,11 +26,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Panel: Your SVG */}
-      <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-10 overflow-hidden">
+      <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-0 overflow-hidden">
         <img
           src="/assets/loginpage_right.svg"
           alt="Login Illustration"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
         />
       </div>
 
