@@ -588,9 +588,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Login Page Performance and Authentication Flow"
-    - "Enhanced Player Creation with Automatic Login Credential Generation"
-    - "Player Authentication System"
+    - "UI Redesign: Vertical Side Navigation (Super Admin + Academy)"
+    - "UI Redesign: Card Grid Layouts for Players & Coaches (Academy)"
+    - "UI Redesign: Card Grid Layouts for Users & Academies (Super Admin)"
+    - "Verify Bulk Approve via Card Checkboxes (Super Admin → Academies)"
     - "Player Dashboard APIs"
     - "Theme Preference System"
     - "Announcement Management System"
