@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import TMA from "../assets/TMA.png"; // Adjust path if needed
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -8,19 +9,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const validateEmail = (value) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(value);
-  };
+  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
-    if (value === "") {
-      setIsEmailValid(true);
-    } else {
-      setIsEmailValid(validateEmail(value));
-    }
+    setIsEmailValid(value === "" ? true : validateEmail(value));
   };
 
   const handleSubmit = (e) => {
@@ -30,38 +24,65 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-gray-50 relative overflow-hidden">
-      {/* SVG background */}
-      <div className="absolute inset-0 -z-10">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Left Panel with Animated Background */}
+      <div className="hidden md:flex md:w-1/2 bg-blue-50 relative items-center justify-center p-10 overflow-hidden">
+        {/* Animated floating circles */}
+        <motion.div
+          className="absolute w-72 h-72 bg-blue-200 rounded-full opacity-30 top-10 left-10"
+          animate={{ y: [0, 20, 0], x: [0, 15, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-48 h-48 bg-blue-300 rounded-full opacity-20 bottom-20 right-20"
+          animate={{ y: [0, -15, 0], x: [0, -10, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-32 h-32 bg-blue-100 rounded-full opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          animate={{ y: [0, 10, 0], x: [0, -10, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        {/* Illustration and branding */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 text-center"
+        >
+          <img src={TMA} alt="TMA Logo" className="mx-auto h-24 mb-6" />
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Track My Academy</h1>
+          <p className="text-gray-600">Manage your sports events and academy seamlessly.</p>
+          <img
+            src="https://via.placeholder.com/300x300?text=Illustration"
+            alt="Illustration"
+            className="mt-6 mx-auto"
+          />
+        </motion.div>
       </div>
 
-      {/* Login Card with Motion */}
-      <div className="flex flex-col items-center justify-center flex-grow px-4">
+      {/* Right Panel (Login Form) */}
+      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 p-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6 }}
           className="w-full max-w-md bg-white shadow-xl rounded-lg border border-gray-200 p-8"
         >
-          <motion.div 
+          {/* Header */}
+          <motion.div
             className="flex flex-col items-center mb-6"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <img src="/assets/TMA.png" alt="TMA Logo" className="h-12 mb-2" />
+            <img src={TMA} alt="TMA Logo" className="h-12 mb-2" />
             <h2 className="text-xl font-semibold text-gray-800">Welcome Back</h2>
             <p className="text-gray-500 text-sm">Sign in to your account</p>
           </motion.div>
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
@@ -85,17 +106,13 @@ export default function LoginPage() {
                 <Mail className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
               </div>
               {!isEmailValid && (
-                <p className="text-red-500 text-xs mt-1">
-                  Enter a valid email address
-                </p>
+                <p className="text-red-500 text-xs mt-1">Enter a valid email address</p>
               )}
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -110,11 +127,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
@@ -130,7 +143,7 @@ export default function LoginPage() {
               </a>
             </div>
 
-            {/* Submit with Motion */}
+            {/* Submit */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
@@ -150,14 +163,6 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
-
-      {/* Footer */}
-      <footer className="text-center py-3 text-gray-500 text-xs">
-        © 2025 Track My Academy. All rights reserved. •{" "}
-        <a href="/contact" className="hover:underline text-blue-600">
-          Contact Support
-        </a>
-      </footer>
     </div>
   );
 }
