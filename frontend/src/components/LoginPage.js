@@ -25,41 +25,23 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel with Animated Background */}
-      <div className="hidden md:flex md:w-1/2 bg-blue-50 relative items-center justify-center p-10 overflow-hidden">
-        {/* Animated floating circles */}
-        <motion.div
-          className="absolute w-72 h-72 bg-blue-200 rounded-full opacity-30 top-10 left-10"
-          animate={{ y: [0, 20, 0], x: [0, 15, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute w-48 h-48 bg-blue-300 rounded-full opacity-20 bottom-20 right-20"
-          animate={{ y: [0, -15, 0], x: [0, -10, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute w-32 h-32 bg-blue-100 rounded-full opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          animate={{ y: [0, 10, 0], x: [0, -10, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        />
+      {/* Left Panel (CSS-only animated shapes) */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-50 via-blue-100 to-gray-50 relative items-center justify-center p-10 overflow-hidden">
+        {/* Floating circles */}
+        <div className="absolute w-72 h-72 bg-blue-200 opacity-30 rounded-full top-10 left-10 animate-bounce-slow"></div>
+        <div className="absolute w-48 h-48 bg-blue-300 opacity-20 rounded-full bottom-20 right-20 animate-bounce-slower"></div>
+        <div className="absolute w-32 h-32 bg-blue-100 opacity-25 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-bounce-slowest"></div>
 
-        {/* Illustration and branding */}
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 text-center"
-        >
+        {/* Branding & Illustration placeholder */}
+        <div className="relative z-10 text-center">
           <img src={TMA} alt="TMA Logo" className="mx-auto h-24 mb-6" />
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Track My Academy</h1>
           <p className="text-gray-600">Manage your sports events and academy seamlessly.</p>
-          <img
-            src="https://via.placeholder.com/300x300?text=Illustration"
-            alt="Illustration"
-            className="mt-6 mx-auto"
-          />
-        </motion.div>
+
+          <div className="mt-6 w-72 h-72 bg-blue-200 rounded-lg shadow-lg mx-auto flex items-center justify-center text-gray-500">
+            Illustration
+          </div>
+        </div>
       </div>
 
       {/* Right Panel (Login Form) */}
