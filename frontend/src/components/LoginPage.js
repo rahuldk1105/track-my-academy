@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import TMA from "../assets/TMA.png"; // adjust path if needed
+import TMA from "../assets/TMA.png"; // logo
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -25,23 +25,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-50 via-blue-100 to-gray-50 relative items-center justify-center p-10 overflow-hidden">
-        {/* Animated floating circles */}
-        <div className="absolute w-72 h-72 bg-blue-200 opacity-30 rounded-full top-10 left-10 animate-float-slow"></div>
-        <div className="absolute w-48 h-48 bg-blue-300 opacity-20 rounded-full bottom-20 right-20 animate-float-slower"></div>
-        <div className="absolute w-32 h-32 bg-blue-100 opacity-25 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-slowest"></div>
-
-        {/* Branding & illustration */}
-        <div className="relative z-10 text-center">
-          <img src={TMA} alt="TMA Logo" className="mx-auto h-24 mb-6" />
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Track My Academy</h1>
-          <p className="text-gray-600">Manage your sports events and academy seamlessly.</p>
-
-          <div className="mt-6 w-72 h-72 bg-blue-200 rounded-lg shadow-lg mx-auto flex items-center justify-center text-gray-500">
-            Illustration
-          </div>
-        </div>
+      {/* Left Panel: Your SVG */}
+      <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-10 overflow-hidden">
+        <img
+          src="/assets/loginpage_right.svg"
+          alt="Login Illustration"
+          className="w-full h-full object-contain"
+        />
       </div>
 
       {/* Right Panel (Login Form) */}
