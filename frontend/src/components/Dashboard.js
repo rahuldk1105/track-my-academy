@@ -721,7 +721,7 @@ const Dashboard = () => {
             </div>
           )}
 
-          {activeTab === 'billing' &amp;&amp; (
+          {activeTab === 'billing' && (
             <div className="p-6">
               <BillingDashboard />
             </div>
