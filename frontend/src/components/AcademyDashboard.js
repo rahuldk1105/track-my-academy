@@ -248,7 +248,7 @@ const AcademyDashboard = () => {
   const TabButton = ({ id, label, active, onClick }) => (
     <button
       onClick={() => onClick(id)}
-      className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base mb-2 border ${
+      className={`px-4 sm:px-6 py-2 sm:py-3 rounded-none font-medium transition-all duration-200 text-sm sm:text-base mb-2 border ${
         active
           ? isLight
             ? 'bg-sky-50 text-sky-700 border-sky-200'
@@ -265,7 +265,7 @@ const AcademyDashboard = () => {
   if (loading) {
     return (
       <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-950'} flex items-center justify-center`}>
-        <div className={`animate-spin rounded-full h-12 w-12 border-2 ${isLight ? 'border-gray-300 border-t-sky-600' : 'border-gray-700 border-t-sky-400'}`}></div>
+        <div className={`animate-spin rounded-none h-12 w-12 border-2 ${isLight ? 'border-gray-300 border-t-sky-600' : 'border-gray-700 border-t-sky-400'}`}></div>
       </div>
     );
   }
@@ -273,12 +273,12 @@ const AcademyDashboard = () => {
   if (!userRole || userRole.role !== 'academy_user' || !userRole.academy_id) {
     return (
       <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-950'} flex items-center justify-center`}>
-        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl p-8 text-center`}>
+        <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-8 text-center`}>
           <div className={`${isLight ? 'text-red-700' : 'text-red-400'} text-xl mb-2`}>Access Denied</div>
           <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>You don't have permission to access the academy dashboard.</div>
           <button
             onClick={handleSignOut}
-            className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-lg transition-all duration-200`}
+            className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-none transition-all duration-200`}
           >
             Sign Out
           </button>
@@ -295,11 +295,11 @@ const AcademyDashboard = () => {
           <div className="flex justify-between items-center py-5">
             <div className="flex items-center">
               {/* Academy Logo */}
-              <div className={`flex items-center ${isLight ? 'bg-gray-100' : 'bg-gray-800'} rounded-xl px-4 py-2 mr-6 border ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
+              <div className={`flex items-center ${isLight ? 'bg-gray-100' : 'bg-gray-800'} rounded-none px-4 py-2 mr-6 border ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
                 <img 
                   src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
                   alt={`${academyData?.name || 'Academy'} Logo`} 
-                  className={`h-12 w-12 rounded-lg object-cover mr-3 ${isLight ? 'border-gray-200' : 'border-white/10'} border`}
+                  className={`h-12 w-12 rounded-none object-cover mr-3 ${isLight ? 'border-gray-200' : 'border-white/10'} border`}
                   onError={(e) => { e.target.src = "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"; }}
                 />
                 <div>
@@ -325,7 +325,7 @@ const AcademyDashboard = () => {
               <ThemeToggle />
               <button
                 onClick={handleSignOut}
-                className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-lg transition-all duration-200`}
+                className={`${isLight ? 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' : 'bg-gray-800 text-white hover:bg-gray-700 border border-white/10'} px-4 py-2 rounded-none transition-all duration-200`}
               >
                 Sign Out
               </button>
@@ -344,7 +344,7 @@ const AcademyDashboard = () => {
               { id: 'players', label: 'Players', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 8a3 3 0 100-6 3 3 0 000 6zM5 13a5 5 0 0110 0v1H5v-1z"/></svg>) },
               { id: 'coaches', label: 'Coaches', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13 7H7v6h6V7z"/></svg>) },
               { id: 'attendance', label: 'Attendance', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v2h10V3a1 1 0 00-1-1H6zM5 7h10v9a2 2 0 01-2 2H7a2 2 0 01-2-2V7z"/></svg>) },
-              { id: 'performance', label: 'Performance', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 3h2v14H3V3zm6 4h2v10H9V7zm6-3h2v13h-2V4z"/></svg>) },
+              { id: 'performance', label: 'Performance', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 3h2v14H3V3zm6 4h2v10H9V7zm5-3h2v13h-2V4z"/></svg>) },
               { id: 'analytics', label: 'Analytics', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 13h3V7H4v6zm5 4h3V3H9v14zm5-8h3v8h-3V9z"/></svg>) },
               { id: 'settings', label: 'Settings', icon: (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M11.983 1.83a1 1 0 00-1.966 0l-.2 1.197a7.969 7.969 0 00-1.63.943L5.13 3.386a1 1 0 00-1.06 1.06l.584 3.056a7.97 7.97 0 00-.943 1.63L2.414 9.85a1 1 0 000 1.966l1.197.2c.257.588.58 1.145.943 1.63l-.584 3.056a1 1 0 001.06 1.06l3.056-.584c.485.363 1.042.686 1.63.943l.2 1.197a1 1 0 001.966 0l.2-1.197a7.97 7.97 0 001.63-.943l3.056.584a1 1 0 001.06-1.06l-.584-3.056c.363-.485.686-1.042.943-1.63l1.197-.2a1 1 0 000-1.966l-1.197-.2a7.969 7.969 0 00-.943-1.63l.584-3.056a1 1 0 00-1.06-1.06l-3.056.584a7.97 7.97 0 00-1.63-.943l-.2-1.197zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/></svg>) },
             ]}
@@ -352,7 +352,7 @@ const AcademyDashboard = () => {
 
           <div className="flex-1 space-y-6">
             {/* Academy Info */}
-            <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl p-6`}>
+            <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-6`}>
               <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-2`}>Academy Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
@@ -371,22 +371,22 @@ const AcademyDashboard = () => {
             </div>
 
             {/* Content by tab */}
-            <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl overflow-hidden`}>
+            <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
               {activeTab === 'overview' && (
                 <div className="p-6">
                   <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Academy Overview</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                       <h3 className="text-sm font-medium text-blue-600 mb-1">Total Players</h3>
                       <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.total_players || 0}</p>
                       <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.player_limit || 50}</p>
                     </div>
-                    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                       <h3 className="text-sm font-medium text-emerald-600 mb-1">Active Coaches</h3>
                       <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_coaches || 0}</p>
                       <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.coach_limit || 10}</p>
                     </div>
-                    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-lg p-4`}>
+                    <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
                       <h3 className="text-sm font-medium text-purple-600 mb-1">Active Players</h3>
                       <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_players || 0}</p>
                       <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Currently Active</p>
@@ -398,19 +398,19 @@ const AcademyDashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <button 
                         onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
-                        className={`${isLight ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' : 'bg-blue-600/20 text-blue-300 border border-blue-600/30 hover:bg-blue-600/30'} px-4 py-3 rounded-lg text-left transition-all duration-200`}
+                        className={`${isLight ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' : 'bg-blue-600/20 text-blue-300 border border-blue-600/30 hover:bg-blue-600/30'} px-4 py-3 rounded-none text-left transition-all duration-200`}
                       >
                         + Add New Player
                       </button>
                       <button 
                         onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
-                        className={`${isLight ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-emerald-600/20 text-emerald-300 border border-emerald-600/30 hover:bg-emerald-600/30'} px-4 py-3 rounded-lg text-left transition-all duration-200`}
+                        className={`${isLight ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-emerald-600/20 text-emerald-300 border border-emerald-600/30 hover:bg-emerald-600/30'} px-4 py-3 rounded-none text-left transition-all duration-200`}
                       >
                         + Add New Coach
                       </button>
                       <button 
                         onClick={() => setActiveTab('players')}
-                        className={`${isLight ? 'bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100' : 'bg-sky-600/20 text-sky-300 border border-sky-600/30 hover:bg-sky-600/30'} px-4 py-3 rounded-lg text-left transition-all duration-200`}
+                        className={`${isLight ? 'bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100' : 'bg-sky-600/20 text-sky-300 border border-sky-600/30 hover:bg-sky-600/30'} px-4 py-3 rounded-none text-left transition-all duration-200`}
                       >
                         View All Players
                       </button>
@@ -425,7 +425,7 @@ const AcademyDashboard = () => {
                     <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Players</h2>
                     <button
                       onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
-                      className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-lg transition-colors`}
+                      className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-4 py-2 rounded-none transition-colors`}
                     >
                       + Add Player
                     </button>
@@ -439,7 +439,7 @@ const AcademyDashboard = () => {
                       </div>
                       <button
                         onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
-                        className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-6 py-3 rounded-lg transition-colors`}
+                        className={`${isLight ? 'bg-sky-600 hover:bg-sky-700 text-white' : 'bg-sky-600 hover:bg-sky-700 text-white'} px-6 py-3 rounded-none transition-colors`}
                       >
                         Add Your First Player
                       </button>
@@ -465,7 +465,7 @@ const AcademyDashboard = () => {
                     <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Coaches</h2>
                     <button
                       onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
-                      className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-lg transition-colors`}
+                      className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-4 py-2 rounded-none transition-colors`}
                     >
                       + Add Coach
                     </button>
@@ -479,7 +479,7 @@ const AcademyDashboard = () => {
                       </div>
                       <button
                         onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
-                        className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-6 py-3 rounded-lg transition-colors`}
+                        className={`${isLight ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-6 py-3 rounded-none transition-colors`}
                       >
                         Add Your First Coach
                       </button>
