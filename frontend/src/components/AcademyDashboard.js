@@ -606,7 +606,7 @@ const AcademyDashboard = () => {
             <PerformanceAnalytics />
           )}
 
-          {activeTab === 'analytics' &amp;&amp; (
+          {activeTab === 'analytics' && (
             <AcademyAnalytics />
           )}
 
