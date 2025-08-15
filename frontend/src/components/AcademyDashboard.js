@@ -258,7 +258,7 @@ const AcademyDashboard = () => {
             : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border-white/10'
       }`}
     >
-      {label}
+      label
     </button>
   );
 
@@ -350,9 +350,9 @@ const AcademyDashboard = () => {
           </div>
         </header>
 
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           {/* Academy Info */}
-          <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-6`}>
+          <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none p-6 mb-6`}>
             <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-2`}>Academy Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -370,30 +370,32 @@ const AcademyDashboard = () => {
             </div>
           </div>
 
-          {/* Content by tab */}
-          <div className={`mt-6 ${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
+          {/* Unified Content Container */}
+          <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
             {activeTab === 'overview' && (
-              <div className="p-6">
-                <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Academy Overview</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
-                    <h3 className="text-sm font-medium text-blue-600 mb-1">Total Players</h3>
-                    <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.total_players || 0}</p>
-                    <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.player_limit || 50}</p>
-                  </div>
-                  <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
-                    <h3 className="text-sm font-medium text-emerald-600 mb-1">Active Coaches</h3>
-                    <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_coaches || 0}</p>
-                    <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.coach_limit || 10}</p>
-                  </div>
-                  <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
-                    <h3 className="text-sm font-medium text-purple-600 mb-1">Active Players</h3>
-                    <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_players || 0}</p>
-                    <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Currently Active</p>
+              <div className="p-6 space-y-6">
+                <div>
+                  <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Academy Overview</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
+                      <h3 className="text-sm font-medium text-blue-600 mb-1">Total Players</h3>
+                      <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.total_players || 0}</p>
+                      <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.player_limit || 50}</p>
+                    </div>
+                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
+                      <h3 className="text-sm font-medium text-emerald-600 mb-1">Active Coaches</h3>
+                      <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_coaches || 0}</p>
+                      <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Limit: {stats.coach_limit || 10}</p>
+                    </div>
+                    <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-4`}>
+                      <h3 className="text-sm font-medium text-purple-600 mb-1">Active Players</h3>
+                      <p className={`text-2xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_players || 0}</p>
+                      <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Currently Active</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-6">
+                <div className="p-6 pt-0">
                   <h3 className={`text-lg font-medium ${isLight ? 'text-gray-900' : 'text-white'} mb-3`}>Quick Actions</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button 
@@ -517,8 +519,26 @@ const AcademyDashboard = () => {
           </div>
         </div>
       </div>
+      
+      {/* Create Academy Modal */}
+      <CreateAcademyModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={handleAcademyCreated}
+      />
+
+      {/* Edit Academy Modal */}
+      <EditAcademyModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedAcademy(null);
+        }}
+        onSuccess={handleAcademyUpdated}
+        academy={selectedAcademy}
+      />
     </div>
   );
 };
 
-export default AcademyDashboard;
+export default Dashboard;
