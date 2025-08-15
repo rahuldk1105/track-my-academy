@@ -39,7 +39,7 @@ const AcademyAnalytics = () => {
   const SectionButton = ({ id, label, active, onClick }) => (
     <button
       onClick={() => onClick(id)}
-      className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+      className={`px-4 py-2 rounded-none font-medium transition-all duration-300 ${
         active
           ? 'bg-sky-500 text-white shadow-lg'
           : 'text-gray-400 hover:text-white hover:bg-white/10'
@@ -50,7 +50,7 @@ const AcademyAnalytics = () => {
   );
 
   const StatCard = ({ title, value, subtitle, color = 'blue', icon }) => (
-    <div className={`bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10`}>
+    <div className={`bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10`}>
       <div className="flex items-center justify-between">
         <div>
           <h3 className={`text-lg font-semibold text-${color}-400 mb-1`}>{title}</h3>
@@ -67,7 +67,7 @@ const AcademyAnalytics = () => {
   );
 
   const DistributionChart = ({ title, data, color = 'sky' }) => (
-    <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+    <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
       <h4 className="text-lg font-medium text-gray-300 mb-4">{title}</h4>
       <div className="space-y-3">
         {Object.entries(data).map(([key, value]) => {
@@ -77,7 +77,7 @@ const AcademyAnalytics = () => {
           return (
             <div key={key} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full bg-${color}-400`}></div>
+                <div className={`w-3 h-3 rounded-none bg-${color}-400`}></div>
                 <span className="text-gray-300 capitalize">{key.replace(/_/g, ' ')}</span>
               </div>
               <div className="flex items-center space-x-2">
@@ -94,7 +94,7 @@ const AcademyAnalytics = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
+        <div className="animate-spin rounded-none h-12 w-12 border-b-2 border-sky-500"></div>
       </div>
     );
   }
@@ -106,7 +106,7 @@ const AcademyAnalytics = () => {
           <div className="text-gray-400 mb-4">Unable to load analytics data</div>
           <button
             onClick={loadAnalytics}
-            className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-2 rounded-lg transition-all duration-300"
+            className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-2 rounded-none transition-all duration-300"
           >
             Retry
           </button>
@@ -121,7 +121,7 @@ const AcademyAnalytics = () => {
         <h2 className="text-xl font-semibold text-white">Academy Analytics</h2>
         <button
           onClick={loadAnalytics}
-          className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-2 rounded-lg transition-all duration-300"
+          className="bg-sky-500/20 text-sky-400 border border-sky-500/30 hover:bg-sky-500/30 px-4 py-2 rounded-none transition-all duration-300"
         >
           Refresh Data
         </button>
@@ -194,7 +194,7 @@ const AcademyAnalytics = () => {
 
           {/* Player & Coach Summary */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
               <h4 className="text-lg font-medium text-gray-300 mb-4">Player Summary</h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -218,7 +218,7 @@ const AcademyAnalytics = () => {
               </div>
             </div>
 
-            <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
               <h4 className="text-lg font-medium text-gray-300 mb-4">Coach Summary</h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -244,7 +244,7 @@ const AcademyAnalytics = () => {
           </div>
 
           {/* Operational Metrics */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <h4 className="text-lg font-medium text-gray-300 mb-4">Operational Metrics</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center">
@@ -252,9 +252,9 @@ const AcademyAnalytics = () => {
                   {analytics.operational_metrics.settings_completion}%
                 </div>
                 <div className="text-gray-400 text-sm">Settings Completion</div>
-                <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                <div className="w-full bg-gray-700 rounded-none h-2 mt-2">
                   <div 
-                    className="bg-sky-500 h-2 rounded-full" 
+                    className="bg-sky-500 h-2 rounded-none" 
                     style={{width: `${analytics.operational_metrics.settings_completion}%`}}
                   ></div>
                 </div>
@@ -327,7 +327,7 @@ const AcademyAnalytics = () => {
             />
             
             {/* Player Insights */}
-            <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
               <h4 className="text-lg font-medium text-gray-300 mb-4">Player Insights</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -406,7 +406,7 @@ const AcademyAnalytics = () => {
           </div>
 
           {/* Coach Insights */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <h4 className="text-lg font-medium text-gray-300 mb-4">Coach Insights</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center">
@@ -459,7 +459,7 @@ const AcademyAnalytics = () => {
 
           {/* Growth Breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
               <h4 className="text-lg font-medium text-gray-300 mb-4">Player Growth</h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -481,7 +481,7 @@ const AcademyAnalytics = () => {
               </div>
             </div>
 
-            <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
               <h4 className="text-lg font-medium text-gray-300 mb-4">Coach Growth</h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -505,7 +505,7 @@ const AcademyAnalytics = () => {
           </div>
 
           {/* Growth Insights */}
-          <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
             <h4 className="text-lg font-medium text-gray-300 mb-4">Growth Insights & Recommendations</h4>
             <div className="space-y-3">
               {analytics.monthly_growth_rate > 5 && (
