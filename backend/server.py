@@ -3449,10 +3449,17 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[
+        "https://track-my-academy.vercel.app",
+        "https://dev.trackmyacademy.com",
+        "https://track-my-academy-rahuldk1105s-projects.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
 )
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
