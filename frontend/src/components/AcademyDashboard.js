@@ -470,7 +470,7 @@ const AcademyDashboard = () => {
                                 <span className={`${isLight ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-emerald-600/20 text-emerald-300 border border-emerald-600/30'} px-2 py-1 rounded-full text-xs`}>
                                   ✓ Login Enabled
                                 </span>
-                                {player.default_password &amp;&amp; !player.password_changed &amp;&amp; (
+                                {player.default_password && !player.password_changed && (
                                   <div className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'} mt-1`}>
                                     Default Password: <span className="font-mono ${isLight ? 'bg-gray-100' : 'bg-gray-800'} px-1 rounded">{player.default_password}</span>
                                   </div>
