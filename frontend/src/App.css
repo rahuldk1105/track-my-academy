@@ -70,7 +70,7 @@ html {
 
 ::-webkit-scrollbar-thumb {
   background: #0ea5e9;
-  border-radius: 4px;
+  border-radius: 2px; /* Changed from 4px to 2px for a sharper feel */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -91,12 +91,12 @@ html {
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.1), 0 10px 10px -5px rgba(14, 165, 233, 0.04);
+  box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.1), 0 4px 6px -2px rgba(14, 165, 233, 0.05); /* Adjusted for a less rounded shadow */
 }
 
 /* Glowing effects */
 .glow-effect {
-  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.2); /* Slightly reduced glow for a sharper look */
 }
 
 /* Typography improvements */
