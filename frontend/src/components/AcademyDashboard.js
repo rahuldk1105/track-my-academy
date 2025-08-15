@@ -575,4 +575,4 @@ const AcademyDashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AcademyDashboard;
