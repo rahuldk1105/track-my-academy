@@ -403,7 +403,7 @@ const Dashboard = () => {
 
         {/* Content */}
         <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-xl overflow-hidden`}>
-          {activeTab === 'overview' &amp;&amp; (
+          {activeTab === 'overview' && (
             <div className="p-6">
               <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>System Overview</h2>
               {overviewLoading ? (
