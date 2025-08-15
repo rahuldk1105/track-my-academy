@@ -503,21 +503,20 @@ const AcademyDashboard = () => {
         </div>
       </div>
       
-      {/* Create Academy Modal */}
-      <CreateAcademyModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={() => {}}
+      <PlayerModal
+        isOpen={showPlayerModal}
+        onClose={() => setShowPlayerModal(false)}
+        onSubmit={handleCreatePlayer}
+        player={editingPlayer}
+        isEditing={!!editingPlayer}
       />
 
-      {/* Edit Academy Modal */}
-      <EditAcademyModal
-        isOpen={showEditModal}
-        onClose={() => {
-          setShowEditModal(false);
-        }}
-        onSuccess={() => {}}
-        academy={null}
+      <CoachModal
+        isOpen={showCoachModal}
+        onClose={() => setShowCoachModal(false)}
+        onSubmit={handleCreateCoach}
+        coach={editingCoach}
+        isEditing={!!editingCoach}
       />
     </div>
   );
