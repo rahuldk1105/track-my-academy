@@ -25,13 +25,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel: Your SVG */}
-      <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-0 overflow-hidden">
+      {/* Left Panel: SVG with gradient overlay */}
+      <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
         <img
           src="/assets/loginpage_right.svg"
           alt="Login Illustration"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain max-w-[600px] max-h-screen mx-auto"
         />
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 via-blue-50 to-white opacity-30 pointer-events-none"></div>
       </div>
 
       {/* Right Panel (Login Form) */}
