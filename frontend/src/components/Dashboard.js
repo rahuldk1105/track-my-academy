@@ -579,7 +579,7 @@ const Dashboard = () => {
             </div>
           )}
 
-          {activeTab === 'academies' &amp;&amp; (
+          {activeTab === 'academies' && (
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Academy Management</h2>
