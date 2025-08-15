@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import TMA from "../assets/TMA.png"; // Adjust path if needed
+import TMA from "../assets/TMA.png"; // adjust path if needed
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -25,14 +25,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel (CSS-only animated shapes) */}
+      {/* Left Panel */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-50 via-blue-100 to-gray-50 relative items-center justify-center p-10 overflow-hidden">
-        {/* Floating circles */}
-        <div className="absolute w-72 h-72 bg-blue-200 opacity-30 rounded-full top-10 left-10 animate-bounce-slow"></div>
-        <div className="absolute w-48 h-48 bg-blue-300 opacity-20 rounded-full bottom-20 right-20 animate-bounce-slower"></div>
-        <div className="absolute w-32 h-32 bg-blue-100 opacity-25 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-bounce-slowest"></div>
+        {/* Animated floating circles */}
+        <div className="absolute w-72 h-72 bg-blue-200 opacity-30 rounded-full top-10 left-10 animate-float-slow"></div>
+        <div className="absolute w-48 h-48 bg-blue-300 opacity-20 rounded-full bottom-20 right-20 animate-float-slower"></div>
+        <div className="absolute w-32 h-32 bg-blue-100 opacity-25 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-slowest"></div>
 
-        {/* Branding & Illustration placeholder */}
+        {/* Branding & illustration */}
         <div className="relative z-10 text-center">
           <img src={TMA} alt="TMA Logo" className="mx-auto h-24 mb-6" />
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Track My Academy</h1>
@@ -45,12 +45,15 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel (Login Form) */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 p-8">
+      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 p-8 relative overflow-hidden">
+        {/* Soft floating gradient behind form */}
+        <div className="absolute -inset-10 bg-gradient-to-tr from-blue-100 via-blue-50 to-white opacity-40 rounded-3xl blur-3xl pointer-events-none"></div>
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md bg-white shadow-xl rounded-lg border border-gray-200 p-8"
+          className="relative w-full max-w-md bg-white shadow-xl rounded-lg border border-gray-200 p-8"
         >
           {/* Header */}
           <motion.div
@@ -76,13 +79,13 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={handleEmailChange}
-                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none transition-all ${
-                    email === ""
-                      ? "border-gray-300 focus:border-blue-500"
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none transition-all
+                    ${email === ""
+                      ? "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                       : isEmailValid
-                      ? "border-green-500"
-                      : "border-red-500"
-                  }`}
+                      ? "border-green-500 focus:ring-2 focus:ring-green-200"
+                      : "border-red-500 focus:ring-2 focus:ring-red-200"
+                    }`}
                   placeholder="you@example.com"
                 />
                 <Mail className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
@@ -100,7 +103,8 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-all"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none transition-all
+                    focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   placeholder="••••••••"
                 />
                 <Lock className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
