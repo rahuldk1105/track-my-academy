@@ -10,6 +10,9 @@ import ThemeToggle from './ThemeToggle';
 import SideNav from './SideNav';
 import UserCard from './UserCard';
 import AcademyCard from './AcademyCard';
+import AcademyAnalytics from './AcademyAnalytics';
+import AttendanceTracker from './AttendanceTracker';
+import PerformanceAnalytics from './PerformanceAnalytics';
 
 const Dashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
@@ -382,7 +385,6 @@ const Dashboard = () => {
                   </div>
                 ) : systemOverview ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Recent Activities */}
                     <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
                       <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recent Activity</h3>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
@@ -406,7 +408,6 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    {/* Recently Added Academies */}
                     <div className={`${isLight ? 'bg-gray-50 border border-gray-200 shadow-inner' : 'bg-gray-800 border border-white/10'} rounded-none p-6`}>
                       <h3 className={`${isLight ? 'text-gray-800' : 'text-white'} text-lg font-medium mb-3`}>Recently Added Academies</h3>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
