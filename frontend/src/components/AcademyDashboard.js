@@ -9,6 +9,9 @@ import AcademyAnalytics from './AcademyAnalytics';
 import AttendanceTracker from './AttendanceTracker';
 import PerformanceAnalytics from './PerformanceAnalytics';
 import ThemeToggle from './ThemeToggle';
+import SideNav from './SideNav';
+import PlayerCard from './PlayerCard';
+import CoachCard from './CoachCard';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
