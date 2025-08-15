@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ShieldCheck, Loader2 } from "lucide-react";
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 import TMA from "../assets/TMA.png"; // logo
 
 export default function LoginPage() {
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -17,15 +24,40 @@ export default function LoginPage() {
     setIsEmailValid(value === "" ? true : validateEmail(value));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Logging in:", { email, password });
-    // TODO: Hook this to backend API
+    setError("");
+
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setIsEmailValid(false);
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const { data, error } = await signIn(email, password);
+      if (error) {
+        setError(error.message || "Invalid credentials. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+      // Successful login: route to dashboard (super admin will land here; academy users will be redirected to /academy by Dashboard)
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Something went wrong while logging in. Please try again.");
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel: Your SVG */}
+      {/* Left Panel: Illustration */}
       <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-0 overflow-hidden">
         <img
           src="/assets/loginpage_right.svg"
@@ -57,6 +89,13 @@ export default function LoginPage() {
             <p className="text-gray-500 text-sm">Sign in to your account</p>
           </motion.div>
 
+          {/* Error banner */}
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
+              {error}
+            </div>
+          )}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
@@ -77,6 +116,7 @@ export default function LoginPage() {
                       : "border-red-500 focus:ring-2 focus:ring-red-200"
                     }`}
                   placeholder="you@example.com"
+                  autoComplete="username"
                 />
                 <Mail className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
               </div>
@@ -96,12 +136,14 @@ export default function LoginPage() {
                   className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none transition-all
                     focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   placeholder="••••••••"
+                  autoComplete="current-password"
                 />
                 <Lock className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -121,13 +163,23 @@ export default function LoginPage() {
 
             {/* Submit */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: submitting ? 1 : 1.02 }}
+              whileTap={{ scale: submitting ? 1 : 0.97 }}
               type="submit"
-              className="w-full bg-blue-600 text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-2 shadow-md hover:bg-blue-700 transition-colors"
+              disabled={submitting}
+              className={`w-full ${submitting ? 'bg-blue-500' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg flex items-center justify-center space-x-2 shadow-md transition-colors`}
             >
-              <span>Sign In</span>
-              <ShieldCheck className="w-5 h-5" />
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ShieldCheck className="w-5 h-5" />
+                </>
+              )}
             </motion.button>
           </form>
 
