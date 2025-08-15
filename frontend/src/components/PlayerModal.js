@@ -183,7 +183,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 rounded-none border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-700">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white">
@@ -218,7 +218,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.first_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -232,7 +232,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.last_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -245,7 +245,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -258,7 +258,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -271,7 +271,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="date_of_birth"
                   value={formData.date_of_birth}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -287,7 +287,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   min="5"
                   max="50"
                   readOnly={!!formData.date_of_birth}
-                  className={`w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     formData.date_of_birth ? 'bg-gray-700 cursor-not-allowed' : ''
                   }`}
                 />
@@ -302,7 +302,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.gender}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select Gender</option>
                   {genderOptions.map(gender => (
@@ -329,7 +329,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.sport}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select Sport</option>
                   {sportsOptions.map(sport => (
@@ -349,7 +349,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                     name="position"
                     value={formData.position}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Position</option>
                     {getPositionOptions().map(position => (
@@ -362,7 +362,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
               )}
 
               {formData.sport && isIndividualSport() && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-none p-3">
                   <p className="text-sm text-blue-300">
                     📌 <strong>{formData.sport}</strong> is an individual sport. Position selection is not required.
                   </p>
@@ -379,7 +379,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.registration_number}
                   onChange={handleChange}
                   placeholder="e.g., REG001, 2024-TN-001"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -393,7 +393,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.height}
                   onChange={handleChange}
                   placeholder="e.g., 5'10, 175cm"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -407,7 +407,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   value={formData.weight}
                   onChange={handleChange}
                   placeholder="e.g., 70kg, 154lbs"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -434,7 +434,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                             }));
                           }
                         }}
-                        className="mr-2 rounded"
+                        className="mr-2 rounded-none"
                       />
                       <span className="text-gray-300 text-sm">{day}</span>
                     </label>
@@ -450,7 +450,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="training_batch"
                   value={formData.training_batch}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select Training Batch</option>
                   <option value="Morning">Morning</option>
@@ -467,7 +467,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -491,7 +491,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="emergency_contact_name"
                   value={formData.emergency_contact_name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -504,7 +504,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   name="emergency_contact_phone"
                   value={formData.emergency_contact_phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -525,7 +525,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
                   onChange={handleChange}
                   rows="4"
                   placeholder="Any medical conditions, allergies, or special notes..."
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
               </div>
             </div>
@@ -536,14 +536,14 @@ const PlayerModal = ({ isOpen, onClose, onSubmit, player = null, isEditing = fal
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-gray-400 border border-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all duration-300"
+              className="px-6 py-2 text-gray-400 border border-gray-600 rounded-none hover:bg-gray-800 hover:text-white transition-all duration-300"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-blue-500 text-white rounded-none hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Saving...' : (isEditing ? 'Update Player' : 'Create Player')}
             </button>
