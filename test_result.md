@@ -556,6 +556,30 @@ frontend:
           agent: "testing"
           comment: "Parallax background effects work during scrolling. Scroll-triggered animations function correctly - elements appear as you scroll. Gradient text animations and hover effects are smooth. Glass morphism effects display properly."
 
+  - task: "Dashboard Theme Refresh (Super Admin)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Dashboard.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Applied Minimal & Clean light-first theme: white cards with subtle borders, Sky accents, comfortable spacing, refined tabs and tables. Preserved dark mode."
+
+  - task: "Academy Dashboard Theme Refresh (Admin)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/AcademyDashboard.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Applied consistent Minimal & Clean theme to academy dashboard with comfortable spacing and refined header/logo card. Preserved dark mode."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
