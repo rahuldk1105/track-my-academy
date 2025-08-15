@@ -183,7 +183,7 @@ const AttendanceTracker = () => {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-none h-8 w-8 border-b-2 border-blue-500"></div>
           <span className="ml-2 text-gray-400">Loading players...</span>
         </div>
       </div>
@@ -203,7 +203,7 @@ const AttendanceTracker = () => {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -211,19 +211,19 @@ const AttendanceTracker = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
+        <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
           <h3 className="text-sm font-medium text-gray-300">Total Players</h3>
           <p className="text-2xl font-bold text-white">{attendanceRecords.length}</p>
         </div>
-        <div className="bg-green-500/10 backdrop-blur-md rounded-lg p-4 border border-green-500/20">
+        <div className="bg-green-500/10 backdrop-blur-md rounded-none p-4 border border-green-500/20">
           <h3 className="text-sm font-medium text-green-300">Present</h3>
           <p className="text-2xl font-bold text-green-400">{getPresentCount()}</p>
         </div>
-        <div className="bg-red-500/10 backdrop-blur-md rounded-lg p-4 border border-red-500/20">
+        <div className="bg-red-500/10 backdrop-blur-md rounded-none p-4 border border-red-500/20">
           <h3 className="text-sm font-medium text-red-300">Absent</h3>
           <p className="text-2xl font-bold text-red-400">{getAbsentCount()}</p>
         </div>
-        <div className="bg-blue-500/10 backdrop-blur-md rounded-lg p-4 border border-blue-500/20">
+        <div className="bg-blue-500/10 backdrop-blur-md rounded-none p-4 border border-blue-500/20">
           <h3 className="text-sm font-medium text-blue-300">Avg Rating</h3>
           <p className="text-2xl font-bold text-blue-400">{getAverageRating()}/10</p>
         </div>
@@ -234,13 +234,13 @@ const AttendanceTracker = () => {
         <div className="flex space-x-2">
           <button
             onClick={markAllPresent}
-            className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-2 rounded-lg transition-all duration-300 text-sm"
+            className="bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 px-4 py-2 rounded-none transition-all duration-300 text-sm"
           >
             Mark All Present
           </button>
           <button
             onClick={markAllAbsent}
-            className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-lg transition-all duration-300 text-sm"
+            className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 px-4 py-2 rounded-none transition-all duration-300 text-sm"
           >
             Mark All Absent
           </button>
@@ -248,7 +248,7 @@ const AttendanceTracker = () => {
         <button
           onClick={saveAttendance}
           disabled={saving}
-          className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 px-6 py-2 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 px-6 py-2 rounded-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? 'Saving...' : 'Save Attendance'}
         </button>
@@ -256,7 +256,7 @@ const AttendanceTracker = () => {
 
       {/* Message */}
       {message && (
-        <div className={`mb-4 p-3 rounded-lg ${
+        <div className={`mb-4 p-3 rounded-none ${
           message.includes('✅') 
             ? 'bg-green-500/10 border border-green-500/20 text-green-400' 
             : 'bg-red-500/10 border border-red-500/20 text-red-400'
@@ -266,7 +266,7 @@ const AttendanceTracker = () => {
       )}
 
       {/* Attendance Table */}
-      <div className="bg-white/5 backdrop-blur-md rounded-lg border border-white/10 overflow-hidden">
+      <div className="bg-white/5 backdrop-blur-md rounded-none border border-white/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-white/5">
@@ -287,7 +287,7 @@ const AttendanceTracker = () => {
                   </td>
                   <td className="py-3 px-4 text-gray-300">{record.position || 'Not specified'}</td>
                   <td className="py-3 px-4">
-                    <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-sm">
+                    <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-none text-sm">
                       #{record.registration_number || 'N/A'}
                     </span>
                   </td>
@@ -297,7 +297,7 @@ const AttendanceTracker = () => {
                         type="checkbox"
                         checked={record.present}
                         onChange={(e) => updateAttendanceRecord(record.player_id, 'present', e.target.checked)}
-                        className="form-checkbox h-5 w-5 text-green-500 bg-gray-800 border-gray-600 rounded focus:ring-green-500 focus:ring-2"
+                        className="form-checkbox h-5 w-5 text-green-500 bg-gray-800 border-gray-600 rounded-none focus:ring-green-500 focus:ring-2"
                       />
                     </label>
                   </td>
@@ -306,7 +306,7 @@ const AttendanceTracker = () => {
                       value={record.performance_rating || ''}
                       onChange={(e) => updateAttendanceRecord(record.player_id, 'performance_rating', e.target.value ? parseInt(e.target.value) : null)}
                       disabled={!record.present}
-                      className="w-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded-none text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="">-</option>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
@@ -320,7 +320,7 @@ const AttendanceTracker = () => {
                       value={record.notes}
                       onChange={(e) => updateAttendanceRecord(record.player_id, 'notes', e.target.value)}
                       placeholder="Add notes..."
-                      className="w-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-2 py-1 bg-gray-800 border border-gray-600 rounded-none text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </td>
                 </tr>
