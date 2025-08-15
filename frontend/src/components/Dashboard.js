@@ -673,7 +673,7 @@ const Dashboard = () => {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex gap-3 text-sm">
-                            {academy.status === 'pending' &amp;&amp; (
+                            {academy.status === 'pending' && (
                               <>
                                 <button 
                                   onClick={() => handleApproveAcademy(academy.id, academy.name)}
