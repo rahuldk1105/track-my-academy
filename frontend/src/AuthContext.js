@@ -17,8 +17,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState(null)
 
-  const fetchUserRole = async (session) => {
-    if (!session?.access_token) {
+  const fetchUserRole = async (activeSession) => {
+    if (!activeSession?.access_token) {
       setUserRole(null)
       return
     }
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user`, {
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${activeSession.access_token}`
         }
       })
 
@@ -42,16 +42,59 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // --- NEW: refresh token helper ---
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem('refresh_token')
+    if (!refreshToken) return null
+
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      })
+
+      if (!res.ok) {
+        console.error('Failed to refresh token')
+        return null
+      }
+
+      const data = await res.json()
+      if (data?.session?.access_token && data?.session?.refresh_token) {
+        localStorage.setItem('refresh_token', data.session.refresh_token)
+        setSession(data.session)
+        setUser(data.session.user)
+        return data.session.access_token
+      }
+    } catch (err) {
+      console.error('Error refreshing token:', err)
+      return null
+    }
+  }
+
+  // --- NEW: helper for components to always get valid token ---
+  const getValidToken = async () => {
+    // If session still valid, return token
+    if (session?.access_token) return session.access_token
+    // Otherwise refresh
+    return await refreshAccessToken()
+  }
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
-      
+
+      // Store refresh token locally
+      if (session?.refresh_token) {
+        localStorage.setItem('refresh_token', session.refresh_token)
+      }
+
       if (session) {
         await fetchUserRole(session)
       }
-      
+
       setLoading(false)
     })
 
@@ -60,13 +103,19 @@ export const AuthProvider = ({ children }) => {
       async (event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
-        
+
+        // Store refresh token on every change
+        if (session?.refresh_token) {
+          localStorage.setItem('refresh_token', session.refresh_token)
+        }
+
         if (session) {
           await fetchUserRole(session)
         } else {
           setUserRole(null)
+          localStorage.removeItem('refresh_token')
         }
-        
+
         setLoading(false)
       }
     )
@@ -79,6 +128,9 @@ export const AuthProvider = ({ children }) => {
       email,
       password,
     })
+    if (data?.session?.refresh_token) {
+      localStorage.setItem('refresh_token', data.session.refresh_token)
+    }
     return { data, error }
   }
 
@@ -86,14 +138,16 @@ export const AuthProvider = ({ children }) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: userData
-      }
+      options: { data: userData }
     })
+    if (data?.session?.refresh_token) {
+      localStorage.setItem('refresh_token', data.session.refresh_token)
+    }
     return { data, error }
   }
 
   const signOut = async () => {
+    localStorage.removeItem('refresh_token')
     const { error } = await supabase.auth.signOut()
     return { error }
   }
@@ -108,6 +162,7 @@ export const AuthProvider = ({ children }) => {
     signUp,
     signOut,
     refreshUserRole: () => fetchUserRole(session),
+    getValidToken, // expose helper
   }
 
   return (
