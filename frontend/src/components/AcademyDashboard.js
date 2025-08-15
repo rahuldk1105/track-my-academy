@@ -12,6 +12,10 @@ import ThemeToggle from './ThemeToggle';
 import SideNav from './SideNav';
 import PlayerCard from './PlayerCard';
 import CoachCard from './CoachCard';
+import CreateAcademyModal from './CreateAcademyModal';
+import EditAcademyModal from './EditAcademyModal';
+import DemoRequestsTable from './DemoRequestsTable';
+import BillingDashboard from './BillingDashboard';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
@@ -304,12 +308,10 @@ const AcademyDashboard = () => {
       />
 
       <div className="flex-1">
-        {/* Header */}
         <header className={`${isLight ? 'bg-white/90 border-b border-gray-200 backdrop-blur' : 'bg-gray-900/60 border-b border-white/10 backdrop-blur'} sticky top-0 z-10`}>
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-5">
               <div className="flex items-center">
-                {/* Academy Logo */}
                 <div className={`flex items-center ${isLight ? 'bg-gray-100' : 'bg-gray-800'} rounded-none px-4 py-2 mr-6 border ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
                   <img 
                     src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
@@ -350,7 +352,6 @@ const AcademyDashboard = () => {
         </header>
 
         <div className="p-4 sm:p-6 lg:p-8">
-          {/* Unified Content Container */}
           <div className={`${isLight ? 'bg-white border border-gray-200 shadow-sm' : 'bg-gray-900 border border-white/10'} rounded-none overflow-hidden`}>
             {activeTab === 'overview' && (
               <div className="p-6 space-y-6">
