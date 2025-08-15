@@ -116,7 +116,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 rounded-none border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-700">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white">
@@ -151,7 +151,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   value={formData.first_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -165,7 +165,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   value={formData.last_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -178,7 +178,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -191,7 +191,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -203,7 +203,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -226,7 +226,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="specialization"
                   value={formData.specialization}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Select Specialization</option>
                   {specializationOptions.map(spec => (
@@ -248,7 +248,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   onChange={handleChange}
                   min="0"
                   max="50"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -262,7 +262,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   value={formData.qualifications}
                   onChange={handleChange}
                   placeholder="e.g., UEFA A License, Sports Science Degree"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -278,7 +278,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   min="0"
                   step="0.01"
                   placeholder="e.g., 50000"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -291,7 +291,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="hire_date"
                   value={formData.hire_date}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -304,7 +304,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="contract_end_date"
                   value={formData.contract_end_date}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -324,7 +324,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="emergency_contact_name"
                   value={formData.emergency_contact_name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -337,7 +337,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   name="emergency_contact_phone"
                   value={formData.emergency_contact_phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -358,7 +358,7 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
                   onChange={handleChange}
                   rows="4"
                   placeholder="Brief biography, achievements, coaching philosophy, etc..."
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-none text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
                 />
               </div>
             </div>
@@ -369,14 +369,14 @@ const CoachModal = ({ isOpen, onClose, onSubmit, coach = null, isEditing = false
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-gray-400 border border-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all duration-300"
+              className="px-6 py-2 text-gray-400 border border-gray-600 rounded-none hover:bg-gray-800 hover:text-white transition-all duration-300"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-green-500 text-white rounded-none hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Saving...' : (isEditing ? 'Update Coach' : 'Create Coach')}
             </button>
