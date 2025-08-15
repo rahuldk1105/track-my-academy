@@ -36,7 +36,6 @@ const AttendanceTracker = () => {
         const playersData = await response.json();
         setPlayers(playersData);
         
-        // Initialize attendance records for all players
         const initialRecords = playersData.map(player => ({
           player_id: player.id,
           player_name: `${player.first_name} ${player.last_name}`,
@@ -68,7 +67,6 @@ const AttendanceTracker = () => {
       if (response.ok) {
         const attendanceData = await response.json();
         
-        // Update attendance records with existing data
         setAttendanceRecords(prevRecords => 
           prevRecords.map(record => {
             const existingRecord = attendanceData.attendance_records.find(
@@ -133,7 +131,6 @@ const AttendanceTracker = () => {
       setSaving(true);
       setMessage('');
 
-      // Prepare attendance data for API
       const attendanceData = {
         date: selectedDate,
         attendance_records: attendanceRecords.map(record => ({
@@ -164,7 +161,7 @@ const AttendanceTracker = () => {
       }
     } catch (error) {
       console.error('Error saving attendance:', error);
-      setMessage('❌ Error saving attendance');
+      setMessage('❌ Network error. Failed to save attendance.');
     } finally {
       setSaving(false);
     }
@@ -209,7 +206,6 @@ const AttendanceTracker = () => {
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white/5 backdrop-blur-md rounded-none p-4 border border-white/10">
           <h3 className="text-sm font-medium text-gray-300">Total Players</h3>
@@ -229,7 +225,6 @@ const AttendanceTracker = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-2">
           <button
@@ -254,7 +249,6 @@ const AttendanceTracker = () => {
         </button>
       </div>
 
-      {/* Message */}
       {message && (
         <div className={`mb-4 p-3 rounded-none ${
           message.includes('✅') 
@@ -265,7 +259,6 @@ const AttendanceTracker = () => {
         </div>
       )}
 
-      {/* Attendance Table */}
       <div className="bg-white/5 backdrop-blur-md rounded-none border border-white/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
