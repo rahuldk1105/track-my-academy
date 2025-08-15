@@ -291,7 +291,7 @@ const AcademyDashboard = () => {
     <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-950'}`}>
       {/* Header */}
       <header className={`${isLight ? 'bg-white/90 border-b border-gray-200 backdrop-blur' : 'bg-gray-900/60 border-b border-white/10 backdrop-blur'} sticky top-0 z-10`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-5">
             <div className="flex items-center">
               {/* Academy Logo */}
@@ -334,7 +334,7 @@ const AcademyDashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-6">
           <SideNav
             activeId={activeTab}
