@@ -5,7 +5,7 @@ Debug CORS configuration by testing a simple endpoint
 
 import requests
 
-BACKEND_URL = "https://academy-ui-refresh.preview.emergentagent.com"
+BACKEND_URL = "https://dash-profile-revamp.preview.emergentagent.com"
 SIMPLE_ENDPOINT = "/api/"  # Simple endpoint that should work
 FULL_URL = f"{BACKEND_URL}{SIMPLE_ENDPOINT}"
 
