@@ -86,6 +86,8 @@ const AcademyDashboard = () => {
         const settings = await response.json();
         if (settings.branding && settings.branding.logo_url) {
           setAcademyLogo(settings.branding.logo_url);
+        } else if (settings.logo_url) {
+          setAcademyLogo(settings.logo_url);
         }
       }
     } catch (error) {
