@@ -336,7 +336,14 @@ const AcademyDashboard = () => {
           <div className={`${isLight ? 'text-red-600' : 'text-red-400'} text-xl mb-2 font-semibold`}>Access Denied</div>
           <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>You don't have permission to access the academy dashboard.</div>
           <button
-            onClick={handleSignOut}
+            onClick={async () => {
+              try {
+                await signOut();
+                navigate('/');
+              } catch (error) {
+                console.error('Error signing out:', error);
+              }
+            }}
             className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
           >
             Sign Out
