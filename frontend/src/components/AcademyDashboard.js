@@ -5,17 +5,20 @@ import { useTheme } from '../contexts/ThemeContext';
 import PlayerModal from './PlayerModal';
 import CoachModal from './CoachModal';
 import AcademySettingsForm from './AcademySettingsForm';
-import AcademyAnalytics from './AcademyAnalytics';
 import AttendanceTracker from './AttendanceTracker';
 import PerformanceAnalytics from './PerformanceAnalytics';
 import ThemeToggle from './ThemeToggle';
 import SideNav from './SideNav';
 import PlayerCard from './PlayerCard';
 import CoachCard from './CoachCard';
-import CreateAcademyModal from './CreateAcademyModal';
-import EditAcademyModal from './EditAcademyModal';
-import DemoRequestsTable from './DemoRequestsTable';
-import BillingDashboard from './BillingDashboard';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, Legend
+} from 'recharts';
+import { 
+  Users, UserCheck, TrendingUp, Calendar, Award, Clock, 
+  Activity, Target, BookOpen, Search, Bell, Settings, Plus
+} from 'lucide-react';
 
 const AcademyDashboard = () => {
   const { user, signOut, token, userRole } = useAuth();
