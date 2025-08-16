@@ -30,13 +30,13 @@ const AcademyDashboard = () => {
   const [players, setPlayers] = useState([]);
   const [coaches, setCoaches] = useState([]);
   const [stats, setStats] = useState({});
+  const [analytics, setAnalytics] = useState(null);
   const [showPlayerModal, setShowPlayerModal] = useState(false);
   const [showCoachModal, setShowCoachModal] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [editingCoach, setEditingCoach] = useState(null);
   const [academyLogo, setAcademyLogo] = useState(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
