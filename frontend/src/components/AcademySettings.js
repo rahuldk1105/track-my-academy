@@ -173,28 +173,28 @@ const AcademySettings = () => {
   }
 
   return (
-    <div className={`p-6 space-y-6 ${isLight ? 'bg-gray-50' : 'bg-black'} min-h-screen`}>
+    <div className={`p-6 space-y-6 ${isLight ? 'bg-gray-50' : 'bg-gray-900'} min-h-screen`}>
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-3`}>
-            <Settings className={`w-6 h-6 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
+          <h2 className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-3`}>
+            <Settings className={`w-8 h-8 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
             Academy Settings
           </h2>
-          <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mt-1`}>
-            Configure operational and privacy settings for your academy
+          <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mt-2 text-lg`}>
+            Configure operational, notification, and privacy settings for your academy
           </p>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 ${
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 shadow-md ${
             isLight 
               ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50' 
               : 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 disabled:opacity-50'
           } disabled:cursor-not-allowed`}
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-5 h-5" />
           {saving ? 'Saving...' : 'Save Settings'}
         </button>
       </div>
@@ -214,14 +214,14 @@ const AcademySettings = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Operational Settings */}
         <div className={`${
-          isLight ? 'bg-white border border-gray-200' : 'bg-gray-900 border border-cyan-500/30'
-        } rounded-2xl p-6 shadow-sm space-y-6`}>
-          <div className="flex items-center gap-3 mb-4">
-            <Calendar className={`w-5 h-5 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
-            <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+          isLight ? 'bg-white border border-gray-200' : 'bg-gray-800 border border-gray-700'
+        } rounded-2xl p-8 shadow-lg space-y-6`}>
+          <div className="flex items-center gap-3 mb-6">
+            <Calendar className={`w-6 h-6 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
+            <h3 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Operational Settings
             </h3>
           </div>
@@ -241,7 +241,7 @@ const AcademySettings = () => {
                   className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
                     isLight 
                       ? 'border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-blue-500' 
-                      : 'border-cyan-500/30 bg-gray-800 text-white focus:border-cyan-400'
+                      : 'border-gray-700 bg-gray-900 text-white focus:border-cyan-400'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
                 />
               </div>
@@ -256,7 +256,7 @@ const AcademySettings = () => {
                   className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
                     isLight 
                       ? 'border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-blue-500' 
-                      : 'border-cyan-500/30 bg-gray-800 text-white focus:border-cyan-400'
+                      : 'border-gray-700 bg-gray-900 text-white focus:border-cyan-400'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
                 />
               </div>
@@ -266,7 +266,7 @@ const AcademySettings = () => {
           {/* Training Schedule */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Clock className={`w-4 h-4 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
+              <Clock className={`w-5 h-5 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
               <h4 className={`font-medium ${isLight ? 'text-gray-800' : 'text-gray-200'}`}>Training Schedule</h4>
             </div>
             
@@ -307,7 +307,7 @@ const AcademySettings = () => {
                 className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
                   isLight 
                     ? 'border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-blue-500' 
-                    : 'border-cyan-500/30 bg-gray-800 text-white focus:border-cyan-400'
+                    : 'border-gray-700 bg-gray-900 text-white focus:border-cyan-400'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
               />
             </div>
@@ -316,11 +316,11 @@ const AcademySettings = () => {
 
         {/* Notification Settings */}
         <div className={`${
-          isLight ? 'bg-white border border-gray-200' : 'bg-gray-900 border border-green-500/30'
-        } rounded-2xl p-6 shadow-sm space-y-6`}>
-          <div className="flex items-center gap-3 mb-4">
-            <Bell className={`w-5 h-5 ${isLight ? 'text-green-600' : 'text-green-400'}`} />
-            <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+          isLight ? 'bg-white border border-gray-200' : 'bg-gray-800 border border-gray-700'
+        } rounded-2xl p-8 shadow-lg space-y-6`}>
+          <div className="flex items-center gap-3 mb-6">
+            <Bell className={`w-6 h-6 ${isLight ? 'text-green-600' : 'text-green-400'}`} />
+            <h3 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Notification Preferences
             </h3>
           </div>
@@ -389,17 +389,17 @@ const AcademySettings = () => {
         </div>
 
         {/* Privacy Settings */}
-        <div className={`xl:col-span-2 ${
-          isLight ? 'bg-white border border-gray-200' : 'bg-gray-900 border border-purple-500/30'
-        } rounded-2xl p-6 shadow-sm space-y-6`}>
-          <div className="flex items-center gap-3 mb-4">
-            <Shield className={`w-5 h-5 ${isLight ? 'text-purple-600' : 'text-purple-400'}`} />
-            <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+        <div className={`${
+          isLight ? 'bg-white border border-gray-200' : 'bg-gray-800 border border-gray-700'
+        } rounded-2xl p-8 shadow-lg space-y-6`}>
+          <div className="flex items-center gap-3 mb-6">
+            <Shield className={`w-6 h-6 ${isLight ? 'text-purple-600' : 'text-purple-400'}`} />
+            <h3 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Privacy & Security Settings
             </h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <label className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>
@@ -473,6 +473,82 @@ const AcademySettings = () => {
                 </h4>
                 <p className={`text-sm ${isLight ? 'text-blue-800' : 'text-blue-300'}`}>
                   Your privacy settings control how your academy information is shared. We never share personal data without explicit consent and always comply with data protection regulations.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* System Settings */}
+        <div className={`${
+          isLight ? 'bg-white border border-gray-200' : 'bg-gray-800 border border-gray-700'
+        } rounded-2xl p-8 shadow-lg space-y-6`}>
+          <div className="flex items-center gap-3 mb-6">
+            <Monitor className={`w-6 h-6 ${isLight ? 'text-orange-600' : 'text-orange-400'}`} />
+            <h3 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+              System Settings
+            </h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  Auto Backup
+                </label>
+                <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Automatically backup academy data weekly
+                </p>
+              </div>
+              <ToggleSwitch
+                checked={formData.auto_backup}
+                onChange={(checked) => handleInputChange('auto_backup', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <label className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  API Access
+                </label>
+                <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Allow third-party integrations access to academy data
+                </p>
+              </div>
+              <ToggleSwitch
+                checked={formData.api_access}
+                onChange={(checked) => handleInputChange('api_access', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <label className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  Maintenance Mode
+                </label>
+                <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Temporarily disable academy access for maintenance
+                </p>
+              </div>
+              <ToggleSwitch
+                checked={formData.maintenance_mode}
+                onChange={(checked) => handleInputChange('maintenance_mode', checked)}
+              />
+            </div>
+          </div>
+
+          {/* System Info */}
+          <div className={`p-4 rounded-xl ${
+            isLight ? 'bg-gray-50 border border-gray-200' : 'bg-gray-900/50 border border-gray-700/50'
+          }`}>
+            <div className="flex items-start gap-3">
+              <Monitor className={`w-5 h-5 mt-0.5 ${isLight ? 'text-gray-600' : 'text-gray-400'}`} />
+              <div>
+                <h4 className={`font-medium ${isLight ? 'text-gray-900' : 'text-gray-300'} mb-1`}>
+                  System Information
+                </h4>
+                <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  All settings are automatically saved and synchronized across all devices. Changes may take a few minutes to reflect.
                 </p>
               </div>
             </div>
