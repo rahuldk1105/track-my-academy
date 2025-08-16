@@ -40,16 +40,24 @@ export default function LoginPage() {
 
     try {
       setSubmitting(true);
+      console.log("Starting login process...");
+      
       const { data, error } = await signIn(email, password);
+      console.log("SignIn result:", { data: !!data, error: error?.message });
+      
       if (error) {
+        console.error("Login error:", error);
         setError(error.message || "Invalid credentials. Please try again.");
         setSubmitting(false);
         return;
       }
       
+      console.log("Login successful, checking access token...", !!data?.session?.access_token);
+      
       // Wait for role data to be fetched before navigation
       if (data?.session?.access_token) {
         try {
+          console.log("Fetching user role...");
           // Fetch user role directly to ensure we have role data before navigation
           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user`, {
             headers: {
@@ -57,22 +65,32 @@ export default function LoginPage() {
             }
           });
           
+          console.log("Role fetch response status:", response.status);
+          
           if (response.ok) {
             const userData = await response.json();
+            console.log("User data received:", userData);
             const userRole = userData.user?.role_info;
             
+            console.log("User role:", userRole?.role);
+            
             if (userRole?.role === 'super_admin') {
+              console.log("Navigating to dashboard...");
               navigate("/dashboard", { replace: true });
             } else if (userRole?.role === 'academy_user') {
+              console.log("Navigating to academy...");
               navigate("/academy", { replace: true });
             } else if (userRole?.role === 'player') {
+              console.log("Navigating to player...");
               navigate("/player", { replace: true });
             } else {
+              console.error("Invalid role:", userRole?.role);
               setError("Invalid user role. Please contact administrator.");
               setSubmitting(false);
               return;
             }
           } else {
+            console.error("Role fetch failed with status:", response.status);
             setError("Failed to get user role. Please try again.");
             setSubmitting(false);
             return;
@@ -84,6 +102,7 @@ export default function LoginPage() {
           return;
         }
       } else {
+        console.error("No access token received");
         setError("Authentication failed. Please try again.");
         setSubmitting(false);
       }
