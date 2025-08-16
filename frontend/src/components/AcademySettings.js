@@ -74,7 +74,10 @@ const AcademySettings = () => {
           public_profile: data.public_profile !== undefined ? data.public_profile : false,
           show_player_stats: data.show_player_stats !== undefined ? data.show_player_stats : true,
           show_coach_info: data.show_coach_info !== undefined ? data.show_coach_info : true,
-          data_sharing_consent: data.data_sharing_consent !== undefined ? data.data_sharing_consent : false
+          data_sharing_consent: data.data_sharing_consent !== undefined ? data.data_sharing_consent : false,
+          auto_backup: data.auto_backup !== undefined ? data.auto_backup : true,
+          maintenance_mode: data.maintenance_mode !== undefined ? data.maintenance_mode : false,
+          api_access: data.api_access !== undefined ? data.api_access : true
         }));
       }
     } catch (error) {
