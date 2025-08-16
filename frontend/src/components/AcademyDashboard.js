@@ -17,7 +17,8 @@ import {
 } from 'recharts';
 import { 
   Users, UserCheck, TrendingUp, Calendar, Award, Clock, 
-  Activity, Target, BookOpen, Search, Bell, Settings, Plus
+  Activity, Target, BookOpen, Search, Bell, Settings, Plus,
+  BarChart3, PieChart, LineChart, User, Building2
 } from 'lucide-react';
 
 const AcademyDashboard = () => {
