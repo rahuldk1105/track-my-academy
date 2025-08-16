@@ -323,7 +323,34 @@ const AcademyDashboard = () => {
     coach.specialization?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
+  if (loading) {
+    return (
+      <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-900'} flex items-center justify-center`}>
+        <div className="flex flex-col items-center space-y-4">
+          <div className={`animate-spin rounded-full h-12 w-12 border-4 ${isLight ? 'border-gray-300 border-t-blue-600' : 'border-gray-600 border-t-blue-400'}`}></div>
+          <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Loading academy dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userRole || userRole.role !== 'academy_user' || !userRole.academy_id) {
+    return (
+      <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-900'} flex items-center justify-center`}>
+        <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-8 text-center shadow-lg border ${isLight ? 'border-gray-200' : 'border-gray-700'} max-w-md`}>
+          <div className={`${isLight ? 'text-red-600' : 'text-red-400'} text-xl mb-2 font-semibold`}>Access Denied</div>
+          <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>You don't have permission to access the academy dashboard.</div>
+          <button
+            onClick={handleSignOut}
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
     <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-900'}`}>
       {/* Modern Sidebar */}
       <div className="flex">
