@@ -757,7 +757,7 @@ const AcademyDashboard = () => {
 
             {activeTab === 'attendance' && <AttendanceTracker />}
             {activeTab === 'performance' && <PerformanceAnalytics />}
-            {activeTab === 'settings' && <AcademySettingsForm />}
+            {activeTab === 'settings' && <AcademySettings />}
           </div>
         </main>
       </div>
