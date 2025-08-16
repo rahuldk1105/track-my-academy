@@ -53,11 +53,25 @@ const AcademyDashboard = () => {
       setLoading(true);
       setAcademyData({ id: userRole.academy_id, name: userRole.academy_name });
       await loadAcademySettings();
-      await Promise.all([loadStats(), loadPlayers(), loadCoaches()]);
+      await Promise.all([loadStats(), loadPlayers(), loadCoaches(), loadAnalytics()]);
     } catch (error) {
       console.error('Error loading academy data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAnalytics = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/academy/analytics`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+      });
+      if (response.ok) {
+        const analyticsData = await response.json();
+        setAnalytics(analyticsData);
+      }
+    } catch (error) {
+      console.error('Error loading analytics:', error);
     }
   };
 
