@@ -280,7 +280,7 @@ const Dashboard = () => {
       <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-900'} flex items-center justify-center`}>
         <div className="flex flex-col items-center space-y-4">
           <div className={`animate-spin rounded-full h-12 w-12 border-4 ${isLight ? 'border-gray-300 border-t-blue-600' : 'border-gray-600 border-t-blue-400'}`}></div>
-          <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Loading super admin dashboard...</p>
+          <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Loading dashboard...</p>
         </div>
       </div>
     );
