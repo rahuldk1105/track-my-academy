@@ -3,7 +3,7 @@ import { useAuth } from '../AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
   Settings, Calendar, Clock, Bell, Shield, 
-  Toggle, Save, AlertCircle, CheckCircle
+  Save, AlertCircle, CheckCircle, Globe, Users, Monitor
 } from 'lucide-react';
 
 const AcademySettings = () => {
