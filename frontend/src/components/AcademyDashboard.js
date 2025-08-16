@@ -405,10 +405,23 @@ const AcademyDashboard = () => {
           {/* Top Bar */}
           <header className={`${isLight ? 'bg-white/80 backdrop-blur-sm border-b border-gray-200' : 'bg-gray-800/80 backdrop-blur-sm border-b border-gray-700'} sticky top-0 z-10`}>
             <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <h1 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                </h1>
+              <div className="flex items-center gap-6">
+                {/* Academy Logo in Header */}
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                    alt="Academy Logo" 
+                    className="h-8 w-8 rounded-lg object-cover border border-gray-200 shadow-sm"
+                  />
+                  <div className="hidden md:block">
+                    <h1 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                      {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                    </h1>
+                    <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {academyData?.name || 'Academy Dashboard'}
+                    </p>
+                  </div>
+                </div>
                 {(activeTab === 'players' || activeTab === 'coaches') && (
                   <div className="relative">
                     <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -431,16 +444,6 @@ const AcademyDashboard = () => {
                   <Bell className={`w-5 h-5 ${isLight ? 'text-gray-600' : 'text-gray-400'}`} />
                 </button>
                 <ThemeToggle />
-                <button
-                  onClick={handleSignOut}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isLight 
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                >
-                  Sign Out
-                </button>
               </div>
             </div>
           </header>
