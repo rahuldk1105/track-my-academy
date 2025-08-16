@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import PlayerModal from './PlayerModal';
 import CoachModal from './CoachModal';
 import AcademySettings from './AcademySettings';
+import AcademyProfile from './AcademyProfile';
 import AttendanceTracker from './AttendanceTracker';
 import PerformanceAnalytics from './PerformanceAnalytics';
 import ThemeToggle from './ThemeToggle';
