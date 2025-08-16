@@ -268,6 +268,61 @@ const AcademyDashboard = () => {
     }
   };
 
+  // Chart color schemes
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+  
+  // Prepare chart data
+  const getPlayerDistributionData = () => {
+    if (!analytics?.player_analytics?.position_distribution) return [];
+    return Object.entries(analytics.player_analytics.position_distribution).map(([position, count]) => ({
+      name: position,
+      value: count,
+      percentage: ((count / (stats.total_players || 1)) * 100).toFixed(1)
+    }));
+  };
+
+  const getAgeDistributionData = () => {
+    if (!analytics?.player_analytics?.age_distribution) return [];
+    return Object.entries(analytics.player_analytics.age_distribution).map(([ageGroup, count]) => ({
+      ageGroup: ageGroup.replace('_', '-'),
+      players: count
+    }));
+  };
+
+  const getMonthlyGrowthData = () => {
+    // Mock monthly growth data - replace with real data from backend
+    return [
+      { month: 'Jan', players: 12, coaches: 3 },
+      { month: 'Feb', players: 15, coaches: 3 },
+      { month: 'Mar', players: 18, coaches: 4 },
+      { month: 'Apr', players: 22, coaches: 4 },
+      { month: 'May', players: 28, coaches: 5 },
+      { month: 'Jun', players: stats.total_players || 30, coaches: stats.total_coaches || 5 },
+    ];
+  };
+
+  const getPerformanceData = () => {
+    // Mock performance data - replace with real data
+    return [
+      { week: 'W1', attendance: 85, performance: 78 },
+      { week: 'W2', attendance: 88, performance: 82 },
+      { week: 'W3', attendance: 92, performance: 85 },
+      { week: 'W4', attendance: 87, performance: 88 },
+    ];
+  };
+
+  const filteredPlayers = players.filter(player => 
+    player.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    player.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    player.position?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredCoaches = coaches.filter(coach => 
+    coach.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    coach.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    coach.specialization?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const TabButton = ({ id, label, active, onClick }) => (
     <button
       onClick={() => onClick(id)}
