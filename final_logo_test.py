@@ -9,7 +9,7 @@ import json
 import os
 
 # Configuration
-BACKEND_URL = "https://dash-profile-revamp.preview.emergentagent.com"
+BACKEND_URL = "https://dashboard-repair-15.preview.emergentagent.com"
 API_BASE_URL = f"{BACKEND_URL}/api"
 
 print("🎯 FINAL ACADEMY LOGO SYSTEM TEST")

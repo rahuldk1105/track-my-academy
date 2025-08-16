@@ -9,7 +9,7 @@ import json
 from typing import Dict, Any
 
 # Test configuration
-BACKEND_URL = "https://dash-profile-revamp.preview.emergentagent.com"
+BACKEND_URL = "https://dashboard-repair-15.preview.emergentagent.com"
 TEST_ENDPOINT = "/api/auth/user"
 FULL_URL = f"{BACKEND_URL}{TEST_ENDPOINT}"
 

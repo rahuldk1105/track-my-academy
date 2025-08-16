@@ -2500,7 +2500,7 @@ def setup_admin_account():
     print("🎉 ADMIN ACCOUNT SETUP COMPLETE!")
     print("=" * 60)
     print("📋 LOGIN CREDENTIALS FOR USER:")
-    print(f"URL: https://dash-profile-revamp.preview.emergentagent.com/login")
+    print(f"URL: https://dashboard-repair-15.preview.emergentagent.com/login")
     print(f"Email: admin@trackmyacademy.com")
     print(f"Password: AdminPassword123!")
     print("\n📊 ACCOUNT DETAILS:")
