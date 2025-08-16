@@ -84,7 +84,7 @@ Unlike other platforms that target individual athletes, Track My Academy follows
 
 ### Frontend Environment Variables
 ```
-REACT_APP_BACKEND_URL=https://dashboard-repair-15.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://login-route-fix.preview.emergentagent.com
 WDS_SOCKET_PORT=443
 ```
 
