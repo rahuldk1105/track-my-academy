@@ -46,8 +46,47 @@ export default function LoginPage() {
         setSubmitting(false);
         return;
       }
-      // Successful login: route to dashboard (super admin will land here; academy users will be redirected to /academy by Dashboard)
-      navigate("/dashboard", { replace: true });
+      
+      // Wait for role data to be fetched before navigation
+      if (data?.session?.access_token) {
+        try {
+          // Fetch user role directly to ensure we have role data before navigation
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user`, {
+            headers: {
+              'Authorization': `Bearer ${data.session.access_token}`
+            }
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            const userRole = userData.user?.role_info;
+            
+            if (userRole?.role === 'super_admin') {
+              navigate("/dashboard", { replace: true });
+            } else if (userRole?.role === 'academy_user') {
+              navigate("/academy", { replace: true });
+            } else if (userRole?.role === 'player') {
+              navigate("/player", { replace: true });
+            } else {
+              setError("Invalid user role. Please contact administrator.");
+              setSubmitting(false);
+              return;
+            }
+          } else {
+            setError("Failed to get user role. Please try again.");
+            setSubmitting(false);
+            return;
+          }
+        } catch (roleError) {
+          console.error("Role fetch error:", roleError);
+          setError("Failed to authenticate. Please try again.");
+          setSubmitting(false);
+          return;
+        }
+      } else {
+        setError("Authentication failed. Please try again.");
+        setSubmitting(false);
+      }
     } catch (err) {
       console.error("Login error:", err);
       setError("Something went wrong while logging in. Please try again.");
