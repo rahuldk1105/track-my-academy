@@ -40,7 +40,7 @@ client = AsyncIOMotorClient(
     serverSelectionTimeoutMS=5000,
     connectTimeoutMS=5000,
     retryWrites=True,
-    tls=True,  # Atlas
+    tls=False,  # Local MongoDB
 )
 db = client[os.environ['DB_NAME']]
 
