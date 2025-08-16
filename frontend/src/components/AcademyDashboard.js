@@ -823,6 +823,7 @@ const AcademyDashboard = () => {
 
             {activeTab === 'attendance' && <AttendanceTracker />}
             {activeTab === 'performance' && <PerformanceAnalytics />}
+            {activeTab === 'profile' && <AcademyProfile />}
             {activeTab === 'settings' && <AcademySettings />}
           </div>
         </main>
