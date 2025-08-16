@@ -361,9 +361,9 @@ const AcademyDashboard = () => {
           <div className="p-6">
             <div className="flex items-center gap-3 mb-8">
               <img 
-                src={academyLogo || "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
                 alt="Academy Logo" 
-                className="h-10 w-10 rounded-xl object-cover"
+                className="h-12 w-12 rounded-xl object-cover border-2 border-gray-200 shadow-md"
               />
               <div>
                 <h2 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
