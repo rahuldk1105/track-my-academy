@@ -29,7 +29,12 @@ const AcademySettings = () => {
     public_profile: false,
     show_player_stats: true,
     show_coach_info: true,
-    data_sharing_consent: false
+    data_sharing_consent: false,
+    
+    // System Settings
+    auto_backup: true,
+    maintenance_mode: false,
+    api_access: true
   });
 
   const [message, setMessage] = useState({ type: '', text: '' });
