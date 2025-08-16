@@ -380,6 +380,7 @@ const AcademyDashboard = () => {
                 { id: 'coaches', label: 'Coaches', icon: <UserCheck className="w-5 h-5" /> },
                 { id: 'attendance', label: 'Attendance', icon: <Calendar className="w-5 h-5" /> },
                 { id: 'performance', label: 'Performance', icon: <TrendingUp className="w-5 h-5" /> },
+                { id: 'profile', label: 'Profile', icon: <User className="w-5 h-5" /> },
                 { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
               ].map((item) => (
                 <button
