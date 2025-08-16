@@ -11,7 +11,7 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light'); // Default to light theme
 
   // Get unique storage key based on user email
   const getStorageKey = (userEmail) => {
@@ -26,11 +26,11 @@ export const ThemeProvider = ({ children }) => {
       if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
         setTheme(savedTheme);
       } else {
-        setTheme('dark'); // Default to dark theme
+        setTheme('light'); // Default to light theme
       }
     } catch (error) {
       console.warn('Error loading theme preference:', error);
-      setTheme('dark');
+      setTheme('light');
     }
   };
 
