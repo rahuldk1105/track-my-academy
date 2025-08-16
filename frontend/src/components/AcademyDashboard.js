@@ -452,6 +452,68 @@ const AcademyDashboard = () => {
           <div className="p-6 space-y-6">
             {activeTab === 'overview' && (
               <div className="space-y-6">
+                {/* Academy Overview Card */}
+                <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-8 shadow-lg border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Academy Overview</h2>
+                    <div className="flex items-center gap-4">
+                      <img 
+                        src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                        alt="Academy Logo" 
+                        className="h-16 w-16 rounded-2xl object-cover border-2 border-gray-200 shadow-lg"
+                      />
+                      <div className="text-right">
+                        <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                          {academyData?.name || 'Academy Name'}
+                        </h3>
+                        <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                          Academy Dashboard
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div className={`p-4 rounded-xl ${isLight ? 'bg-blue-50' : 'bg-blue-500/10'}`}>
+                      <div className="flex items-center gap-3">
+                        <Users className={`w-8 h-8 ${isLight ? 'text-blue-600' : 'text-blue-400'}`} />
+                        <div>
+                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.total_players || 0}</p>
+                          <p className={`text-sm ${isLight ? 'text-blue-600' : 'text-blue-400'}`}>Players</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`p-4 rounded-xl ${isLight ? 'bg-green-50' : 'bg-green-500/10'}`}>
+                      <div className="flex items-center gap-3">
+                        <UserCheck className={`w-8 h-8 ${isLight ? 'text-green-600' : 'text-green-400'}`} />
+                        <div>
+                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>{stats.active_coaches || 0}</p>
+                          <p className={`text-sm ${isLight ? 'text-green-600' : 'text-green-400'}`}>Coaches</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`p-4 rounded-xl ${isLight ? 'bg-orange-50' : 'bg-orange-500/10'}`}>
+                      <div className="flex items-center gap-3">
+                        <TrendingUp className={`w-8 h-8 ${isLight ? 'text-orange-600' : 'text-orange-400'}`} />
+                        <div>
+                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>87%</p>
+                          <p className={`text-sm ${isLight ? 'text-orange-600' : 'text-orange-400'}`}>Attendance</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`p-4 rounded-xl ${isLight ? 'bg-purple-50' : 'bg-purple-500/10'}`}>
+                      <div className="flex items-center gap-3">
+                        <Award className={`w-8 h-8 ${isLight ? 'text-purple-600' : 'text-purple-400'}`} />
+                        <div>
+                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>8.4</p>
+                          <p className={`text-sm ${isLight ? 'text-purple-600' : 'text-purple-400'}`}>Rating</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
