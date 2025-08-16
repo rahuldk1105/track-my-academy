@@ -351,6 +351,7 @@ const AcademyDashboard = () => {
     );
   }
 
+  return (
     <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-900'}`}>
       {/* Modern Sidebar */}
       <div className="flex">
