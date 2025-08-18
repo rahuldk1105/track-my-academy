@@ -5,7 +5,7 @@ Debug CORS configuration by testing a simple endpoint
 
 import requests
 
-BACKEND_URL = "https://login-route-fix.preview.emergentagent.com"
+BACKEND_URL = "https://sportfix.preview.emergentagent.com"
 SIMPLE_ENDPOINT = "/api/"  # Simple endpoint that should work
 FULL_URL = f"{BACKEND_URL}{SIMPLE_ENDPOINT}"
 
