@@ -896,17 +896,17 @@ backend:
           agent: "testing"
           comment: "COMPREHENSIVE ACADEMY DASHBOARD TESTING COMPLETED SUCCESSFULLY! Complete academy management system tested and verified working: 1) ✅ ACADEMY AUTHENTICATION: Academy user login working with proper role detection (academy_user), correct academy_id and academy_name assignment, proper permissions array. Super admin users correctly blocked from academy endpoints with 403 status. 2) ✅ PLAYER MANAGEMENT CRUD: All operations working - GET /api/academy/players (lists academy players), POST /api/academy/players (creates players with validation), GET /api/academy/players/{id} (retrieves specific player), PUT /api/academy/players/{id} (updates player info), DELETE /api/academy/players/{id} (removes players). Jersey number duplication prevention working correctly. Created 3 test players with complete profiles. 3) ✅ COACH MANAGEMENT CRUD: All operations working - GET /api/academy/coaches (lists academy coaches), POST /api/academy/coaches (creates coaches), GET /api/academy/coaches/{id} (retrieves specific coach), PUT /api/academy/coaches/{id} (updates coach info), DELETE /api/academy/coaches/{id} (removes coaches). Coach limit enforcement working - prevents creating coaches beyond academy limit (5). Created 5 test coaches with complete profiles. 4) ✅ ACADEMY STATS API: GET /api/academy/stats returns accurate counts - total_players: 3, active_players: 3, total_coaches: 5, active_coaches: 5, player_limit: 30, coach_limit: 5. All fields present and valid. 5) ✅ DATA ISOLATION: Academy users can only access their own data - all players and coaches have correct academy_id linkage, no cross-academy data access. Fixed missing Supabase dependencies (gotrue, postgrest, realtime, storage3, supafunc) that were preventing backend startup. All 8/8 tests passed. Academy management system is production-ready and fully operational."
 
-  - task: "Academy Settings APIs - GET, PUT, Logo Upload"
+  - task: "Academy Settings and Profile Update Issue - CRITICAL"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: false
           agent: "testing"
-          comment: "ACADEMY SETTINGS APIS TESTING COMPLETED SUCCESSFULLY! All academy settings endpoints are working perfectly: 1) ✅ GET /api/academy/settings: Creates default settings if none exist, returns all settings fields (branding, operational, notification, privacy settings), proper authentication and data isolation working. 2) ✅ PUT /api/academy/settings: Successfully updates all settings categories including branding (description, website, theme_color, social_media), operational (season dates, training days/time, facility info), notification preferences, and privacy settings. Partial updates work correctly. 3) ✅ POST /api/academy/logo: Validates image file types (JPEG, JPG, PNG), generates unique filenames with academy_id prefix, stores files in /uploads/logos/ directory, updates academy settings with logo URL, serves uploaded files via static file serving, properly rejects non-image files with 400 status. 4) ✅ Authentication & Data Isolation: Academy users can only access their own settings, super admin users correctly blocked with 403 status, JWT token validation working properly. 5) ✅ Database Integration: Settings stored in academy_settings collection with proper upsert operations, all field updates persist correctly. All academy settings functionality is production-ready and fully operational."
+          comment: "❌ CRITICAL ISSUE IDENTIFIED IN ACADEMY PROFILE UPDATES: PUT /api/academy/settings endpoint has field mapping issue where academy_name and other profile fields are not being properly updated in database despite successful API responses. Logo upload (POST /api/academy/logo) works correctly - photos upload and save properly. However, profile details like academy_name are not getting saved when updating settings. This matches user's report about 'profile details not getting saved'. Root cause: AcademySettingsUpdate model or update logic in backend needs investigation for proper field mapping."
 
   - task: "Academy Analytics APIs - Comprehensive Analytics"
     implemented: true
