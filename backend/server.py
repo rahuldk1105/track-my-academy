@@ -3467,15 +3467,15 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://track-my-academy.vercel.app",
         "http://localhost:3000",
         "http://localhost:5173"
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["Content-Length", "X-Requested-With"],
-    max_age=600,
+    max_age=600,
 )
 
 @app.on_event("shutdown")
