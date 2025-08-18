@@ -40,7 +40,7 @@ client = AsyncIOMotorClient(
     serverSelectionTimeoutMS=5000,
     connectTimeoutMS=5000,
     retryWrites=True,
-    tls=False,  # Local MongoDB
+    tls=True,  # Atlas
 )
 db = client[os.environ['DB_NAME']]
 
@@ -3466,17 +3466,20 @@ app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
+    allow_credentials=True,
     allow_origins=[
+        "https://track-my-academy.vercel.app",
+        "https://dev.trackmyacademy.com",
+        "http://localhost:5173",
         "http://localhost:3000",
-        "http://localhost:5173"
     ],
     allow_origin_regex=r"https://.*\.vercel\.app$",
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["Content-Length", "X-Requested-With"],
     max_age=600,
 )
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
