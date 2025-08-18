@@ -25,8 +25,8 @@ API_BASE_URL = f"{BACKEND_URL}/api"
 print(f"Testing backend at: {API_BASE_URL}")
 
 # Test credentials for academy user
-ACADEMY_USER_EMAIL = "testacademy2@roletest.com"
-ACADEMY_USER_PASSWORD = "TestPassword123!"
+ACADEMY_USER_EMAIL = "admin@cpsports.in"
+ACADEMY_USER_PASSWORD = "AdminPassword123!"
 
 def get_academy_user_token():
     """Get access token for academy user"""
