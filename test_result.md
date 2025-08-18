@@ -375,7 +375,7 @@ backend:
           agent: "testing"
           comment: "Manual subscription management endpoints working correctly: 1) ✅ POST /api/admin/billing/subscriptions/manual creates manual subscriptions with plan validation, custom amount support, period management, status control (active, cancelled, suspended, pending, trial), auto-renew settings, and admin notes. 2) ✅ PUT /api/admin/billing/subscriptions/{id} updates subscription details with proper validation. 3) ✅ Subscription plans integration working - validates plan_id against SUBSCRIPTION_PLANS configuration, supports custom pricing overrides. 4) ✅ Database operations use upsert for academy subscriptions to prevent duplicates. Complete manual billing and subscription management system is production-ready."
 
-  - task: "Complete Backend System Integration Test"
+  - task: "Attendance Tracker - Mark Attendance (POST /api/academy/attendance)"
     implemented: true
     working: true
     file: "/app/backend/server.py"
@@ -385,7 +385,67 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "COMPREHENSIVE BACKEND TESTING COMPLETED SUCCESSFULLY! All major backend systems tested and working correctly: 1) ✅ Server Health Check: GET /api/ endpoint returns proper 'Hello World' response with 200 status. 2) ✅ MongoDB Integration: Database connectivity confirmed, data persistence working, CRUD operations functional. 3) ✅ Supabase Authentication: Health check endpoint working, JWT token handling operational, admin login successful with proper access token generation. 4) ✅ Academy Management APIs: Complete CRUD operations working - POST /api/admin/create-academy (FormData support), GET /api/admin/academies, PUT /api/admin/academies/{id}, DELETE /api/admin/academies/{id}. Enhanced features including logo upload, player/coach limits fully functional. 5) ✅ Demo Request System: All endpoints operational - POST /api/demo-requests (public), GET /api/admin/demo-requests, PUT /api/admin/demo-requests/{id}. Proper validation, MongoDB integration, status management working. 6) ✅ Billing & Subscription System: Complete manual billing system operational - subscription plans, academy subscriptions, payment transactions, manual payment creation, subscription management. All endpoints tested and working correctly. Backend is production-ready and fully functional for Track My Academy SaaS platform."
+          comment: "ATTENDANCE MARKING ENDPOINT TESTING COMPLETED SUCCESSFULLY: POST /api/academy/attendance endpoint working perfectly with real academy user and players. Tested with academy user testacademy@attendance.com and real players (John Doe ID: a0b72b9e-af9f-4deb-b387-329580dcfddf, Alice Smith ID: 4ec3763b-6be6-4db6-8e8f-2c56d6cfa6fb). Attendance data IS being saved properly to database - contrary to user's initial report. Successfully marked attendance for 2025-08-18 with performance ratings, notes, and present/absent status. Database persistence confirmed with proper player_attendance collection updates. Response includes detailed results with player_id and status confirmation."
+
+  - task: "Attendance Tracker - Get Attendance by Date (GET /api/academy/attendance/{date})"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "ATTENDANCE RETRIEVAL BY DATE ENDPOINT TESTING COMPLETED SUCCESSFULLY: GET /api/academy/attendance/{date} endpoint working correctly. Successfully retrieved attendance records for 2025-08-18 with complete data structure including attendance_id, player_id, player_name, present status, performance_rating, notes, and marked_at timestamp. Found 2 attendance records as expected. Data persistence confirmed - attendance marked via POST endpoint is properly retrievable via GET endpoint. Response format: {'date': 'YYYY-MM-DD', 'attendance_records': [array of attendance objects]}."
+
+  - task: "Attendance Tracker - Get Attendance Summary (GET /api/academy/attendance/summary)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "ATTENDANCE SUMMARY ENDPOINT TESTING: GET /api/academy/attendance/summary endpoint exists and returns 200 status but response format needs verification. Current response: {'date': 'summary', 'attendance_records': []} suggests endpoint may be using same handler as date-specific endpoint. Expected summary fields like total_sessions, attendance_rate, total_players not present in current response. Endpoint functional but may need enhancement for proper summary statistics."
+
+  - task: "Academy Logo Upload (POST /api/academy/logo)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "ACADEMY LOGO UPLOAD ENDPOINT TESTING COMPLETED SUCCESSFULLY: POST /api/academy/logo working perfectly - photos ARE uploading and saving properly, contrary to user's report. Tested with real academy user testacademy@attendance.com. Logo files properly stored in /uploads/logos/ directory with academy_id prefix format (006e1885-933d-467b-90c0-bdd8d5992210_[uuid].png). Static file serving working correctly - uploaded logos accessible via /api/uploads/logos/ URLs. Logo URLs correctly saved to academy_settings collection in database. File validation working - rejects non-image files with proper 400 status and error message. Logo persistence confirmed across multiple requests."
+
+  - task: "Academy Profile Settings - Get Settings (GET /api/academy/settings)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "ACADEMY SETTINGS GET ENDPOINT TESTING COMPLETED SUCCESSFULLY: GET /api/academy/settings endpoint working correctly. Successfully retrieves academy settings with complete AcademySettings model structure including id, academy_id, logo_url, description, website, social_media, theme_color, notification preferences, and other configuration fields. Proper authentication required and working. Settings persistence confirmed - logo uploads properly update logo_url field in settings. Default settings created automatically if none exist for academy."
+
+  - task: "Academy Profile Settings - Update Settings (PUT /api/academy/settings)"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE IDENTIFIED IN ACADEMY SETTINGS UPDATE: PUT /api/academy/settings endpoint has a significant bug that matches user's report. While endpoint returns 200 status and appears successful, the academy_name field and other profile details are NOT being saved properly. Tested update with academy_name: 'Updated Test Academy Name' but field remains None/null in response. The endpoint accepts updates and creates new settings records but doesn't apply field changes correctly. This confirms user's report that 'profile details are not getting saved'. Other fields like description and website may update correctly, but academy_name specifically fails. ROOT CAUSE: Field mapping issue in settings update logic where certain fields are not being properly updated in the database despite successful API response."
 
   - task: "Dark/Light Mode Toggle Implementation"
     implemented: true
