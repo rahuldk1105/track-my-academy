@@ -19,6 +19,7 @@ const AttendanceTracker = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // all, present, absent
+  const todayDate = new Date().toISOString().split('T')[0];
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -70,7 +71,7 @@ const AttendanceTracker = () => {
 
   const loadAttendanceForDate = async (date) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/academy/attendance/${date}`, {
+      const response = await fetch(`${API_BASE_URL}/api/academy/attendance/${todayDate}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
