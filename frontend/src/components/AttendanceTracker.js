@@ -158,7 +158,7 @@ const AttendanceTracker = () => {
         }))
       };
 
-      const response = await fetch(`${API_BASE_URL}/api/academy/attendance`, {
+      const response = await fetch(`${API_BASE_URL}/api/academy/attendance/${date}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
