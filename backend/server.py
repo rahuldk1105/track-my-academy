@@ -611,7 +611,7 @@ class PlayerAttendance(BaseModel):
     academy_id: str
     date: str  # YYYY-MM-DD format
     present: bool
-    sport: str  # Sport type for performance categories
+    # sport: str  # Sport type for performance categories
     # Sport-specific performance ratings (1-10 scale for each category)
     performance_ratings: Dict[str, Optional[int]] = {}  # e.g., {"Technical Skills": 8, "Physical Fitness": 7, ...}
     notes: Optional[str] = None
