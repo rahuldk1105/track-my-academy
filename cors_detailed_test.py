@@ -7,7 +7,7 @@ Analyzes the specific CORS behavior for regex pattern matching
 import requests
 import json
 
-BACKEND_URL = "https://sportfix.preview.emergentagent.com"
+BACKEND_URL = "https://dashboard-debug-5.preview.emergentagent.com"
 TEST_ENDPOINT = "/api/auth/user"
 FULL_URL = f"{BACKEND_URL}{TEST_ENDPOINT}"
 

@@ -9,7 +9,7 @@ import json
 import os
 
 # Configuration
-BACKEND_URL = "https://sportfix.preview.emergentagent.com"
+BACKEND_URL = "https://dashboard-debug-5.preview.emergentagent.com"
 API_BASE_URL = f"{BACKEND_URL}/api"
 
 print("🎯 FINAL ACADEMY LOGO SYSTEM TEST")
