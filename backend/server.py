@@ -2213,7 +2213,7 @@ async def mark_attendance(attendance_request: AttendanceMarkingRequest, user_inf
         raise HTTPException(status_code=500, detail="Failed to mark attendance")
 
 # Get attendance for a specific date (Academy User)
-@api_router.get("/academy/attendance/{date}")
+@api_router.post("/academy/attendance/{date}")
 async def get_attendance_by_date(date: str, user_info = Depends(require_academy_user)):
     """Get attendance records for a specific date"""
     try:
