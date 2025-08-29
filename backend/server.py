@@ -1,3 +1,5 @@
+# backend/server.py
+
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
@@ -2277,7 +2279,7 @@ async def get_player_performance(player_id: str, user_info = Depends(require_aca
             {"date": record["date"], "rating": record.get("performance_ratings", {}).get("overall")}
             for record in attended_sessions_records
             if record.get("performance_ratings", {}).get("overall") is not None
-        ], key=lambda x: x["date"])[-10:]
+        ], key=lambda x: x["date"])
         
         monthly_stats = {}
         for record in all_sessions:
