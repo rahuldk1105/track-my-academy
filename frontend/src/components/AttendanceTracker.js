@@ -19,11 +19,13 @@ const AttendanceTracker = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // all, present, absent
+  const [sportCategories, setSportCategories] = useState({});
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     loadPlayers();
+    loadSportCategories();
   }, []);
 
   useEffect(() => {
@@ -31,6 +33,24 @@ const AttendanceTracker = () => {
       loadAttendanceForDate(selectedDate);
     }
   }, [selectedDate, players]);
+
+  const loadSportCategories = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/sports/config`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const config = await response.json();
+        setSportCategories(config.performance_categories);
+      }
+    } catch (error) {
+      console.error('Error loading sport categories:', error);
+    }
+  };
+
 
   const loadPlayers = async () => {
     try {
@@ -595,21 +615,28 @@ const AttendanceTracker = () => {
                     </label>
                   </td>
                   <td className="py-4 px-6">
-                  <select
-                      value={record.performance_ratings?.['Technical Skills'] || ''}
-                      onChange={(e) => updatePerformanceRating(record.player_id, 'Technical Skills', e.target.value)}
-                      disabled={!record.present}
-                      className={`w-20 px-3 py-2 rounded-lg border text-center transition-all duration-200 ${
-                          isLight
-                              ? 'border-gray-200 bg-white text-gray-900 focus:border-blue-500'
-                              : 'border-purple-500/30 bg-gray-800 text-white focus:border-purple-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                      <option value="">-</option>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
-                          <option key={rating} value={rating}>{rating}</option>
+                    <div className="flex flex-col gap-2">
+                      {(sportCategories[record.sport] || sportCategories['Other'] || []).map(category => (
+                        <div key={category} className="flex items-center gap-2">
+                          <label className={`text-sm w-32 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{category}</label>
+                          <select
+                            value={record.performance_ratings?.[category] || ''}
+                            onChange={(e) => updatePerformanceRating(record.player_id, category, e.target.value)}
+                            disabled={!record.present}
+                            className={`w-20 px-3 py-1 rounded-lg border text-center transition-all duration-200 ${
+                                isLight
+                                    ? 'border-gray-200 bg-white text-gray-900 focus:border-blue-500'
+                                    : 'border-purple-500/30 bg-gray-800 text-white focus:border-purple-400'
+                            } focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            <option value="">-</option>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(rating => (
+                                <option key={rating} value={rating}>{rating}</option>
+                            ))}
+                          </select>
+                        </div>
                       ))}
-                  </select>
+                    </div>
                   </td>
                   <td className="py-4 px-6">
                     <input
