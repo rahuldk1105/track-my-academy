@@ -9,17 +9,21 @@ import AcademyProfile from './AcademyProfile';
 import AttendanceTracker from './AttendanceTracker';
 import PerformanceAnalytics from './PerformanceAnalytics';
 import ThemeToggle from './ThemeToggle';
+import SideNav from './SideNav';
+import PlayerCard from './PlayerCard';
+import CoachCard from './CoachCard';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, Legend
 } from 'recharts';
 import { 
-  Users, UserCheck, TrendingUp, Calendar, Award,
-  Activity, Search, Bell, Settings, Plus, User
+  Users, UserCheck, TrendingUp, Calendar, Award, Clock, 
+  Activity, Target, BookOpen, Search, Bell, Settings, Plus,
+  BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, User, Building2
 } from 'lucide-react';
 
 const AcademyDashboard = () => {
-  const { signOut, token, userRole } = useAuth();
+  const { user, signOut, token, userRole } = useAuth();
   const { isLight } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -35,7 +39,6 @@ const AcademyDashboard = () => {
   const [editingCoach, setEditingCoach] = useState(null);
   const [academyLogo, setAcademyLogo] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [attendanceSummary, setAttendanceSummary] = useState(null); // State for summary data
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -52,33 +55,11 @@ const AcademyDashboard = () => {
       setLoading(true);
       setAcademyData({ id: userRole.academy_id, name: userRole.academy_name });
       await loadAcademySettings();
-      // Fetch all data in parallel, including the new attendance summary
-      await Promise.all([
-        loadStats(), 
-        loadPlayers(), 
-        loadCoaches(), 
-        loadAnalytics(), 
-        loadAttendanceSummary() // Fetch summary for overview
-      ]);
+      await Promise.all([loadStats(), loadPlayers(), loadCoaches(), loadAnalytics()]);
     } catch (error) {
       console.error('Error loading academy data:', error);
     } finally {
       setLoading(false);
-    }
-  };
-  
-  // New function to fetch attendance summary data
-  const loadAttendanceSummary = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/academy/attendance/summary`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const summaryData = await response.json();
-        setAttendanceSummary(summaryData);
-      }
-    } catch (error) {
-      console.error('Error loading attendance summary:', error);
     }
   };
 
@@ -282,8 +263,10 @@ const AcademyDashboard = () => {
     }
   };
 
+  // Chart color schemes
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
   
+  // Prepare chart data
   const getPlayerDistributionData = () => {
     if (!analytics?.player_analytics?.position_distribution) return [];
     return Object.entries(analytics.player_analytics.position_distribution).map(([position, count]) => ({
@@ -302,6 +285,7 @@ const AcademyDashboard = () => {
   };
 
   const getMonthlyGrowthData = () => {
+    // Mock monthly growth data - replace with real data from backend
     return [
       { month: 'Jan', players: 12, coaches: 3 },
       { month: 'Feb', players: 15, coaches: 3 },
@@ -313,6 +297,7 @@ const AcademyDashboard = () => {
   };
 
   const getPerformanceData = () => {
+    // Mock performance data - replace with real data
     return [
       { week: 'W1', attendance: 85, performance: 78 },
       { week: 'W2', attendance: 88, performance: 82 },
@@ -352,7 +337,12 @@ const AcademyDashboard = () => {
           <div className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>You don't have permission to access the academy dashboard.</div>
           <button
             onClick={async () => {
-              try { await signOut(); navigate('/'); } catch (error) { console.error('Error signing out:', error); }
+              try {
+                await signOut();
+                navigate('/');
+              } catch (error) {
+                console.error('Error signing out:', error);
+              }
             }}
             className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
           >
@@ -365,6 +355,7 @@ const AcademyDashboard = () => {
 
   return (
     <div className={`min-h-screen ${isLight ? 'bg-gray-50' : 'bg-gray-900'}`}>
+      {/* Modern Sidebar */}
       <div className="flex">
         <nav className={`${isLight ? 'bg-white border-r border-gray-200' : 'bg-gray-800 border-r border-gray-700'} w-64 min-h-screen fixed left-0 top-0 z-20`}>
           <div className="p-6">
@@ -375,7 +366,9 @@ const AcademyDashboard = () => {
                 className="h-12 w-12 rounded-xl object-cover border-2 border-gray-200 shadow-md"
               />
               <div>
-                <h2 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{academyData?.name || 'Academy'}</h2>
+                <h2 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {academyData?.name || 'Academy'}
+                </h2>
                 <p className={`text-sm ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>Dashboard</p>
               </div>
             </div>
@@ -390,37 +383,58 @@ const AcademyDashboard = () => {
                 { id: 'profile', label: 'Profile', icon: <User className="w-5 h-5" /> },
                 { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
               ].map((item) => (
-                <button key={item.id} onClick={() => setActiveTab(item.id)}
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    activeTab === item.id ? `${isLight ? 'bg-blue-50 text-blue-600 shadow-sm' : 'bg-blue-600/20 text-blue-400'}`
+                    activeTab === item.id
+                      ? `${isLight ? 'bg-blue-50 text-blue-600 shadow-sm' : 'bg-blue-600/20 text-blue-400'}`
                       : `${isLight ? 'text-gray-600 hover:bg-gray-50' : 'text-gray-400 hover:bg-gray-700'}`
                   }`}
                 >
-                  {item.icon}<span>{item.label}</span>
+                  {item.icon}
+                  <span>{item.label}</span>
                 </button>
               ))}
             </nav>
           </div>
         </nav>
 
+        {/* Main Content */}
         <main className="flex-1 ml-64">
+          {/* Top Bar */}
           <header className={`${isLight ? 'bg-white/80 backdrop-blur-sm border-b border-gray-200' : 'bg-gray-800/80 backdrop-blur-sm border-b border-gray-700'} sticky top-0 z-10`}>
             <div className="flex items-center justify-between px-6 py-4">
               <div className="flex items-center gap-6">
+                {/* Academy Logo in Header */}
                 <div className="flex items-center gap-3">
-                  <img src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} alt="Academy Logo" 
+                  <img 
+                    src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                    alt="Academy Logo" 
                     className="h-8 w-8 rounded-lg object-cover border border-gray-200 shadow-sm"
                   />
                   <div className="hidden md:block">
-                    <h1 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
-                    <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{academyData?.name || 'Academy Dashboard'}</p>
+                    <h1 className={`text-xl font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                      {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                    </h1>
+                    <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {academyData?.name || 'Academy Dashboard'}
+                    </p>
                   </div>
                 </div>
                 {(activeTab === 'players' || activeTab === 'coaches') && (
                   <div className="relative">
                     <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-400' : 'text-gray-500'}`} />
-                    <input type="text" placeholder={`Search ${activeTab}...`} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                      className={`pl-10 pr-4 py-2 w-64 rounded-lg border ${isLight ? 'border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500' : 'border-gray-600 bg-gray-700 focus:bg-gray-600 focus:border-blue-400 text-white'} focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200`}
+                    <input
+                      type="text"
+                      placeholder={`Search ${activeTab}...`}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={`pl-10 pr-4 py-2 w-64 rounded-lg border ${
+                        isLight 
+                          ? 'border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500' 
+                          : 'border-gray-600 bg-gray-700 focus:bg-gray-600 focus:border-blue-400 text-white'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200`}
                     />
                   </div>
                 )}
@@ -434,23 +448,32 @@ const AcademyDashboard = () => {
             </div>
           </header>
 
+          {/* Page Content */}
           <div className="p-6 space-y-6">
             {activeTab === 'overview' && (
               <div className="space-y-6">
+                {/* Academy Overview Card */}
                 <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-8 shadow-lg border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                   <div className="flex items-center justify-between mb-6">
                     <h2 className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Academy Overview</h2>
                     <div className="flex items-center gap-4">
-                      <img src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} alt="Academy Logo" 
+                      <img 
+                        src={academyLogo ? `${API_BASE_URL}${academyLogo}` : "https://i.ibb.co/1Z8cJ6q/academy-default-logo.png"} 
+                        alt="Academy Logo" 
                         className="h-16 w-16 rounded-2xl object-cover border-2 border-gray-200 shadow-lg"
                       />
                       <div className="text-right">
-                        <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{academyData?.name || 'Academy Name'}</h3>
-                        <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Academy Dashboard</p>
+                        <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                          {academyData?.name || 'Academy Name'}
+                        </h3>
+                        <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                          Academy Dashboard
+                        </p>
                       </div>
                     </div>
                   </div>
                   
+                  {/* Quick Stats */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div className={`p-4 rounded-xl ${isLight ? 'bg-blue-50' : 'bg-blue-500/10'}`}>
                       <div className="flex items-center gap-3">
@@ -474,9 +497,7 @@ const AcademyDashboard = () => {
                       <div className="flex items-center gap-3">
                         <TrendingUp className={`w-8 h-8 ${isLight ? 'text-orange-600' : 'text-orange-400'}`} />
                         <div>
-                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                            {attendanceSummary?.overall_attendance_rate?.toFixed(0) || 0}%
-                          </p>
+                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>87%</p>
                           <p className={`text-sm ${isLight ? 'text-orange-600' : 'text-orange-400'}`}>Attendance</p>
                         </div>
                       </div>
@@ -485,16 +506,15 @@ const AcademyDashboard = () => {
                       <div className="flex items-center gap-3">
                         <Award className={`w-8 h-8 ${isLight ? 'text-purple-600' : 'text-purple-400'}`} />
                         <div>
-                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                            {attendanceSummary?.average_performance_rating?.toFixed(1) || 'N/A'}
-                          </p>
-                          <p className={`text-sm ${isLight ? 'text-purple-600' : 'text-purple-400'}`}>Avg Rating</p>
+                          <p className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>8.4</p>
+                          <p className={`text-sm ${isLight ? 'text-purple-600' : 'text-purple-400'}`}>Rating</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* KPI Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <div className="flex items-center justify-between">
@@ -503,9 +523,12 @@ const AcademyDashboard = () => {
                         <p className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} mt-1`}>{stats.total_players || 0}</p>
                         <p className={`text-sm ${isLight ? 'text-gray-500' : 'text-gray-400'} mt-1`}>of {stats.player_limit || 50}</p>
                       </div>
-                      <div className="p-3 bg-blue-100 rounded-xl"><Users className="w-6 h-6 text-blue-600" /></div>
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Users className="w-6 h-6 text-blue-600" />
+                      </div>
                     </div>
                   </div>
+
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <div className="flex items-center justify-between">
                       <div>
@@ -513,37 +536,42 @@ const AcademyDashboard = () => {
                         <p className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} mt-1`}>{stats.active_coaches || 0}</p>
                         <p className={`text-sm ${isLight ? 'text-gray-500' : 'text-gray-400'} mt-1`}>of {stats.coach_limit || 10}</p>
                       </div>
-                      <div className="p-3 bg-green-100 rounded-xl"><UserCheck className="w-6 h-6 text-green-600" /></div>
+                      <div className="p-3 bg-green-100 rounded-xl">
+                        <UserCheck className="w-6 h-6 text-green-600" />
+                      </div>
                     </div>
                   </div>
+
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <p className={`text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Attendance Rate</p>
-                        <p className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} mt-1`}>
-                          {attendanceSummary?.overall_attendance_rate?.toFixed(0) || 0}%
-                        </p>
-                        <p className="text-sm text-green-500 mt-1">Overall</p>
+                        <p className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} mt-1`}>87%</p>
+                        <p className="text-sm text-green-500 mt-1">+2% this week</p>
                       </div>
-                      <div className="p-3 bg-orange-100 rounded-xl"><TrendingUp className="w-6 h-6 text-orange-600" /></div>
+                      <div className="p-3 bg-orange-100 rounded-xl">
+                        <TrendingUp className="w-6 h-6 text-orange-600" />
+                      </div>
                     </div>
                   </div>
+
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className={`text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Avg. Performance</p>
-                        <p className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} mt-1`}>
-                          {attendanceSummary?.average_performance_rating?.toFixed(1) || 'N/A'}
-                        </p>
+                        <p className={`text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Performance Score</p>
+                        <p className={`text-3xl font-bold ${isLight ? 'text-gray-900' : 'text-white'} mt-1`}>8.4</p>
                         <p className="text-sm text-blue-500 mt-1">Academy Average</p>
                       </div>
-                      <div className="p-3 bg-purple-100 rounded-xl"><Award className="w-6 h-6 text-purple-600" /></div>
+                      <div className="p-3 bg-purple-100 rounded-xl">
+                        <Award className="w-6 h-6 text-purple-600" />
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Charts */}
+                {/* Charts Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Monthly Growth Chart */}
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Monthly Growth</h3>
                     <ResponsiveContainer width="100%" height={300}>
@@ -551,22 +579,92 @@ const AcademyDashboard = () => {
                         <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#e5e7eb' : '#374151'} />
                         <XAxis dataKey="month" stroke={isLight ? '#6b7280' : '#9ca3af'} />
                         <YAxis stroke={isLight ? '#6b7280' : '#9ca3af'} />
-                        <Tooltip contentStyle={{ backgroundColor: isLight ? '#ffffff' : '#1f2937', border: `1px solid ${isLight ? '#e5e7eb' : '#374151'}`, borderRadius: '12px' }}/>
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: isLight ? '#ffffff' : '#1f2937',
+                            border: `1px solid ${isLight ? '#e5e7eb' : '#374151'}`,
+                            borderRadius: '12px'
+                          }}
+                        />
                         <Legend />
                         <Area type="monotone" dataKey="players" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} />
                         <Area type="monotone" dataKey="coaches" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.2} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
+
+                  {/* Player Position Distribution */}
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Player Positions</h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
-                        <Pie data={getPlayerDistributionData()} cx="50%" cy="50%" labelLine={false} label={({ name, percentage }) => `${name} (${percentage}%)`} outerRadius={80} fill="#8884d8" dataKey="value">
-                          {getPlayerDistributionData().map((entry, index) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
+                        <Pie
+                          data={getPlayerDistributionData()}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percentage }) => `${name} (${percentage}%)`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {getPlayerDistributionData().map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
                         </Pie>
-                        <Tooltip contentStyle={{ backgroundColor: isLight ? '#ffffff' : '#1f2937', border: `1px solid ${isLight ? '#e5e7eb' : '#374151'}`, borderRadius: '12px' }}/>
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: isLight ? '#ffffff' : '#1f2937',
+                            border: `1px solid ${isLight ? '#e5e7eb' : '#374151'}`,
+                            borderRadius: '12px'
+                          }}
+                        />
                       </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Performance & Age Distribution */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Weekly Performance */}
+                  <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+                    <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Weekly Performance</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={getPerformanceData()}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#e5e7eb' : '#374151'} />
+                        <XAxis dataKey="week" stroke={isLight ? '#6b7280' : '#9ca3af'} />
+                        <YAxis stroke={isLight ? '#6b7280' : '#9ca3af'} />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: isLight ? '#ffffff' : '#1f2937',
+                            border: `1px solid ${isLight ? '#e5e7eb' : '#374151'}`,
+                            borderRadius: '12px'
+                          }}
+                        />
+                        <Legend />
+                        <Line type="monotone" dataKey="attendance" stroke="#3B82F6" strokeWidth={3} dot={{ r: 5 }} />
+                        <Line type="monotone" dataKey="performance" stroke="#10B981" strokeWidth={3} dot={{ r: 5 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Age Distribution */}
+                  <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-6 shadow-sm border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+                    <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-4`}>Age Distribution</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={getAgeDistributionData()}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#e5e7eb' : '#374151'} />
+                        <XAxis dataKey="ageGroup" stroke={isLight ? '#6b7280' : '#9ca3af'} />
+                        <YAxis stroke={isLight ? '#6b7280' : '#9ca3af'} />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: isLight ? '#ffffff' : '#1f2937',
+                            border: `1px solid ${isLight ? '#e5e7eb' : '#374151'}`,
+                            borderRadius: '12px'
+                          }}
+                        />
+                        <Bar dataKey="players" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
@@ -577,16 +675,24 @@ const AcademyDashboard = () => {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h2 className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Players</h2>
-                  <button onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200">
-                    <Plus className="w-4 h-4" /> Add Player
+                  <button
+                    onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Player
                   </button>
                 </div>
+
                 {filteredPlayers.length === 0 ? (
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-12 text-center border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <Users className={`w-16 h-16 mx-auto mb-4 ${isLight ? 'text-gray-400' : 'text-gray-600'}`} />
                     <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-2`}>No players found</h3>
                     <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>Start by adding your first player to the academy.</p>
-                    <button onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }} className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200">
+                    <button
+                      onClick={() => { setEditingPlayer(null); setShowPlayerModal(true); }}
+                      className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200"
+                    >
                       Add Your First Player
                     </button>
                   </div>
@@ -599,17 +705,39 @@ const AcademyDashboard = () => {
                             {(player.first_name?.[0] || '') + (player.last_name?.[0] || '')}
                           </div>
                           <div>
-                            <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{player.first_name} {player.last_name}</h4>
-                            <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{player.position || 'No Position'}</p>
+                            <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                              {player.first_name} {player.last_name}
+                            </h4>
+                            <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                              {player.position || 'No Position'}
+                            </p>
                           </div>
                         </div>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between"><span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Jersey</span><span className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>#{player.jersey_number || 'N/A'}</span></div>
-                          <div className="flex justify-between"><span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Age</span><span className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>{player.age || 'N/A'}</span></div>
+                          <div className="flex justify-between">
+                            <span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Jersey</span>
+                            <span className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>#{player.jersey_number || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Age</span>
+                            <span className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>{player.age || 'N/A'}</span>
+                          </div>
                         </div>
                         <div className="flex gap-2 mt-4">
-                          <button onClick={() => { setEditingPlayer(player); setShowPlayerModal(true); }} className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${isLight ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}>Edit</button>
-                          <button onClick={() => handleDeletePlayer(player.id)} className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors duration-200">Delete</button>
+                          <button
+                            onClick={() => { setEditingPlayer(player); setShowPlayerModal(true); }}
+                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                              isLight ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            }`}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeletePlayer(player.id)}
+                            className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors duration-200"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -620,18 +748,28 @@ const AcademyDashboard = () => {
 
             {activeTab === 'coaches' && (
               <div className="space-y-6">
-                 <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center">
                   <h2 className={`text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Coaches</h2>
-                  <button onClick={() => { setEditingCoach(null); setShowCoachModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200">
-                    <Plus className="w-4 h-4" /> Add Coach
+                  <button
+                    onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Coach
                   </button>
                 </div>
+
                 {filteredCoaches.length === 0 ? (
                   <div className={`${isLight ? 'bg-white' : 'bg-gray-800'} rounded-2xl p-12 text-center border ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
                     <UserCheck className={`w-16 h-16 mx-auto mb-4 ${isLight ? 'text-gray-400' : 'text-gray-600'}`} />
                     <h3 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-2`}>No coaches found</h3>
                     <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} mb-6`}>Start by adding your first coach to the academy.</p>
-                    <button onClick={() => { setEditingCoach(null); setShowCoachModal(true); }} className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200">Add Your First Coach</button>
+                    <button
+                      onClick={() => { setEditingCoach(null); setShowCoachModal(true); }}
+                      className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200"
+                    >
+                      Add Your First Coach
+                    </button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -642,17 +780,39 @@ const AcademyDashboard = () => {
                             {(coach.first_name?.[0] || '') + (coach.last_name?.[0] || '')}
                           </div>
                           <div>
-                            <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{coach.first_name} {coach.last_name}</h4>
-                            <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{coach.specialization || 'General Coach'}</p>
+                            <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                              {coach.first_name} {coach.last_name}
+                            </h4>
+                            <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                              {coach.specialization || 'General Coach'}
+                            </p>
                           </div>
                         </div>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between"><span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Experience</span><span className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>{coach.experience_years || 0} years</span></div>
-                          <div className="flex justify-between"><span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Email</span><span className={`font-medium text-xs ${isLight ? 'text-gray-900' : 'text-white'}`} title={coach.email}>{coach.email?.slice(0, 15)}...</span></div>
+                          <div className="flex justify-between">
+                            <span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Experience</span>
+                            <span className={`font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>{coach.experience_years || 0} years</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className={isLight ? 'text-gray-600' : 'text-gray-400'}>Email</span>
+                            <span className={`font-medium text-xs ${isLight ? 'text-gray-900' : 'text-white'}`} title={coach.email}>{coach.email?.slice(0, 15)}...</span>
+                          </div>
                         </div>
                         <div className="flex gap-2 mt-4">
-                          <button onClick={() => { setEditingCoach(coach); setShowCoachModal(true); }} className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${isLight ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}>Edit</button>
-                          <button onClick={() => handleDeleteCoach(coach.id)} className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors duration-200">Delete</button>
+                          <button
+                            onClick={() => { setEditingCoach(coach); setShowCoachModal(true); }}
+                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                              isLight ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            }`}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCoach(coach.id)}
+                            className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors duration-200"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -669,8 +829,21 @@ const AcademyDashboard = () => {
         </main>
       </div>
       
-      <PlayerModal isOpen={showPlayerModal} onClose={() => setShowPlayerModal(false)} onSubmit={editingPlayer ? (data) => handleUpdatePlayer(editingPlayer.id, data) : handleCreatePlayer} player={editingPlayer} isEditing={!!editingPlayer} />
-      <CoachModal isOpen={showCoachModal} onClose={() => setShowCoachModal(false)} onSubmit={editingCoach ? (data) => handleUpdateCoach(editingCoach.id, data) : handleCreateCoach} coach={editingCoach} isEditing={!!editingCoach} />
+      <PlayerModal
+        isOpen={showPlayerModal}
+        onClose={() => setShowPlayerModal(false)}
+        onSubmit={editingPlayer ? (data) => handleUpdatePlayer(editingPlayer.id, data) : handleCreatePlayer}
+        player={editingPlayer}
+        isEditing={!!editingPlayer}
+      />
+
+      <CoachModal
+        isOpen={showCoachModal}
+        onClose={() => setShowCoachModal(false)}
+        onSubmit={editingCoach ? (data) => handleUpdateCoach(editingCoach.id, data) : handleCreateCoach}
+        coach={editingCoach}
+        isEditing={!!editingCoach}
+      />
     </div>
   );
 };
