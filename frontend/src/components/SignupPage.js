@@ -26,7 +26,6 @@ const SignupPage = () => {
       [name]: value
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -398,5 +397,4 @@ const SignupPage = () => {
     </div>
   );
 };
-
 export default SignupPage;
